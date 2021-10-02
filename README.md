@@ -8,8 +8,8 @@ to run application you need to first install [docker](https://docs.docker.com/en
 
 django web application and postgreSQL database are running in different containers that communicates with each other. To start them both:
 
-```bash 
-docker-compose up
+```bash
+docker-compose up --build
 ```
 
 **NOTE:** on linux-based systems docker and docker-compose are by default installed with root permissions so you need to add _sudo_ to all the commads that utilises them.
@@ -28,16 +28,16 @@ It will help the others in team to reviev code and revert changes if something g
 
 it might be helpful to manage database on development stage
 
-1. Find the _docker-container-id_ in which the postgres is running using the below command. 
-```bash 
+1. Find the _docker-container-id_ in which the postgres is running using the below command.
+```bash
 docker ps -a
 ```
-2. Run the below command to enter into the container (with the ID from step-1). 
+2. Run the below command to enter into the container (with the ID from step-1).
 ```bash
 docker exec -it <PSQL-Container-ID> bash
 ```
-3. Authenticate to start using as postgres user. 
-```bash 
+3. Authenticate to start using as postgres user.
+```bash
 psql -h localhost -p 5432 -U postgres -W
 ```
 4. Enter the password used while creating the PSQL server container. (inside docker-compose.yaml)
