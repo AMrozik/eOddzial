@@ -12,10 +12,12 @@ class PatientModel(models.Model):
             return NotImplemented
         return self.name == other.name and self.PESEL == other.PESEL
 
+    @property
     def gender(self) -> str:
         p = Pesel(str(self.PESEL))
         return p.gender
 
-    def age(self, _date: date) -> int:
+    @property
+    def age(self) -> int:
         p = Pesel(str(self.PESEL))
         return p.age(date.today())
