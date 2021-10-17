@@ -41,3 +41,46 @@ docker exec -it <PSQL-Container-ID> bash
 psql -h localhost -p 5432 -U postgres -W
 ```
 4. Enter the password used while creating the PSQL server container. (inside docker-compose.yaml)
+
+
+
+### Connecting to the Django container via CLI:
+
+it might necessary to connect to django container and e.g. perform database migrations
+
+1. start all containers
+```bash
+docker-compose up -d 
+```
+
+```bash
+docker-compose up 
+```
+2. Find the _docker-container-id_ of django server. its name should have "_web" in its name
+```bash
+docker ps
+```
+3. Run the below command to enter into the container (with the ID from step-2).
+```bash
+docker exec -it <Container-ID> bash
+```
+4. It should bring you to the project directory where you can find [manage.py](https://docs.djangoproject.com/en/3.2/ref/django-admin/) file
+this is the script file made by django framework to perform many administrative tasks during the development and deployment process <br>
+   for example:
+   ####everytime you change django models you need to perform a database migration
+to do so when you are connected with django container and in a correct location with manage.py file inside
+you can do:
+```bash
+python manage.py makemigrations
+```
+then
+```bash
+python manage.py migrate
+```
+
+5. another usefull thing is creating a superuser who can add some testing data during the development process
+```bash
+python manage.py createsuperuser
+```
+
+after that u can log in on localhost:8000/admin using credentials you passed
