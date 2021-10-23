@@ -50,7 +50,7 @@ it might be necessary to connect to django container and e.g. perform database m
 
 1. start all containers
 ```bash
-docker-compose up -d 
+docker-compose up --build 
 ```
 
 ```bash
