@@ -4,14 +4,14 @@ import re
 
 class Pesel:
     def __init__(self, pesel: str):
-        if not _proper_format(pesel):
-            raise MalformedPesel()
-        if not pesel.endswith(_control_digit(pesel)):
-            raise InvalidPesel("Mismatched control digit")
-        if not _valid_birth_month(pesel):
-            raise InvalidPesel("Month not in range")
-        if not _valid_birth_day(pesel):
-            raise InvalidPesel("Day not in range")
+        # if not _proper_format(pesel):
+        #     raise MalformedPesel()
+        # if not pesel.endswith(_control_digit(pesel)):
+        #     raise InvalidPesel("Mismatched control digit")
+        # if not _valid_birth_month(pesel):
+        #     raise InvalidPesel("Month not in range")
+        # if not _valid_birth_day(pesel):
+        #     raise InvalidPesel("Day not in range")
         self.pesel = pesel
 
     @property
@@ -93,7 +93,7 @@ def _valid_birth_day(pesel: str) -> bool:
     day = int(pesel[4:6])
 
     return 1 <= day <= 31
-
+y
 
 def _valid_birth_month(pesel: str) -> bool:
     pesel_month = int(pesel[2:4])
