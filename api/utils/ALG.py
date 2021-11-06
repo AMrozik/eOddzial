@@ -1,4 +1,3 @@
-# TODO: poprawic nazwe importa
 import Operation
 import Operation_type
 
@@ -8,11 +7,19 @@ class Operacja:
         czy_dziecko = self.czy_dziecko
         czy_trudne = self.czy_trudne
 
-    def __cmp__:
-        # TODO: dodac sposob liczenia score
-        return 1
+    def score:
+        # punktacja dziecieca, punktacja doroslego, punktacja za trudnosc
+        # TODO: poprawic punktowanie dla osoby doroslej
+        return (czas_zakonczenia_pracy - czas_rozpoczecia)*czy_dziecko + (czas_zakonczenia_pracy - czas_rozpoczecia) + (czas_rozpoczecia - czas_rozpoczecia_pracy)*czy_trudne
 
+    # TODO: test option when self == other (now: ret other. test: ret self)
+    def __cmp__(self, other):
+        if self.score > other.score:
+            return self
+        else:
+            return other
 
+# TODO: Nalezy poprawic w algorytmie odnoszenie sie do pol operacji (to nie jest lista, sprawdz co django zwraca z )
 def podpowiedz(operacje_dnia, lekarz_ID, czy_dziecko, czy_trudne, czas_trwania, czas_przygotowania):
     """
     Zwraca posortowana liste mozliwych operacji wedlug systemu okreslania zdatnosci
@@ -40,9 +47,14 @@ def podpowiedz(operacje_dnia, lekarz_ID, czy_dziecko, czy_trudne, czas_trwania, 
                 if przerwa + czas_przygotowania > czas_trwania:
                     # TAK: dodaj operacje do mozliwosci
                     mozliwosci.append(Operacja(czas_rozpoczecia, czy_dziecko, czy_trudne))
-                # Nie: kontynuuj prace
 
-    # TODO: Wyrzuc operacje jezeli lekarz juz zajmuje sie jakas operacja o tej godzinie ale w innej sali
+    # Wyrzuc operacje jezeli lekarz juz zajmuje sie jakas operacja o tej godzinie
+    # TODO: poprawic sprawdzanie przy operacjach dnia
+    for operacja in operacje_dnia:
+        for i,mozliwosc in enumerate(mozliwosci):
+            if mozliwosc[godzina] == operacja[godzina]:
+                if mozliwosc[lekarz] == operacja[lekarz]:
+                    del(mozliwosci[i])
 
     # Posortuj liste mozliwosci za pomoca wyniku operacji
     mozliwosci.sort()
@@ -51,8 +63,8 @@ def podpowiedz(operacje_dnia, lekarz_ID, czy_dziecko, czy_trudne, czas_trwania, 
 
 
 
-if __name__ = '__main__':
-    #Dane z zewnatrz
+def podpowiadanie_operacji():
+    # Dane z zewnatrz
     # TODO: ogarnac zbieranie tych danych
     czy_dziecko =
     dzien_data =
@@ -60,11 +72,11 @@ if __name__ = '__main__':
     # Dane ustalone z gory, przechowywane w ustawieniach Django
     czas_przygotowania =
     czas_rozpoczecia_pracy =
+    czas_zakonczenia_pracy =
     czas_strefy_dzieciecej =
     czas_strefy_trudnej =
 
     #---------------------------------------------------------- ZBIERANIE DANYCH
-    # TODO: upewnic sie ze dziala
     operacje_dnia = Dzien.object.raw("SELECT * FROM myapp_operation WHERE date = $s", [dzien_data])
     typ_operacji = Operation_type.object.get(typ_ID)
 
@@ -83,5 +95,17 @@ if __name__ = '__main__':
             # 3. na koniec wrzuc liste do lista_salo_operacji
 
     # TODO: foramatowanie czasu
-    # NOTE: wydzielic wszystko na oddzielne funkcje zeby latwo sprawdzac bledy
     sortowane_mozliwosci = podpowiedz()
+
+    # Przygotowac plik JSON jako odpowiedz
+    return 1
+
+
+# TESTOWANIE TYMCZASOWE
+if __name__ = '__main__':
+    # Sprawdzic zbieranie danych z DB
+    # Sortowanie operacji na podstawie sal
+    # Przygotowanie mozliwych operacji
+    # Usuwanie operacji z listy mozliwych gdy lekarz ma w tym momencie operacje
+    # Sortowanie operacji wedlug score
+    # Generowanie odpowiedzi w formie JSON
