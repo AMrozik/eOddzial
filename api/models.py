@@ -74,7 +74,7 @@ class Operation(models.Model):
     type = models.ForeignKey('Operation_type', on_delete=models.CASCADE)
     medic = models.ForeignKey('Medic', on_delete=models.CASCADE)
     patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
-    date = models.DateTimeField(null=False)
+    date = models.DateField(null=False)
     room = models.ForeignKey('Room', on_delete=models.CASCADE)
     start = models.TimeField()
 

@@ -1,5 +1,6 @@
-import Operation
-import Operation_type
+from api.models import Operation
+from api.models import Operation_type
+from rest_framework.request import Request
 
 class Operacja:
     def __init__(self, czas_rozpoczecia, czy_dziecko, czy_trudne):
@@ -19,18 +20,55 @@ class Operacja:
         else:
             return other
 
-# TODO: Nalezy poprawic w algorytmie odnoszenie sie do pol operacji (to nie jest lista, sprawdz co django zwraca z )
-def podpowiedz(operacje_dnia, lekarz_ID, czy_dziecko, czy_trudne, czas_trwania, czas_przygotowania):
-    """
-    Zwraca posortowana liste mozliwych operacji wedlug systemu okreslania zdatnosci
 
-    ARGS:
-    operacje_dnia - lista list operacji, sortowane wedlug sal
-    lekarz_ID - id lekarza w DB
-    czy_trudne - wartosc -1/1
-    czy_dziecko - wartosc -1/1
-    czas_trwania - czas trwania operacji podany w minutch
-    czas_przerwy - czas trwania przerwy pooperacyjnej podany w minutch
+def gatherDataFromDB(day_date, type_ICD):
+    daily_operations = Operation.objects.raw("SELECT * FROM api_operation WHERE date = %s", [day_date])
+    operation_type = Operation_type.objects.get(ICD_code=type_ICD)
+    return daily_operations, operation_type
+
+def sortListBasedOnRooms(daily_operations):
+    """
+
+    Args:
+        daily_operations: QuerySet with all operations in defined day
+
+    Returns: List with operations sorted based on room they are expected to be
+
+    """
+    # TEMP NOTE
+    # How it is supposed to work
+    # 1. take first room's number on list
+    # 2. iterate through list and move operations of the same room to temp_list
+    # 3. append temp_list to result a nd repeat the process until run out of rooms
+
+    room_operation_list = []
+    daily_operations_list = list(daily_operations)
+
+    while daily_operations_list:
+        temp_list = []
+        room = daily_operations_list[0].room.room_number
+        for operation in daily_operations_list:
+            if operation.room.room_number == room:
+                temp_list.append(operation)
+                daily_operations_list.remove(operation)
+        room_operation_list.append(temp_list)
+
+    return room_operation_list
+
+
+def processData(operacje_dnia, lekarz_ID, czy_dziecko, czy_trudne, czas_trwania, czas_przygotowania):
+    """
+
+    Args:
+        operacje_dnia - lista list operacji, sortowane wedlug sal
+        lekarz_ID - id lekarza w DB
+        czy_trudne - wartosc -1/1
+        czy_dziecko - wartosc -1/1
+        czas_trwania - czas trwania operacji podany w minutch
+        czas_przerwy - czas trwania przerwy pooperacyjnej podany w minutch
+
+    Returns: Zwraca posortowana liste mozliwych operacji wedlug systemu okreslania zdatnosci
+
     """
 
     # Mozliwe pozycje dla operacji
@@ -64,48 +102,26 @@ def podpowiedz(operacje_dnia, lekarz_ID, czy_dziecko, czy_trudne, czas_trwania, 
 
 
 def podpowiadanie_operacji():
-    # Dane z zewnatrz
-    # TODO: ogarnac zbieranie tych danych
-    czy_dziecko =
-    dzien_data =
-    typ_ID =
-    # Dane ustalone z gory, przechowywane w ustawieniach Django
-    czas_przygotowania =
-    czas_rozpoczecia_pracy =
-    czas_zakonczenia_pracy =
-    czas_strefy_dzieciecej =
-    czas_strefy_trudnej =
+    # Data from REST
+    is_child = Request.POST["is_child"]
+    day_date = Request.POST["date"]
+    type_ICD = Request.POST["type_id"]
 
-    #---------------------------------------------------------- ZBIERANIE DANYCH
-    operacje_dnia = Dzien.object.raw("SELECT * FROM myapp_operation WHERE date = $s", [dzien_data])
-    typ_operacji = Operation_type.object.get(typ_ID)
+    # Data from Django about ward
+    operation_prepare_time =
+    working_start_houre =
+    working_end_houre =
+    enfding_houre_of_child_interval =
+    begining_houre_of_difficult_interval =
 
-    #------------------------------------------------------ PRZYGOTOWANIE DANYCH
-    # sortowanie operacji wedlug sal
-    lista_salo_operacji = []
-    while len(operacje_dnia) > 0:
-        temp_list = []
-        sala = operacje_dnia[0][]                               #TODO: uzupelnic
-        for operacja in operacje_dnia:
-            if operacja[] == sala:
-                temp_list.append(operacja)
-                operacje_dnia.remove(operacja) # Mozliwa kolizja petli z usuwaniem
-            # 1. wez nr_sali z pierwszej napotkanej sali
-            # 2. operacje o tej samej sali wrzuc do listy oraz wyrzuc je z operacji dnia
-            # 3. na koniec wrzuc liste do lista_salo_operacji
+    # Gather data from DB
+    (daily_operations, operation_type) = gatherDataFromDB(day_date, type_ICD)
 
-    # TODO: foramatowanie czasu
-    sortowane_mozliwosci = podpowiedz()
+    # Prepare data for algorithm
+    room_sorted_list = sortListBasedOnRooms(daily_operations)
 
-    # Przygotowac plik JSON jako odpowiedz
+    # Process data with algorithm
+    sorted_possibilities = processData()
+
+    # Prepare JSON out of possibilities
     return 1
-
-
-# TESTOWANIE TYMCZASOWE
-if __name__ = '__main__':
-    # Sprawdzic zbieranie danych z DB
-    # Sortowanie operacji na podstawie sal
-    # Przygotowanie mozliwych operacji
-    # Usuwanie operacji z listy mozliwych gdy lekarz ma w tym momencie operacje
-    # Sortowanie operacji wedlug score
-    # Generowanie odpowiedzi w formie JSON
