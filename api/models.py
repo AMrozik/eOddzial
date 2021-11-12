@@ -79,4 +79,12 @@ class Operation(models.Model):
     start = models.TimeField()
 
 
+class WardData(models.Model):
+    operation_prepare_time = models.TimeField()
+    working_start_hour = models.TimeField()
+    working_end_hour = models.TimeField()
+    child_interval_hour = models.TimeField()
+    difficult_interval_hour = models.TimeField()
+
+
 
