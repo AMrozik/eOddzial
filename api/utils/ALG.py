@@ -1,27 +1,53 @@
-from api.models import Operation
-from api.models import Operation_type
-from api.models import Medic
-from api.models import WardData
-from rest_framework.request import Request
+from api.models import Operation, Operation_type, WardData, Medic
 
-# class Operacja:
-#     def __init__(self, czas_rozpoczecia, czy_dziecko, czy_trudne, medic):
-#         czas_rozpoczecia = self.czas_rozpoczecia
-#         czy_dziecko = self.czy_dziecko
-#         czy_trudne = self.czy_trudne
-#         self.medic = medic
-#
-#     def score(self):
-#         # punktacja dziecieca, punktacja doroslego, punktacja za trudnosc
-#         # TODO: poprawic punktowanie dla osoby doroslej
-#         # return (czas_zakonczenia_pracy - czas_rozpoczecia)*czy_dziecko + (czas_zakonczenia_pracy - czas_rozpoczecia) + (czas_rozpoczecia - czas_rozpoczecia_pracy)*czy_trudne
-#
-#     # TODO: test option when self == other (now: ret other. test: ret self)
-#     def __cmp__(self, other):
-#         if self.score > other.score:
-#             return self
-#         else:
-#             return other
+
+class PossibleOperation:
+    def __init__(self, start_hour, is_child, difficulty, room, ward_beginning_hour, ward_ending_hour, ward_child_hour, ward_difficult_hour):
+        """
+
+        Args:
+            start_hour: operation start hour in seconds format
+            is_child:
+            difficulty:
+            room: ward room for operation
+            ward_ending_hour: end hour of work in this ward
+            ward_beginning_hour: beginning hour of work for this ward
+            ward_child_hour: last hour reserved for child operations
+            ward_difficult_hour: first hour in interval for difficult operations
+        """
+        self.start_hour = start_hour
+        self.is_child = is_child
+        self.difficulty = difficulty
+        self.room = room
+        self.ward_ending_hour = ward_ending_hour
+        self.ward_beginning_hour = ward_beginning_hour
+        self.ward_child_hour = ward_child_hour
+        self.ward_difficult_hour = ward_difficult_hour
+
+    def score(self):
+        # TODO: testing
+        normal_points = self.start_hour - self.ward_child_hour if self.start_hour < self.ward_child_hour else self.ward_ending_hour - self.start_hour
+        child_points = (self.ward_ending_hour - self.start_hour) * self.is_child
+        difficulty_points = (self.start_hour - self.ward_difficult_hour) * self.difficulty
+        return child_points + normal_points + difficulty_points
+
+    def __lt__(self, other):
+        return self.score() < other.score()
+
+    def __le__(self, other):
+        return self.score() <= other.score()
+
+    def __eq__(self, other):
+        return self.score() == other.score()
+
+    def __ne__(self, other):
+        return self.score() != other.score()
+
+    def __gt__(self, other):
+        return self.score() > other.score()
+
+    def __ge__(self, other):
+        return self.score() >= other.score()
 
 
 class DailyHintALG:
@@ -67,43 +93,48 @@ class DailyHintALG:
         while daily_operations_list:
             temp_list = []
             room = daily_operations_list[0].room.room_number
-            for operation in daily_operations_list:
-                if operation.room.room_number == room:
-                    temp_list.append(operation)
-                    daily_operations_list.remove(operation)
+
+            iterator = 0
+            while iterator < len(daily_operations_list):
+                if daily_operations_list[iterator].room.room_number == room:
+                    temp_list.append(daily_operations_list[iterator])
+                    daily_operations_list.remove(daily_operations_list[iterator])
+                else:
+                    iterator += 1
+
             room_operation_list.append(temp_list)
 
         return room_operation_list
 
-    # def processData(room_sorted_list, lekarz_ID, czy_dziecko, czy_trudne, czas_trwania, czas_przygotowania):
-    #
-    #     # Mozliwe pozycje dla operacji
-    #     mozliwosci = []
-    #
-    #     for operacje_w_jednej_sali in enumerate(room_sorted_list):
-    #         for i,operacja in enumerate(operacje_w_jednej_sali):
-    #
-    #             # Sprawdzanie przerw miedzy operacjami
-    #             if i+1 < len(room_sorted_list):
-    #                 # Sprawdz przerwe miedzy i-ta operacja a i+1
-    #                 przerwa = operacja[rozpoczecie]+czas_trwania - operacje_w_jednej_sali[i+1][rozpoczecie]
-    #                 # Sprawdz czy mozna ustawic operacje w tej przerwie
-    #                 if przerwa + czas_przygotowania > czas_trwania:
-    #                     # TAK: dodaj operacje do mozliwosci
-    #                     mozliwosci.append(Operacja(czas_rozpoczecia, czy_dziecko, czy_trudne))
-    #
-    #     # Wyrzuc operacje jezeli lekarz juz zajmuje sie jakas operacja o tej godzinie
-    #     # TODO: poprawic sprawdzanie przy operacjach dnia
-    #     for operacja in operacje_dnia:
-    #         for i,mozliwosc in enumerate(mozliwosci):
-    #             if mozliwosc[godzina] == operacja[godzina]:
-    #                 if mozliwosc[lekarz] == operacja[lekarz]:
-    #                     del(mozliwosci[i])
-    #
-    #     # Posortuj liste mozliwosci za pomoca wyniku operacji
-    #     mozliwosci.sort()
-    #
-    #     return mozliwosci
+    def processData(self, room_sorted_list, lekarz_ID, czy_dziecko, czy_trudne, duration):
+        # ONLY IF NEEDED, ELSE DELETE
+        # operation_types = Operation_type.objects.all()
+
+        possibilities = []
+        for room_operations in enumerate(room_sorted_list):
+            for i, operation in enumerate(room_operations):
+                # Check time between next operations
+                if i+1 < len(room_sorted_list):
+                    free_time = room_operations[i].start + room_operations[i].type.duration - room_operations[i+1].start
+                    # Is it possible to place new operation here?
+                    if free_time + self.operation_prepare_time > duration:
+                        # YES: add this possibility to list
+                        possibilities.append(PossibleOperation())
+
+        # Wyrzuc operacje jezeli nie sa w godzinach pracy lekarza
+
+        # Wyrzuc operacje jezeli lekarz juz zajmuje sie jakas operacja o tej godzinie
+        # TODO: poprawic sprawdzanie przy operacjach dnia
+        for operacja in operacje_dnia:
+            for i,mozliwosc in enumerate(mozliwosci):
+                if mozliwosc[godzina] == operacja[godzina]:
+                    if mozliwosc[lekarz] == operacja[lekarz]:
+                        del(mozliwosci[i])
+
+        # Sort possibilities to get best results on top
+        possibilities.sort()
+
+        return possibilities
 
     def toJson(self):
         # Gather data from DB
