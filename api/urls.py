@@ -7,6 +7,11 @@ from .views import (
     delete_patient,
 )
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 urlpatterns = [
     path('patients/', PatientsView.as_view(), name='patients'),
@@ -14,4 +19,8 @@ urlpatterns = [
     path('patient/<id>/', patient_by_id, name='patient'),
     path('update_patient/<id>/', update_patient, name='update_patient'),
     path('delete_patient/<id>/', delete_patient, name='delete_patient'),
+
+    # JWT
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
