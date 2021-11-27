@@ -6,21 +6,60 @@ from api.models import Patient
 from functools import wraps
 from rest_framework_simplejwt.backends import TokenBackend
 from users.models import Account
+from django.core.exceptions import ValidationError
+from typing import List
 
 
-def allow_access(permissions):
+def retrieve_user(request):
+    """
+    Retrieves user from database by decoding token from request.
+
+    Args:
+        request: HttpRequest
+
+    Returns:
+        user: Optional[str] - If couldn't specify the user None is returned, data: dict - Http response header
+
+    Raises:
+        ValidationError: If could not decode token
+    """
+    token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+    data = {'token': token}
+    try:
+        valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+        user_id = valid_data['user_id']
+        user = Account.objects.get(id=user_id)
+    except ValidationError as v:
+        print("validation error", v)
+        return None, data
+    return user, data
+
+
+def allow_access(permissions: List[str]):
+    """
+    Function decorator to retrieve user (by using retrieve_user()) and ascertain his permissions to view this endpoint
+
+    Args:
+        permissions: List[str] List of permission fields in Account model e.g: ['is_admin', 'is_medic']
+
+    Raises:
+        ValidationError: If could not decode token
+    """
     def allow_access_decorator(func):
         @wraps(func)
         def func_wrapper(*args, **kwargs):
             request = args[0]
-            token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
-            valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
-            user_id = valid_data['user_id']
-            user = Account.objects.get(id=user_id)
+            user, data = retrieve_user(request)
+            if user is None:
+                data['failure'] = "Could not specify the user"
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
             for p in permissions:
-                if user.__dict__[p] is True: break
+                if user.__dict__.get(p, None) is True: break
             else:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+                data['failure'] = "User does not have permissions to view this site"
+                data['user'] = str(user)
+                return Response(data=data, status=status.HTTP_403_FORBIDDEN)
             return func(*args, **kwargs)
         return func_wrapper
     return allow_access_decorator

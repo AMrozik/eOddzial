@@ -53,7 +53,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     is_secretary = models.BooleanField(default=False)
     is_planist = models.BooleanField(default=False)
 
-    medic = models.OneToOneField(Medic, on_delete=models.PROTECT, default=None, blank=True, null=True)
+    medic = models.OneToOneField(Medic, on_delete=models.PROTECT, blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

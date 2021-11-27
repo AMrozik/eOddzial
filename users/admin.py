@@ -9,17 +9,17 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = Account
-    list_display = ('email', 'first_name', 'last_name', 'is_ordynator', 'is_medic', 'is_secretary', 'is_planist', 'is_superuser', 'is_admin')
+    list_display = ('email', 'first_name', 'last_name', 'medic', 'is_ordynator', 'is_medic', 'is_secretary', 'is_planist', 'is_superuser', 'is_admin')
 
-    list_filter = ('email', 'first_name', 'last_name', 'is_ordynator', 'is_medic', 'is_secretary', 'is_planist', 'is_superuser', 'is_admin')
+    list_filter = ('email', 'first_name', 'last_name', 'medic', 'is_ordynator', 'is_medic', 'is_secretary', 'is_planist', 'is_superuser', 'is_admin')
     fieldsets = (
-        (None, {'fields': ('email', 'first_name', 'last_name', 'password')}),
+        (None, {'fields': ('email', 'first_name', 'last_name', 'medic', 'password')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'is_ordynator', 'is_medic', 'is_secretary', 'is_planist', 'is_superuser', 'is_admin')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'first_name', 'last_name', 'password1', 'password2', 'is_ordynator', 'is_medic', 'is_secretary', 'is_planist')}
+            'fields': ('email', 'first_name', 'last_name', 'medic', 'password1', 'password2', 'is_ordynator', 'is_medic', 'is_secretary', 'is_planist')}
         ),
     )
     search_fields = ('email', 'last_name', 'first_name')
