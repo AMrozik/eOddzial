@@ -1,27 +1,32 @@
 import datetime
+from json import dumps, loads, JSONEncoder
+
 from api.models import Operation, Operation_type, WardData, Medic, Room
 
 
 class PossibleOperation:
-    def __init__(self, start_hour, is_child, is_difficult, room, in_proper_interval, ward_beginning_hour, ward_ending_hour, ward_child_hour, ward_difficult_hour):
+    def __init__(self, start_hour, is_child, is_difficult, room, in_proper_interval, ward_beginning_hour, ward_ending_hour, ward_child_hour, ward_difficult_hour, day_date):
         """
 
         Args:
-            start_hour: HOUR stores operation starting time
+            start_hour: DATETIME stores operation starting time
             is_child: BOOLEAN storing is patient child
             is_difficult: BOOLEAN sorting is patient's operation difficult
             room: INT representing room for this operation (it helps generate clear JSON)
             in_proper_interval: BOOLEAN representing is operation in designated interval for this operation (for React logic)
-            ward_beginning_hour: HOUR ward work starting hour information
-            ward_ending_hour: HOUR ward work ending hour information
-            ward_child_hour: HOUR ward information about end of child interval
-            ward_difficult_hour: HOUR ward information about beginning of difficult interval
+            ward_beginning_hour: INT ward work starting hour information
+            ward_ending_hour: INT ward work ending hour information
+            ward_child_hour: INT ward information about end of child interval
+            ward_difficult_hour: INT ward information about beginning of difficult interval
+            day_date: DATETIME with the day of operation
         """
-        self.start_hour = dateTimeToInt(start_hour)
+        self.start = datetime.datetime(year=day_date.year, month=day_date.month, day=day_date.day, hour=start_hour.hour, minute=start_hour.minute, second=start_hour.second)
         self.is_child = is_child
         self.is_difficult = is_difficult
         self.room = room
         self.in_proper_interval = in_proper_interval
+        # Only for easier score calculation
+        self.start_hour = dateTimeToInt(start_hour)
         self.ward_ending_hour = dateTimeToInt(ward_ending_hour)
         self.ward_beginning_hour = dateTimeToInt(ward_beginning_hour)
         self.ward_child_hour = dateTimeToInt(ward_child_hour)
@@ -31,7 +36,7 @@ class PossibleOperation:
         normal_points = self.start_hour - self.ward_child_hour if self.start_hour < self.ward_child_hour else self.ward_ending_hour - self.start_hour
         child_points = (self.ward_ending_hour - self.start_hour) * self.is_child
         difficulty_points = (self.start_hour - self.ward_difficult_hour) * self.is_difficult
-        return child_points + normal_points + difficulty_points
+        return child_points*10 + normal_points + difficulty_points*10
 
     def __lt__(self, other):
         return self.score() < other.score()
@@ -51,9 +56,28 @@ class PossibleOperation:
     def __ge__(self, other):
         return self.score() >= other.score()
 
+    def toJson(self):
+        """
+
+        Returns:
+            DICT with only needed data about form this object
+
+        """
+        result = self.__dict__
+        del result['start_hour']
+        del result['ward_ending_hour']
+        del result['ward_beginning_hour']
+        del result['ward_child_hour']
+        del result['ward_difficult_hour']
+
+        result['start'] = result['start'].isoformat("T")
+
+        return result
+
 
 class DailyHintALG:
     def __init__(self, is_child, is_difficult, day_date, type_ICD, medic_id):
+
         # Data from REST
         self.is_child = is_child
         self.is_difficult = is_difficult
@@ -88,18 +112,13 @@ class DailyHintALG:
         """
 
         Args:
-            daily_operations: QuerySet with all operations in defined day
+            daily_operations: QUERYSET with all operations in defined day
+            rooms:
 
-        Returns: List with operations sorted based on room they are expected to be
+        Returns:
+            LIST[LIST[INT]] with operations sorted based on room they are expected to be
 
         """
-        # DEV NOTE
-        # How it is supposed to work
-        # 1. take first room's number on list
-        # 2. iterate through list and move operations of the same room to temp_list
-        # 3. append temp_list to result a nd repeat the process until run out of rooms
-        # TODO: append empty list for room with no operations ;)
-
         room_operation_list = []
         daily_operations_list = list(daily_operations)
 
@@ -117,7 +136,7 @@ class DailyHintALG:
 
             room_operation_list.append(temp_list)
 
-        # Make sure that room sorted list has one list for each room
+        # Make sure that room sorted list has at least one list for each room
         empty_rooms = len(rooms)-len(room_operation_list)
         for i in range(empty_rooms):
             temp_list = []
@@ -129,7 +148,7 @@ class DailyHintALG:
         """
 
         Args:
-            hour: Starting hour of operation that you want to check
+            hour: DATETIME.TIME object with starting hour of operation that you want to check
 
         Returns:
             BOOLEAN with information is hour in it's interval
@@ -140,78 +159,104 @@ class DailyHintALG:
             is_in_interval = True
         elif self.is_difficult and hour > dateTimeToInt(self.ward_difficult_hour):
             is_in_interval = True
+        elif self.is_child and self.is_difficult:
+            is_in_interval = True
         elif self.is_child is False and self.is_difficult is False and dateTimeToInt(self.ward_child_hour) < hour < dateTimeToInt(self.ward_difficult_hour):
             is_in_interval = True
 
         return is_in_interval
 
     def processData(self, room_sorted_list, medic, duration, room_list):
-        # ONLY IF NEEDED, ELSE DELETE
-        # operation_types = Operation_type.objects.all()
+        """
 
-        # Special rule for child with difficult case
-        # if is_child and is_difficult:
-        #     TODO: Prepare only one PossibleOperation for each room which is in child interval and proceed with JSON else process data normaly
+        Args:
+            room_sorted_list: LIST[LIST[INT]] with operations sorted based on rooms (each room have to have at least empty list)
+            medic: MEDIC object storing data for this operation medic
+            duration: DATETIME.TIME with duration of this operation
+            room_list: LIST[INT] with stored integer values of rooms in ward
+
+        Returns:
+            LIST[POSSIBLE_OPERATION] sorted based on their score
+
+        """
 
         possibilities = []
-        for i, room_operations in enumerate(room_sorted_list):
 
-            # Add possibilities on beginning of each interval and each room
-            is_in_interval = self.checkIsInInterval(dateTimeToInt(self.ward_beginning_hour))
-            possibilities.append(PossibleOperation(self.ward_beginning_hour, self.is_child, self.is_difficult,
-                                                   room_list[i].room_number, is_in_interval,
-                                                   self.ward_beginning_hour, self.ward_ending_hour,
-                                                   self.ward_child_hour, self.ward_difficult_hour))
-            is_in_interval = self.checkIsInInterval(dateTimeToInt(self.ward_child_hour))
-            possibilities.append(PossibleOperation(self.ward_child_hour, self.is_child, self.is_difficult,
-                                                   room_list[i].room_number, is_in_interval,
-                                                   self.ward_beginning_hour, self.ward_ending_hour,
-                                                   self.ward_child_hour, self.ward_difficult_hour))
-            is_in_interval = self.checkIsInInterval(dateTimeToInt(self.ward_difficult_hour))
-            possibilities.append(PossibleOperation(self.ward_difficult_hour, self.is_child, self.is_difficult,
-                                                   room_list[i].room_number, is_in_interval,
-                                                   self.ward_beginning_hour, self.ward_ending_hour,
-                                                   self.ward_child_hour, self.ward_difficult_hour))
-
-            # Add possibilities between already exiting operations and after them
-            for j, operation in enumerate(room_operations):
-                # Check time between next operations
-                if j+1 < len(room_sorted_list):
-                    free_time = dateTimeToInt(room_operations[j].start) + int(room_operations[j].type.duration.total_seconds()) - dateTimeToInt(room_operations[j+1].start)
-                    # Is it possible to place new operation here?
-                    if free_time + dateTimeToInt(self.operation_prepare_time) > int(duration.total_seconds()):
-                        possible_operation_start_hour = dateTimeToInt(room_operations[j].start) + int(room_operations[j].type.duration.total_seconds()) + dateTimeToInt(self.operation_prepare_time)
-                        # Check is operation in proper interval to pass it to constructor
-                        is_in_interval = self.checkIsInInterval(possible_operation_start_hour)
-                        # YES: add this possibility to list
-                        possible_operation_start_hour = intToDateTime(possible_operation_start_hour)
-                        possibilities.append(PossibleOperation(possible_operation_start_hour, self.is_child,
-                                                               self.is_difficult, room_operations[0].room.room_number,
-                                                               is_in_interval, self.ward_beginning_hour,
-                                                               self.ward_ending_hour, self.ward_child_hour,
-                                                               self.ward_difficult_hour))
-
-            # Add possibility on the end of not empty list
-            if room_operations:
-                possible_operation_start_hour = dateTimeToInt(room_operations[-1].start) + int(room_operations[-1].type.duration.total_seconds()) + dateTimeToInt(self.operation_prepare_time)
-                possible_operation_start_hour = intToDateTime(possible_operation_start_hour)
-                possibilities.append(PossibleOperation(possible_operation_start_hour, self.is_child, self.is_difficult,
-                                                       room_operations[0].room.room_number, is_in_interval,
+        # Special rule for child with difficult case
+        if self.is_child and self.is_difficult:
+            for i, room in enumerate(room_sorted_list):
+                possibilities.append(PossibleOperation(self.ward_beginning_hour, self.is_child, self.is_difficult,
+                                                       room_list[i].room_number, True,
                                                        self.ward_beginning_hour, self.ward_ending_hour,
-                                                       self.ward_child_hour, self.ward_difficult_hour))
+                                                       self.ward_child_hour, self.ward_difficult_hour,
+                                                       self.day_date))
+        else:
+            for i, room_operations in enumerate(room_sorted_list):
+
+                # Add possibilities on beginning of each interval and each room
+                is_in_interval = self.checkIsInInterval(dateTimeToInt(self.ward_beginning_hour))
+                possibilities.append(PossibleOperation(self.ward_beginning_hour, self.is_child, self.is_difficult,
+                                                       room_list[i].room_number, is_in_interval,
+                                                       self.ward_beginning_hour, self.ward_ending_hour,
+                                                       self.ward_child_hour, self.ward_difficult_hour,
+                                                       self.day_date))
+                is_in_interval = self.checkIsInInterval(dateTimeToInt(self.ward_child_hour))
+                possibilities.append(PossibleOperation(self.ward_child_hour, self.is_child, self.is_difficult,
+                                                       room_list[i].room_number, is_in_interval,
+                                                       self.ward_beginning_hour, self.ward_ending_hour,
+                                                       self.ward_child_hour, self.ward_difficult_hour,
+                                                       self.day_date))
+                is_in_interval = self.checkIsInInterval(dateTimeToInt(self.ward_difficult_hour))
+                possibilities.append(PossibleOperation(self.ward_difficult_hour, self.is_child, self.is_difficult,
+                                                       room_list[i].room_number, is_in_interval,
+                                                       self.ward_beginning_hour, self.ward_ending_hour,
+                                                       self.ward_child_hour, self.ward_difficult_hour,
+                                                       self.day_date))
+
+                # Add possibilities between already exiting operations and after them
+                for j, operation in enumerate(room_operations):
+                    # Check time between next operations
+                    if j+1 < len(room_sorted_list):
+                        free_time = dateTimeToInt(room_operations[j].start) + int(room_operations[j].type.duration.total_seconds()) - dateTimeToInt(room_operations[j+1].start)
+                        # Is it possible to place new operation here?
+                        if free_time + dateTimeToInt(self.operation_prepare_time) > int(duration.total_seconds()):
+                            possible_operation_start_hour = dateTimeToInt(room_operations[j].start) + int(room_operations[j].type.duration.total_seconds()) + dateTimeToInt(self.operation_prepare_time)
+                            # Check is operation in proper interval to pass it to constructor
+                            is_in_interval = self.checkIsInInterval(possible_operation_start_hour)
+                            # YES: add this possibility to list
+                            possible_operation_start_hour = intToDateTime(possible_operation_start_hour)
+                            possibilities.append(PossibleOperation(possible_operation_start_hour, self.is_child,
+                                                                   self.is_difficult, room_operations[0].room.room_number,
+                                                                   is_in_interval, self.ward_beginning_hour,
+                                                                   self.ward_ending_hour, self.ward_child_hour,
+                                                                   self.ward_difficult_hour, self.day_date))
+
+                # Add possibility on the end of not empty list
+                if room_operations:
+                    possible_operation_start_hour = dateTimeToInt(room_operations[-1].start) + int(room_operations[-1].type.duration.total_seconds()) + dateTimeToInt(self.operation_prepare_time)
+                    possible_operation_start_hour = intToDateTime(possible_operation_start_hour)
+                    possibilities.append(PossibleOperation(possible_operation_start_hour, self.is_child, self.is_difficult,
+                                                           room_operations[0].room.room_number, is_in_interval,
+                                                           self.ward_beginning_hour, self.ward_ending_hour,
+                                                           self.ward_child_hour, self.ward_difficult_hour,
+                                                           self.day_date))
+
+        # TODO: More tests needed here! (i see invalid data in JSON)
+        to_remove = []
 
         # Select possibilities if they are not in range of medic working hours
-        to_remove = []
         for possibility in possibilities:
             if dateTimeToInt(medic.work_start) > possibility.start_hour > dateTimeToInt(medic.work_end):
+                print(possibility.start_hour)
                 to_remove.append(possibility)
 
         # Select possibilities if they collide with already appointed operations
         for room_operations in room_sorted_list:
             for operation in room_operations:
                 for possibility in possibilities:
-                    if dateTimeToInt(operation.start) <= possibility.start_hour <= dateTimeToInt(operation.start) + int(operation.type.duration.total_seconds()):
-                        to_remove.append(possibility)
+                    if operation.room.room_number == possibility.room:
+                        if dateTimeToInt(operation.start) <= possibility.start_hour <= dateTimeToInt(operation.start) + int(operation.type.duration.total_seconds()):
+                            to_remove.append(possibility)
 
         # Select possibilities if they collide with medic's operations in this day
         medic_operations = Operation.objects.filter(medic=medic)
@@ -226,26 +271,30 @@ class DailyHintALG:
                 possibilities.remove(operation)
 
         # Sort possibilities to get best results on top
-        possibilities.sort()
-
-        print(len(possibilities))
+        possibilities.sort(reverse=True)
 
         return possibilities
 
-    def toJson(self):
+    def toJSON(self):
+        """
+
+        Returns:
+            JSON out of sorted list with possible operations
+
+        """
         # Gather data from DB
-        (daily_operations, operation_type) = self.gatherDataFromDB()
+        (daily_operations, operation_type, medic, rooms) = self.gatherDataFromDB()
 
         # Prepare data for algorithm
-        room_sorted_list = self.sortListBasedOnRooms(daily_operations)
+        room_sorted_list = self.sortListBasedOnRooms(daily_operations, rooms)
 
         # Process data with algorithm
-        # sorted_possibilities = processData()
+        sorted_possibilities = self.processData(room_sorted_list, medic, operation_type.duration, rooms)
 
-        # Prepare JSON out of possibilities
-        return 0
+        return loads(dumps(sorted_possibilities, cls=ListOfPossibleOptionsEncoder))
 
 
+# UTILITY SECTION (not worth it to make in different file)
 def dateTimeToInt(date_time):
     """
 
@@ -279,3 +328,8 @@ def intToDateTime(value):
     value -= minutes * 60
     seconds = value
     return datetime.time(hour=hours, minute=minutes, second=seconds)
+
+
+class ListOfPossibleOptionsEncoder(JSONEncoder):
+    def default(self, o):
+        return o.toJson()

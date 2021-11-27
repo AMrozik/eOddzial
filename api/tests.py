@@ -1,5 +1,4 @@
 import datetime
-from unittest.mock import patch
 
 from django.test import TestCase
 from django.db.models import Count
@@ -99,22 +98,24 @@ class DailyHintingTest(TestCase):
         self.assertEqual(ward_data.difficult_interval_hour, datetime.time(15, 0))
 
     def testConstructingAlgObject(self):
+        day = datetime.date(year=2021, month=10, day=10)
         medic_id = Medic.objects.get(name="Krzysztof").id
-        algorithm = DailyHintALG(True, True, "2021-10-10", "12b", medic_id)
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
         self.assertTrue(algorithm.is_child)
-        self.assertEqual(algorithm.day_date, "2021-10-10")
+        self.assertEqual(algorithm.day_date, day)
         self.assertEqual(algorithm.type_ICD, "12b")
 
     # -----------------------------------------------------------------------------------------------------------------
     # GATHERING DATA FROM DB TESTS
 
     def testGatheringDataFromDB(self):
+        day = datetime.date(year=2021, month=10, day=10)
         medic_id = Medic.objects.get(name="Krzysztof").id
-        algorithm = DailyHintALG(True, True, "2021-10-10", "12b", medic_id)
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
         (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
 
-        operations_amount = len(Operation.objects.filter(date="2021-10-10"))
+        operations_amount = len(Operation.objects.filter(date=day))
         self.assertTrue(len(daily_operations) == operations_amount)
 
         self.assertEqual(operation_type.name, "type2")
@@ -125,12 +126,13 @@ class DailyHintingTest(TestCase):
         self.assertTrue(len(rooms) == rooms_amount)
 
     def testGatheringDataFromDBDifferentDay(self):
+        day = datetime.date(year=2021, month=10, day=11)
         medic_id = Medic.objects.get(name="Krzysztof").id
-        algorithm = DailyHintALG(True, True, "2021-10-11", "12b", medic_id)
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
         (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
 
-        operations_amount = len(Operation.objects.filter(date="2021-10-11"))
+        operations_amount = len(Operation.objects.filter(date=day))
         self.assertTrue(len(daily_operations) == operations_amount)
 
         self.assertEqual(operation_type.name, "type2")
@@ -144,8 +146,9 @@ class DailyHintingTest(TestCase):
     # SORTING BY ROOMS TESTS
 
     def testSortingByRoomsEquals(self):
+        day = datetime.date(year=2021, month=10, day=10)
         medic_id = Medic.objects.get(name="Krzysztof").id
-        algorithm = DailyHintALG(True, True, "2021-10-10", "12b", medic_id)
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
         (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
 
         sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
@@ -178,13 +181,13 @@ class DailyHintingTest(TestCase):
     # -----------------------------------------------------------------------------------------------------------------
     # POSSIBLE OPERATION SCORE TESTS
 
-    # Uncomment if you now how to properly mock PossibleOperation.score method
+    # Uncomment if you now how to properly mock PossibleOperation.score() method
     # @patch('PossibleOperation.score')
     # def testPossibleOperationCMP(self, mock_score):
-    #     # TODO: mock score() and test properly next time ;)
-    #     test = PossibleOperation(12*(60*60), False, False, 2, 8*(60*60), 16*(60*60), 10*(60*60), 15*(60*60))
-    #     test2 = PossibleOperation(11*(60*60), False, False, 2, 8*(60*60), 16*(60*60), 10*(60*60), 15*(60*60))
-    #     test3 = PossibleOperation(11*(60*60), False, False, 2, 8*(60*60), 16*(60*60), 10*(60*60), 15*(60*60))
+    #     ward_data = WardData.objects.all()[0]
+    #     test = PossibleOperation(12*(60*60), False, False, 2, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     test2 = PossibleOperation(11*(60*60), False, False, 2, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     test3 = PossibleOperation(11*(60*60), False, False, 2, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
     #
     #     mock_score.return_value = 3
     #
@@ -199,214 +202,364 @@ class DailyHintingTest(TestCase):
     #
     #     self.assertTrue(test != test2)
 
-    def testPossibleOperationScoreIsChildInChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
+    # VS SELF
+    # Child
+    def testPossibleOperationScoreChildInChildInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
 
-        time_start = datetime.time(hour=9, minute=0, second=0)
-
-        adult = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
-        child = PossibleOperation(time_start, True, False, 0, False, time1, time2, time3, time4)
-
-        self.assertTrue(child > adult)
-
-    def testPossibleOperationScoreIsChildOutChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
-
-        time_start = datetime.time(hour=12, minute=0, second=0)
-
-        adult = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
-        child = PossibleOperation(time_start, True, False, 0, False, time1, time2, time3, time4)
-
-        self.assertTrue(child > adult)
-
-    def testPossibleOperationScoreDifficultOutDifficultInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
-
-        time_start = datetime.time(hour=9, minute=0, second=0)
-
-        easy = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
-        difficult = PossibleOperation(time_start, False, True, 0, False, time1, time2, time3, time4)
-
-        self.assertTrue(difficult < easy)
-
-    def testPossibleOperationScoreDifficultInDifficultInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
-
-        time_start = datetime.time(hour=16, minute=0, second=0)
-
-        easy = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
-        difficult = PossibleOperation(time_start, False, True, 0, False, time1, time2, time3, time4)
-
-        self.assertTrue(difficult > easy)
-
-    def testPossibleOperationScoreNormalInChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
-
-        time_start = datetime.time(hour=8, minute=0, second=0)
+        time_start1 = datetime.time(hour=7, minute=0, second=0)
         time_start2 = datetime.time(hour=9, minute=0, second=0)
 
-        earlier = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
-        later = PossibleOperation(time_start2, False, False, 0, False, time1, time2, time3, time4)
+        child1 = PossibleOperation(time_start1, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        child2 = PossibleOperation(time_start2, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
 
-        self.assertTrue(earlier < later)
+        self.assertTrue(child1 > child2)
 
-    def testPossibleOperationScoreNormalOutChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
+    def testPossibleOperationScoreChildInNormalInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
 
-        time_start = datetime.time(hour=11, minute=0, second=0)
+        time_start1 = datetime.time(hour=11, minute=0, second=0)
         time_start2 = datetime.time(hour=12, minute=0, second=0)
 
-        earlier = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
-        later = PossibleOperation(time_start2, False, False, 0, False, time1, time2, time3, time4)
+        child1 = PossibleOperation(time_start1, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        child2 = PossibleOperation(time_start2, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
 
-        self.assertTrue(earlier > later)
+        self.assertTrue(child1 > child2)
 
-    def testPossibleOperationScoreNormalInVsOutChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
+    def testPossibleOperationScoreChildInDifficultInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
 
-        time_start = datetime.time(hour=9, minute=0, second=0)
+        time_start1 = datetime.time(hour=15, minute=0, second=0)
+        time_start2 = datetime.time(hour=16, minute=0, second=0)
+
+        child1 = PossibleOperation(time_start1, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        child2 = PossibleOperation(time_start2, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+
+        self.assertTrue(child1 > child2)
+
+    def testPossibleOperationScoreChildInChildIntervalAndExtremeValue(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
+
+        time_start1 = datetime.time(hour=9, minute=0, second=0)
+        time_start2 = datetime.time(hour=10, minute=0, second=0)
+
+        child1 = PossibleOperation(time_start1, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        child2 = PossibleOperation(time_start2, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+
+        self.assertTrue(child1 > child2)
+
+    # Normal
+    def testPossibleOperationScoreNormalInChildInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
+
+        time_start1 = datetime.time(hour=8, minute=0, second=0)
+        time_start2 = datetime.time(hour=9, minute=0, second=0)
+
+        normal1 = PossibleOperation(time_start1, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        normal2 = PossibleOperation(time_start2, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+
+        self.assertTrue(normal1 < normal2)
+
+    def testPossibleOperationScoreNormalInNormalInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
+
+        time_start1 = datetime.time(hour=11, minute=0, second=0)
         time_start2 = datetime.time(hour=12, minute=0, second=0)
 
-        earlier = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
-        later = PossibleOperation(time_start2, False, False, 0, False, time1, time2, time3, time4)
+        normal1 = PossibleOperation(time_start1, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        normal2 = PossibleOperation(time_start2, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
 
-        self.assertTrue(earlier < later)
+        self.assertTrue(normal1 > normal2)
 
-    def testPossibleOperationScoreChildVsNormalInChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
+    def testPossibleOperationScoreNormalInDifficultInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
 
-        time_start = datetime.time(hour=9, minute=0, second=0)
+        time_start1 = datetime.time(hour=15, minute=0, second=0)
+        time_start2 = datetime.time(hour=16, minute=0, second=0)
+
+        normal1 = PossibleOperation(time_start1, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        normal2 = PossibleOperation(time_start2, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+
+        self.assertTrue(normal1 > normal2)
+
+    # Difficult
+    def testPossibleOperationScoreDifficultInChildInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
+
+        time_start1 = datetime.time(hour=8, minute=0, second=0)
+        time_start2 = datetime.time(hour=9, minute=0, second=0)
+
+        difficult1 = PossibleOperation(time_start1, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        difficult2 = PossibleOperation(time_start2, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+
+        self.assertTrue(difficult1 < difficult2)
+
+    def testPossibleOperationScoreDifficultInNormalInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
+
+        time_start1 = datetime.time(hour=11, minute=0, second=0)
         time_start2 = datetime.time(hour=12, minute=0, second=0)
 
-        child = PossibleOperation(time_start, True, False, 0, False, time1, time2, time3, time4)
-        adult = PossibleOperation(time_start2, False, False, 0, False, time1, time2, time3, time4)
+        difficult1 = PossibleOperation(time_start1, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        difficult2 = PossibleOperation(time_start2, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
 
-        self.assertTrue(child > adult)
+        self.assertTrue(difficult1 < difficult2)
 
-    def testPossibleOperationScoreChildVsNormalOutChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
+    def testPossibleOperationScoreDifficultInDifficultInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        ward_data = WardData.objects.all()[0]
 
-        time_start = datetime.time(hour=12, minute=0, second=0)
+        time_start1 = datetime.time(hour=15, minute=0, second=0)
+        time_start2 = datetime.time(hour=16, minute=0, second=0)
 
-        child = PossibleOperation(time_start, True, False, 0, False, time1, time2, time3, time4)
-        adult = PossibleOperation(time_start, False, False, 0, False, time1, time2, time3, time4)
+        difficult1 = PossibleOperation(time_start1, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+        difficult2 = PossibleOperation(time_start2, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
 
-        self.assertTrue(child > adult)
+        self.assertTrue(difficult1 < difficult2)
 
-    def testPossibleOperationScoreChildVsDifficultInChildInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
+    # VS OTHERS (testing flexibility of algorithm)
+    # Child vs Normal
+    # def testPossibleOperationScoreChildVsNormalInChildInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=9, minute=0, second=0)
+    #
+    #     adult = PossibleOperation(time_start, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     child = PossibleOperation(time_start, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(child > adult)
+    #
+    # def testPossibleOperationScoreChildVsNormalInNormalInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=12, minute=0, second=0)
+    #
+    #     adult = PossibleOperation(time_start, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     child = PossibleOperation(time_start, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(child > adult)
+    #
+    # def testPossibleOperationScoreChildVsNormalInDifficultInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=16, minute=0, second=0)
+    #
+    #     adult = PossibleOperation(time_start, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     child = PossibleOperation(time_start, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(child > adult)
+    #
+    # def testPossibleOperationScoreDifficultOutDifficultInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=9, minute=0, second=0)
+    #
+    #     easy = PossibleOperation(time_start, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     difficult = PossibleOperation(time_start, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(difficult < easy)
+    #
+    # def testPossibleOperationScoreDifficultInDifficultInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=16, minute=0, second=0)
+    #
+    #     easy = PossibleOperation(time_start, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     difficult = PossibleOperation(time_start, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(difficult > easy)
+    #
+    # def testPossibleOperationScoreChildVsNormalInChildInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=9, minute=0, second=0)
+    #     time_start2 = datetime.time(hour=12, minute=0, second=0)
+    #
+    #     child = PossibleOperation(time_start, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     adult = PossibleOperation(time_start2, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(child > adult)
+    #
+    # def testPossibleOperationScoreChildVsNormalOutChildInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=12, minute=0, second=0)
+    #
+    #     child = PossibleOperation(time_start, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     adult = PossibleOperation(time_start, False, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(child > adult)
+    #
+    # def testPossibleOperationScoreChildVsDifficultInChildInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=9, minute=0, second=0)
+    #
+    #     child = PossibleOperation(time_start, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     difficult = PossibleOperation(time_start, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(child > difficult)
+    #
+    # def testPossibleOperationScoreChildVsDifficultInDifficultInterval(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     ward_data = WardData.objects.all()[0]
+    #
+    #     time_start = datetime.time(hour=16, minute=0, second=0)
+    #
+    #     child = PossibleOperation(time_start, True, False, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #     difficult = PossibleOperation(time_start, False, True, 0, False, ward_data.working_start_hour, ward_data.working_end_hour, ward_data.child_interval_hour, ward_data.difficult_interval_hour, day)
+    #
+    #     self.assertTrue(child < difficult)
 
-        time_start = datetime.time(hour=9, minute=0, second=0)
+    # -----------------------------------------------------------------------------------------------------------------
+    # IS IN PROPER INTERVAL TESTS
+    # DifficultChild
+    def testIsInProperIntervalChildDifficultInChildInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
-        child = PossibleOperation(time_start, True, False, 0, False, time1, time2, time3, time4)
-        difficult = PossibleOperation(time_start, False, True, 0, False, time1, time2, time3, time4)
+        time = datetime.time(hour=9, minute=0, second=0)
+        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
 
-        self.assertTrue(child > difficult)
+    def testIsInProperIntervalChildDifficultInNormalInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
-    def testPossibleOperationScoreChildVsDifficultInDifficultInterval(self):
-        time1 = datetime.time(hour=8, minute=0, second=0)
-        time2 = datetime.time(hour=16, minute=0, second=0)
-        time3 = datetime.time(hour=10, minute=0, second=0)
-        time4 = datetime.time(hour=15, minute=0, second=0)
+        time = datetime.time(hour=12, minute=0, second=0)
+        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
 
-        time_start = datetime.time(hour=16, minute=0, second=0)
+    def testIsInProperIntervalChildDifficultInDifficultInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
-        child = PossibleOperation(time_start, True, False, 0, False, time1, time2, time3, time4)
-        difficult = PossibleOperation(time_start, False, True, 0, False, time1, time2, time3, time4)
+        time = datetime.time(hour=16, minute=0, second=0)
+        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
 
-        self.assertTrue(child < difficult)
+    # Child
+    def testIsInProperIntervalChildInChildInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(True, False, day, "12b", medic_id)
+
+        time = datetime.time(hour=9, minute=0, second=0)
+        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    def testIsInProperIntervalChildInNormalInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(True, False, day, "12b", medic_id)
+
+        time = datetime.time(hour=12, minute=0, second=0)
+        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    def testIsInProperIntervalChildInDifficultInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(True, False, day, "12b", medic_id)
+
+        time = datetime.time(hour=16, minute=0, second=0)
+        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    # Difficult
+    def testIsInProperIntervalDifficultInChildInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(False, True, day, "12b", medic_id)
+
+        time = datetime.time(hour=9, minute=0, second=0)
+        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    def testIsInProperIntervalDifficultInNormalInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(False, True, day, "12b", medic_id)
+
+        time = datetime.time(hour=12, minute=0, second=0)
+        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    def testIsInProperIntervalDifficultInDifficultInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(False, True, day, "12b", medic_id)
+
+        time = datetime.time(hour=16, minute=0, second=0)
+        self.assertTrue( algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    # Normal
+    def testIsInProperIntervalNormalInChildInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(False, False, day, "12b", medic_id)
+
+        time = datetime.time(hour=9, minute=0, second=0)
+        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    def testIsInProperIntervalNormalInNormalInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(False, False, day, "12b", medic_id)
+
+        time = datetime.time(hour=12, minute=0, second=0)
+        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
+
+    def testIsInProperIntervalNormalInDifficultInterval(self):
+        day = datetime.date(year=2021, month=10, day=10)
+        medic_id = Medic.objects.get(name="Krzysztof").id
+        algorithm = DailyHintALG(False, False, day, "12b", medic_id)
+
+        time = datetime.time(hour=16, minute=0, second=0)
+        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
 
     # -----------------------------------------------------------------------------------------------------------------
     # PROCESS DATA TESTS
 
-    # OBSOLETE
-    # def testProcessDataRemovingCollidingWithExistingOperation(self):
-    #     medic_id = Medic.objects.get(name="Krzysztof").id
-    #     algorithm = DailyHintALG(True, True, "2021-10-11", "12b", medic_id)
-    #     (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
-    #     sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
-    #
-    #     possibilities = algorithm.processData(sorted_list, medic, operation_type.duration, rooms)
-    #
-    #     is_colliding = False
-    #     for room_operations in sorted_list:
-    #         for operation in room_operations:
-    #             for possibility in possibilities:
-    #                 if dateTimeToInt(operation.start) <= possibility.start_hour <= dateTimeToInt(operation.start) + int(operation.type.duration.total_seconds()):
-    #                     is_colliding = True
-    #
-    #     self.assertTrue(not is_colliding)
-
-    # OBSOLETE
-    # def testProcessDataRemovingCollidingWithMedicsOperations(self):
-    #     medic_id = Medic.objects.get(name="Krzysztof").id
-    #     algorithm = DailyHintALG(True, True, "2021-10-11", "12b", medic_id)
-    #     (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
-    #     sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
-    #
-    #     possibilities = algorithm.processData(sorted_list, medic, operation_type.duration, rooms)
-    #
-    #     medic_operations = Operation.objects.filter(medic=medic)
-    #     is_colliding = False
-    #     for medic_operation in medic_operations:
-    #         for possible_operation in possibilities:
-    #             if dateTimeToInt(medic_operation.start) < possible_operation.start_hour < (dateTimeToInt(medic_operation.start) + int(medic_operation.type.duration.total_seconds())):
-    #                 is_colliding = True
-    #
-    #     self.assertTrue(not is_colliding)
-
     def testProcessDataDayEmpty(self):
+        day = datetime.date(year=2021, month=10, day=10)
         medic_id = Medic.objects.get(name="Krzysztof").id
-        algorithm = DailyHintALG(True, True, "2021-10-11", "12b", medic_id)
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
         (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
         sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
         possibilities = algorithm.processData(sorted_list, medic, operation_type.duration, rooms)
 
-        self.assertTrue(len(possibilities) == len(rooms))
+        # Assert if possibilities have at least one possibility for each room
+        self.assertTrue(len(possibilities) >= len(rooms))
 
     def testProcessDataDayNotEmpty(self):
+        day = datetime.date(year=2021, month=10, day=10)
         medic_id = Medic.objects.get(name="Krzysztof").id
-        algorithm = DailyHintALG(True, True, "2021-10-10", "12b", medic_id)
+        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
         (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
         sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
         possibilities = algorithm.processData(sorted_list, medic, operation_type.duration, rooms)
 
         self.assertTrue(len(possibilities) >= len(rooms))
 
-
-
-
-# TODO: have to test:
-# - preparing possibilities
-# - removing colliding possibilities based on working hours
-# - sorting
+    # Test only for development
+    # def testTest(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     medic_id = Medic.objects.get(name="Krzysztof").id
+    #     algorithm = DailyHintALG(False, False, day, "12b", medic_id)
+    #
+    #     print(algorithm.toJSON())
+    #
+    #     self.assertTrue(True)
