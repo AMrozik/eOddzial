@@ -13,7 +13,9 @@ const Nav = () => {
             ) : (
                 <Link to="/login">Login</Link>
             )}
-            {user && <p>Hello {user.full_name}</p>}
+            {user && user.is_ordynator &&<p>Hello ordynator {user.full_name} </p>}
+            {user && user.is_medic &&<p>Hello medic {user.full_name} </p>}
+            {user && user.is_planist &&<p>Hello planist {user.full_name} </p>}
         </div>
     )
 }
