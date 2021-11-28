@@ -13,7 +13,7 @@ const Nav = () => {
             ) : (
                 <Link to="/login">Login</Link>
             )}
-            {user && <p>Hello </p>}
+            {user && <p>Hello {user.full_name}</p>}
         </div>
     )
 }
