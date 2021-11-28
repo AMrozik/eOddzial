@@ -18,7 +18,7 @@ function App() {
                 <Nav/>
                 <Routes>
                     <Route path="/" exact element={<PrivateRoute/>}>
-                    <Route path="/" exact element={<Home/>} />
+                        <Route path="/" exact element={<Home/>} />
                     </Route>                
                     <Route path="/login" element={<Login/>} />
                     <Route path="/logout" element={<Logout/>} />
