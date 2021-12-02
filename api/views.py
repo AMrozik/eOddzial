@@ -1,26 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-
-from api.serializers import (
-    PatientSerializer,
-    MedicSerializer,
-    OperationSerializer,
-    OperationTypeSerializer,
-    NonAvailabilityMedicSerializer,
-    RoomSerializer,
-    NonAvailabilityRoomSerializer,
-)
-
-from .models import (
-    Patient,
-    Medic,
-    NonAvailabilityMedic,
-    Operation,
-    Operation_type,
-    Room,
-    NonAvailabilityRoom,
-)
+from api.serializers import PatientSerializer
+from api.models import Patient
 from functools import wraps
 from rest_framework_simplejwt.backends import TokenBackend
 from users.models import Account
@@ -102,6 +84,7 @@ class CreatePatientsView(generics.CreateAPIView):
 @api_view(['GET', ])
 @allow_access(permissions=['is_admin'])
 def patient_by_id(request, id):
+    print(request)
     try:
         patient = Patient.objects.get(id=id)
     except Patient.DoesNotExist:
@@ -144,91 +127,3 @@ def delete_patient(request, id):
         else:
             data["failure"] = "delete failed"
         return Response(data=data)
-
-
-# Medic Views #
-@api_view(['GET', ])
-def medic_by_id(request, id):
-    try:
-        medic = Medic.objects.get(id=id)
-    except Medic.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = MedicSerializer(medic)
-        return Response(serializer.data)
-
-
-@api_view(['GET', ])
-def all_medics(request):
-    medics = [medic for medic in Medic.objects.all()]
-
-    if request.method == 'GET':
-        serializer = MedicSerializer(medics, many=True)
-        return Response(serializer.data)
-
-
-# Operation Views #
-@api_view(['GET', ])
-def all_operations(request):
-    operations = [operation for operation in Operation.objects.all()]
-
-    if request.method == 'GET':
-        serializer = OperationSerializer(operations, many=True)
-        return Response(serializer.data)
-
-
-@api_view(['GET', ])
-def operation_by_id(request, id):
-    try:
-        operation = Operation.objects.get(id=id)
-    except Medic.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = OperationSerializer(operation)
-        return Response(serializer.data)
-
-
-# Room Views #
-@api_view(['GET', ])
-def all_rooms(request):
-    rooms = [room for room in Room.objects.all()]
-
-    if request.method == 'GET':
-        serializer = RoomSerializer(rooms, many=True)
-        return Response(serializer.data)
-
-
-@api_view(['GET', ])
-def room_by_id(request, id):
-    try:
-        room = Room.objects.get(id=id)
-    except Room.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = RoomSerializer(room)
-        return Response(serializer.data)
-
-
-# Operation_type Views #
-@api_view(['GET', ])
-def all_operation_types(request):
-    operation_types = [operation_type for operation_type in Operation_type.objects.all()]
-
-    if request.method == 'GET':
-        serializer = OperationTypeSerializer(operation_types, many=True)
-        return Response(serializer.data)
-
-
-@api_view(['GET', ])
-def operation_type_by_id(request, id):
-    try:
-        operation_type = Operation_type.objects.get(id=id)
-    except Operation_type.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = OperationTypeSerializer(operation_type)
-        return Response(serializer.data)
