@@ -6,7 +6,8 @@ const Nav = () => {
     let {user, logoutUser} = useContext(AuthContext)
     return (
         <div>
-            <Link to="/">Home</Link>
+            {user && (<Link to="/">Home</Link>
+            )}
             <span> | </span>
             {user && user.is_ordynator ? ( <Link to="/ordynator">Ordynator</Link>
             ):(user && user.is_medic && <Link to="/medic">Medic</Link>)}
