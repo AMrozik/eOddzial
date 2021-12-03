@@ -7,7 +7,7 @@ from .views import (
     delete_patient,
 )
 from rest_framework_simplejwt.views import TokenRefreshView
-from users.views import CustomTokenObtainPairView
+from users.views import CustomTokenObtainPairView, BlacklistTokenView
 
 
 urlpatterns = [
@@ -20,4 +20,5 @@ urlpatterns = [
     # JWT
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('logout/', BlacklistTokenView.as_view(), name="logout")
 ]
