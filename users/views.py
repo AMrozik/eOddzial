@@ -26,12 +26,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+
 class BlacklistTokenView(APIView):
     permission_classes = [AllowAny]
 
-    def logout_view(self, request):
+    def post(self, request):
         try:
-            refresh_token = request.data["refresh_token"]
+            refresh_token = request.data["refresh"]
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response("Successful Logout", status=status.HTTP_200_OK)
