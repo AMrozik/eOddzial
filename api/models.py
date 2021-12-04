@@ -39,8 +39,6 @@ class Patient(models.Model):
 
 class Medic(models.Model):
     name = models.CharField(max_length=200, null=False)
-    work_start = models.TimeField(null=False)
-    work_end = models.TimeField(null=False)
 
 
 class Operation_type(models.Model):

@@ -1,6 +1,5 @@
 import datetime
 from json import dumps, loads, JSONEncoder
-
 from api.models import Operation, Operation_type, WardData, Medic, Room
 
 
@@ -166,20 +165,17 @@ class DailyHintALG:
 
         return is_in_interval
 
-    def processData(self, room_sorted_list, medic, duration, room_list):
+    def preparePossibilities(self, room_sorted_list, room_list, duration):
         """
 
         Args:
             room_sorted_list: LIST[LIST[INT]] with operations sorted based on rooms (each room have to have at least empty list)
-            medic: MEDIC object storing data for this operation medic
-            duration: DATETIME.TIME with duration of this operation
             room_list: LIST[INT] with stored integer values of rooms in ward
+            duration: DATETIME.TIME with duration of this operation
 
         Returns:
-            LIST[POSSIBLE_OPERATION] sorted based on their score
 
         """
-
         possibilities = []
 
         # Special rule for child with difficult case
@@ -213,41 +209,60 @@ class DailyHintALG:
                                                        self.ward_child_hour, self.ward_difficult_hour,
                                                        self.day_date))
 
-                # Add possibilities between already exiting operations and after them
+                # Add possibilities between already existing operations and after them
                 for j, operation in enumerate(room_operations):
                     # Check time between next operations
-                    if j+1 < len(room_sorted_list):
-                        free_time = dateTimeToInt(room_operations[j].start) + int(room_operations[j].type.duration.total_seconds()) - dateTimeToInt(room_operations[j+1].start)
+                    if j + 1 < len(room_operations):
+                        free_time = dateTimeToInt(room_operations[j].start) + int(
+                            room_operations[j].type.duration.total_seconds()) - dateTimeToInt(
+                            room_operations[j + 1].start)
                         # Is it possible to place new operation here?
                         if free_time + dateTimeToInt(self.operation_prepare_time) > int(duration.total_seconds()):
-                            possible_operation_start_hour = dateTimeToInt(room_operations[j].start) + int(room_operations[j].type.duration.total_seconds()) + dateTimeToInt(self.operation_prepare_time)
+                            possible_operation_start_hour = dateTimeToInt(room_operations[j].start) + int(
+                                room_operations[j].type.duration.total_seconds()) + dateTimeToInt(
+                                self.operation_prepare_time)
                             # Check is operation in proper interval to pass it to constructor
                             is_in_interval = self.checkIsInInterval(possible_operation_start_hour)
                             # YES: add this possibility to list
                             possible_operation_start_hour = intToDateTime(possible_operation_start_hour)
                             possibilities.append(PossibleOperation(possible_operation_start_hour, self.is_child,
-                                                                   self.is_difficult, room_operations[0].room.room_number,
+                                                                   self.is_difficult,
+                                                                   room_operations[0].room.room_number,
                                                                    is_in_interval, self.ward_beginning_hour,
                                                                    self.ward_ending_hour, self.ward_child_hour,
                                                                    self.ward_difficult_hour, self.day_date))
 
                 # Add possibility on the end of not empty list
                 if room_operations:
-                    possible_operation_start_hour = dateTimeToInt(room_operations[-1].start) + int(room_operations[-1].type.duration.total_seconds()) + dateTimeToInt(self.operation_prepare_time)
+                    possible_operation_start_hour = dateTimeToInt(room_operations[-1].start) + int(
+                        room_operations[-1].type.duration.total_seconds()) + dateTimeToInt(self.operation_prepare_time)
                     possible_operation_start_hour = intToDateTime(possible_operation_start_hour)
-                    possibilities.append(PossibleOperation(possible_operation_start_hour, self.is_child, self.is_difficult,
-                                                           room_operations[0].room.room_number, is_in_interval,
-                                                           self.ward_beginning_hour, self.ward_ending_hour,
-                                                           self.ward_child_hour, self.ward_difficult_hour,
-                                                           self.day_date))
+                    possibilities.append(
+                        PossibleOperation(possible_operation_start_hour, self.is_child, self.is_difficult,
+                                          room_operations[0].room.room_number, is_in_interval,
+                                          self.ward_beginning_hour, self.ward_ending_hour,
+                                          self.ward_child_hour, self.ward_difficult_hour,
+                                          self.day_date))
 
-        # TODO: More tests needed here! (i see invalid data in JSON)
+        return possibilities
+
+    def removeInvalidPossibilities(self, possibilities, medic, room_sorted_list):
+        """
+
+        Args:
+            possibilities: LIST[POSSIBLEOPERATION] to remove invalid possibilities from
+            medic: MEDIC object storing data for this operation medic
+            room_sorted_list: LIST[LIST[INT]] with operations sorted based on rooms (each room have to have at least empty list)
+
+        Returns:
+            LIST[POSSIBLEOPERATION] without invalid possibilities
+
+        """
         to_remove = []
 
-        # Select possibilities if they are not in range of medic working hours
+        # Select possibilities if they are not in range of ward working hours
         for possibility in possibilities:
-            if dateTimeToInt(medic.work_start) > possibility.start_hour > dateTimeToInt(medic.work_end):
-                print(possibility.start_hour)
+            if dateTimeToInt(self.ward_beginning_hour) > possibility.start_hour > dateTimeToInt(self.ward_ending_hour):
                 to_remove.append(possibility)
 
         # Select possibilities if they collide with already appointed operations
@@ -255,14 +270,16 @@ class DailyHintALG:
             for operation in room_operations:
                 for possibility in possibilities:
                     if operation.room.room_number == possibility.room:
-                        if dateTimeToInt(operation.start) <= possibility.start_hour <= dateTimeToInt(operation.start) + int(operation.type.duration.total_seconds()):
+                        if dateTimeToInt(operation.start) <= possibility.start_hour <= dateTimeToInt(
+                                operation.start) + int(operation.type.duration.total_seconds()):
                             to_remove.append(possibility)
 
         # Select possibilities if they collide with medic's operations in this day
         medic_operations = Operation.objects.filter(medic=medic)
         for medic_operation in medic_operations:
             for possibility in possibilities:
-                if dateTimeToInt(medic_operation.start) < possibility.start_hour < (dateTimeToInt(medic_operation.start) + int(medic_operation.type.duration.total_seconds())):
+                if dateTimeToInt(medic_operation.start) < possibility.start_hour < (
+                        dateTimeToInt(medic_operation.start) + int(medic_operation.type.duration.total_seconds())):
                     to_remove.append(possibility)
 
         # Removing operations
@@ -270,6 +287,25 @@ class DailyHintALG:
             if operation in possibilities:
                 possibilities.remove(operation)
 
+        return possibilities
+
+    def processData(self, room_sorted_list, medic, duration, room_list):
+        """
+
+        Args:
+            room_sorted_list: LIST[LIST[INT]] with operations sorted based on rooms (each room have to have at least empty list)
+            medic: MEDIC object storing data for this operation medic
+            duration: DATETIME.TIME with duration of this operation
+            room_list: LIST[INT] with stored integer values of rooms in ward
+
+        Returns:
+            LIST[POSSIBLE_OPERATION] sorted based on their score
+
+        """
+        # Preparing possibilities
+        possibilities = self.preparePossibilities(room_sorted_list, room_list, duration)
+        # Removing invalid possibilities
+        possibilities = self.removeInvalidPossibilities(possibilities, medic, room_sorted_list)
         # Sort possibilities to get best results on top
         possibilities.sort(reverse=True)
 
