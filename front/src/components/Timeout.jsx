@@ -36,7 +36,7 @@ function IdleTimerContainer () {
       {user &&
           <IdleTimer
             ref={idleTimerRef}
-            timeout={1000 * 5}
+            timeout={1000 * 60 * 5}
             onIdle={onIdle}
           />
       }
