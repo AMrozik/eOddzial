@@ -8,19 +8,19 @@ import Ordynator from './pages/Ordynator';
 import Medic from './pages/Medic';
 import PrivateRoute from './PrivateRoute';
 import {AuthProvider} from './AuthContext';
-
+import IdleTimerContainer from './components/Timeout'
 
 function App() {
 
     return (
         <div className="App">
-
             <BrowserRouter>
                 <AuthProvider>
+                <IdleTimerContainer />
                 <Nav/>
                 <Routes>
-                    <Route path="/" exact element={<PrivateRoute/>}>
-                        <Route path="/" exact element={<Home/>} />
+                    <Route path="/home" exact element={<PrivateRoute/>}>
+                        <Route path="/home" exact element={<Home/>} />
                     </Route>
                     <Route path="/ordynator" exact element={<PrivateRoute/>}>
                         <Route path="/ordynator" exact element={<Ordynator/>} />
