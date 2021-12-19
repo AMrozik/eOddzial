@@ -1,13 +1,13 @@
 import React from 'react'
 
 
-const Home = () => {
+const Logout = () => {
 
     return (
         <div>
-            <p>You are logged!</p>
+            <p>You are logout!</p>
         </div>
     )
 }
 
-export default Home
+export default Logout
