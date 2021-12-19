@@ -1,0 +1,17 @@
+.footer {
+    width: 100%;
+    position: fixed;
+    z-index: 300;
+    bottom: 0;
+    overflow: -moz-scrollbars-none;
+    color: #fff;
+    background: rgb(9, 95, 234);
+    text-align: center;
+    font-size: 24px;
+    line-height: 80px;
+    height: 80px;
+}
+
+.repo_link {
+    color: greenyellow !important;
+}
