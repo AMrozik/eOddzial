@@ -1,0 +1,10 @@
+.navigation_style {
+    text-align: center;
+    font-size: 24px;
+    /*height: 64px;*/
+}
+
+.link_item {
+    color: greenyellow !important;
+    margin-left: 86px;
+}
