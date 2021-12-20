@@ -3,14 +3,6 @@
     width: 30%;
 }
 
-<<<<<<< HEAD
-=======
-.separation_style > * {
-    margin-bottom: 24px;
-    width: 30%;
-}
-
->>>>>>> 90db70cf8106d62f5e72c4f8845037e80487f438
 .form_style {
     display: flex;
     justify-content: center;

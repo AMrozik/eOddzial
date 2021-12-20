@@ -17,6 +17,10 @@ import Statistics from "../Statistics/Statistics";
 import {DoctorNavigation} from "./DoctorNavigation";
 import {PlanistNavigation} from "./PlanistNavigation";
 import {SecretaryNavigation} from "./SecretaryNavigation";
+<<<<<<< HEAD
+=======
+import AddRoom from "../Rooms/AddRoom";
+>>>>>>> 90db70cf8106d62f5e72c4f8845037e80487f438
 
 
 export const NavigationBar = () => {
@@ -75,6 +79,12 @@ export const NavigationBar = () => {
               <Route path="/rooms" exact element={<PrivateRoute/>}>
                 <Route path="/rooms" exact element={<Rooms/>}/>
               </Route>
+<<<<<<< HEAD
+=======
+              <Route path="/add_room" exact element={<PrivateRoute/>}>
+                <Route path="/add_room" exact element={<AddRoom/>}/>
+              </Route>
+>>>>>>> 90db70cf8106d62f5e72c4f8845037e80487f438
               <Route path="/statistics" exact element={<PrivateRoute/>}>
                 <Route path="/statistics" exact element={<Statistics/>}/>
               </Route>
