@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import RoomServicw from "../../services/RoomService";
 import { useTable } from "react-table";
 import "./Rooms.css";
+import AddRoom from "./AddRoom";
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState([]);
