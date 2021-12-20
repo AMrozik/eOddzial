@@ -43,7 +43,7 @@ class NonAvailabilityMedicSerializer(serializers.ModelSerializer):
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ('id', 'room_number')
+        fields = ('id', 'name', 'active')
 
 
 class NonAvailabilityRoomSerializer(serializers.ModelSerializer):

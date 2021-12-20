@@ -1,4 +1,6 @@
+from django.http import JsonResponse
 from rest_framework import generics, status
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from functools import wraps
@@ -203,16 +205,36 @@ def operation_by_id(request, id):
 
 
 # Room Views #
-@api_view(['GET', ])
+@api_view(['GET', 'POST', 'DELETE'])
 def all_rooms(request):
     rooms = [room for room in Room.objects.all()]
 
     if request.method == 'GET':
         serializer = RoomSerializer(rooms, many=True)
         return Response(serializer.data)
+    elif request.method == 'POST':
+        room_data = JSONParser().parse(request)
+        room_serializer = RoomSerializer(data=room_data)
+        if room_serializer.is_valid():
+            room_serializer.save()
+            return JsonResponse(room_serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(room_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        count = Room.objects.all().delete()
+        return JsonResponse({'message': '{} Rooms were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', ])
+# Nie działa, problem z migracją
+@api_view(['GET'])
+def active_rooms(request):
+    rooms = Room.objects.filter(active=True)
+
+    if request.method == 'GET':
+        serializer = RoomSerializer(rooms, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def room_by_id(request, id):
     try:
         room = Room.objects.get(id=id)
@@ -222,6 +244,16 @@ def room_by_id(request, id):
     if request.method == 'GET':
         serializer = RoomSerializer(room)
         return Response(serializer.data)
+    elif request.method == 'PUT':
+        room_data = JSONParser().parse(request)
+        room_serializer = RoomSerializer(room, data=room_data)
+        if room_serializer.is_valid():
+            room_serializer.save()
+            return JsonResponse(room_serializer.data)
+        return JsonResponse(room_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        room.delete()
+        return JsonResponse({'message': 'Room was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
 # Operation_type Views #

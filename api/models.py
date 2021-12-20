@@ -61,7 +61,8 @@ class NonAvailabilityMedic(models.Model):
 
 
 class Room(models.Model):
-    room_number = models.IntegerField(null=False)
+    name = models.CharField(max_length=70, blank=False, default='')
+    active = models.BooleanField(default=True)
 
 
 class NonAvailabilityRoom(models.Model):
