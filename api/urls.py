@@ -23,6 +23,8 @@ from .views import (
 
     all_NARs,
     NAR_by_id, active_rooms,
+  
+    dailyAlg,
 
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -63,6 +65,13 @@ urlpatterns = [
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', BlacklistTokenView.as_view(), name='logout'),
+  
+    
+    # Hint Alg
+    urlpatterns = [
+    path('patients', PatientsView.as_view(), name='patients'),
+    path('create_patient', CreatePatientsView.as_view(), name='create_patients'),
+    path('dailyAlg', dailyAlg, name='dailyAlg'),
 
 
     # api documentation for development purposes

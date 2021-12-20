@@ -39,8 +39,6 @@ class Patient(models.Model):
 
 class Medic(models.Model):
     name = models.CharField(max_length=200, null=False)
-    work_start = models.TimeField(null=False)
-    work_end = models.TimeField(null=False)
 
 
 class Operation_type(models.Model):
@@ -75,9 +73,17 @@ class Operation(models.Model):
     type = models.ForeignKey('Operation_type', on_delete=models.CASCADE)
     medic = models.ForeignKey('Medic', on_delete=models.CASCADE)
     patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
-    date = models.DateTimeField(null=False)
+    date = models.DateField(null=False)
     room = models.ForeignKey('Room', on_delete=models.CASCADE)
     start = models.TimeField()
+
+
+class WardData(models.Model):
+    operation_prepare_time = models.TimeField()
+    working_start_hour = models.TimeField()
+    working_end_hour = models.TimeField()
+    child_interval_hour = models.TimeField()
+    difficult_interval_hour = models.TimeField()
 
 
 
