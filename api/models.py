@@ -59,7 +59,7 @@ class NonAvailabilityMedic(models.Model):
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=70, blank=False, default='')
+    name = models.CharField(max_length=70, blank=False)
     active = models.BooleanField(default=True)
 
 
@@ -84,6 +84,3 @@ class WardData(models.Model):
     working_end_hour = models.TimeField()
     child_interval_hour = models.TimeField()
     difficult_interval_hour = models.TimeField()
-
-
-

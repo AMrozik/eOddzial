@@ -93,7 +93,7 @@ def _valid_birth_day(pesel: str) -> bool:
     day = int(pesel[4:6])
 
     return 1 <= day <= 31
-  
+
 
 def _valid_birth_month(pesel: str) -> bool:
     pesel_month = int(pesel[2:4])

@@ -13,7 +13,7 @@ from .views import (
     operation_by_id,
 
     all_rooms,
-    room_by_id,
+    # room_by_id,
 
     all_operation_types,
     operation_type_by_id,
@@ -22,7 +22,8 @@ from .views import (
     NAM_by_id,
 
     all_NARs,
-    NAR_by_id, active_rooms,
+    NAR_by_id,
+    active_rooms,
   
     dailyAlg,
 
@@ -49,7 +50,7 @@ urlpatterns = [
     path('operation/<id>/', operation_by_id, name='medic'),
 
     path('rooms/', all_rooms, name='rooms'),
-    path('rooms/<id>/', room_by_id, name='room'),
+    # path('rooms/<id>/', room_by_id, name='room'),
     path('rooms/active/', active_rooms, name='active_rooms'),
 
     path('operation_types/', all_operation_types, name='operation_types'),
@@ -65,12 +66,8 @@ urlpatterns = [
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', BlacklistTokenView.as_view(), name='logout'),
-  
-    
+
     # Hint Alg
-    urlpatterns = [
-    path('patients', PatientsView.as_view(), name='patients'),
-    path('create_patient', CreatePatientsView.as_view(), name='create_patients'),
     path('dailyAlg', dailyAlg, name='dailyAlg'),
 
 
@@ -85,4 +82,5 @@ urlpatterns = [
         template_name='swagger-ui.html',
         extra_context={'schema_url':'openapi-schema'}
     ),  name='swagger-ui'),
+  
 ]

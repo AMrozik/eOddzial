@@ -1,9 +1,5 @@
-
 from django.http import JsonResponse
-from rest_framework import generics, status
 from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from functools import wraps
 from rest_framework_simplejwt.backends import TokenBackend
 from users.models import Account
@@ -11,17 +7,10 @@ from django.core.exceptions import ValidationError
 from typing import List
 
 import datetime
-
-from django.shortcuts import render
-from django.http import HttpResponse
-from .serializers import PatientSerializer
-from .models import Patient
-from rest_framework import generics, status, serializers
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .utils.ALG import DailyHintALG
-
-
 
 from api.serializers import (
     PatientSerializer,
@@ -42,7 +31,6 @@ from .models import (
     Room,
     NonAvailabilityRoom,
 )
-
 
 
 def retrieve_user(request):
@@ -242,10 +230,11 @@ def all_rooms(request):
 @api_view(['GET'])
 def active_rooms(request):
     rooms = Room.objects.filter(active=True)
+    print(rooms)
 
     if request.method == 'GET':
         serializer = RoomSerializer(rooms, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
