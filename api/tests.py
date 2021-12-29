@@ -3,7 +3,8 @@ import datetime
 from django.test import TestCase
 from django.db.models import Count
 from .utils.ALG import DailyHintALG, PossibleOperation, dateTimeToInt, intToDateTime
-from .models import WardData, Operation, Operation_type, Medic, Patient, Room
+from .utils.DoctorPresence import checkPresence
+from .models import WardData, Operation, Operation_type, Medic, Patient, Room, NonAvailabilityMedic
 
 # Create your tests here.
 
@@ -29,13 +30,9 @@ class DailyHintingTest(TestCase):
                                       is_difficult=False,
                                       duration="1:05")
 
-        Medic.objects.create(name="Krzysztof",
-                             work_start="8:00",
-                             work_end="16:00")
+        Medic.objects.create(name="Krzysztof")
 
-        Medic.objects.create(name="Oleg",
-                             work_start="8:00",
-                             work_end="16:00")
+        Medic.objects.create(name="Oleg")
 
         Patient.objects.create(name="Karol",
                                PESEL="98021400000")
@@ -563,3 +560,30 @@ class DailyHintingTest(TestCase):
     #     print(algorithm.toJSON())
     #
     #     self.assertTrue(True)
+
+
+class DoctorPresenceTest(TestCase):
+    def setUp(self):
+
+        Medic.objects.create(name="Krzysztof")
+        Medic.objects.create(name="Oleg")
+
+        NonAvailabilityMedic.objects.create(medic=Medic.objects.get(name="Oleg"),
+                                            date_start= "2021-10-10",
+                                            date_end= "2021-10-10")
+
+        NonAvailabilityMedic.objects.create(medic=Medic.objects.get(name="Oleg"),
+                                            date_start="2021-10-13",
+                                            date_end="2021-10-16")
+
+    def testMedicPresent(self):
+        checOne = checkPresence("2021-10-11"), Medic.objects.get(name="Oleg")
+        checTwo = checkPresence("2021-10-11"), Medic.objects.get(name="Krzysztof")
+        self.assertTrue(checOne is True and checTwo is True)
+
+    def testMedicNotPresentOneDayOff(self):
+        self.assertTrue(checkPresence("2021-10-10"), Medic.objects.get(name="Oleg"))
+
+    def testMedicNotPresentMultipleDaysOff(self):
+        self.assertTrue(checkPresence("2021-10-14"), Medic.objects.get(name="Oleg"))
+
