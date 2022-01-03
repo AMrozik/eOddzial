@@ -32,6 +32,7 @@ from .models import (
     Operation_type,
     Room,
     NonAvailabilityRoom,
+    WardData,
 )
 
 
@@ -390,11 +391,22 @@ def medicPresence(request):
 
 @api_view(["POST"])
 def yearlyAlg(request):
+    data = {}
+
     if request.method == "POST":
+        if len(WardData.objects.all()) == 0:
+            data["failure"] = "WardData is empty"
+            return Response(status=status.HTTP_409_CONFLICT, data=data)
+
         year = request.POST.get("date_year")
 
         if year is None:
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        else:
-            json = getPercenteges(year)
-            return Response(status=status.HTTP_200_OK, data=json)
+            data["failure"] = "year is None"
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
+
+        if len(Operation.objects.filter(date__year=year)) == 0:
+            data["failure"] = "There are no operations in this year"
+            return Response(status=status.HTTP_204_NO_CONTENT, data=data)
+
+        json = getPercenteges(year)
+        return Response(status=status.HTTP_200_OK, data=json)
