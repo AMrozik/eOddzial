@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework.parsers import JSONParser
 from functools import wraps
 from rest_framework_simplejwt.backends import TokenBackend
@@ -90,16 +90,12 @@ def allow_access(permissions: List[str]):
 
 # Patient Views #
 @api_view(['GET', ])
-@allow_access(permissions=['is_admin'])
-def all_patients(request, id):
-    try:
-        patient = Patient.objects.get(id=id)
-    except Patient.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
+def all_patients(request):
     if request.method == 'GET':
-        serializer = PatientSerializer(patient)
-        return Response(serializer.data)
+        patients = [patient for patient in Patient.objects.all()]
+        serializer = PatientSerializer(patients, many=True)
+        return JsonResponse(serializer.data, status=200, safe=False)
+    return HttpResponse(status=405)
 
 
 @api_view(['POST', ])
