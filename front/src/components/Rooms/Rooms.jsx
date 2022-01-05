@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import RoomServicw from "../../services/RoomService";
-import { useTable } from "react-table";
+import React, {useState, useEffect, useMemo, useRef} from "react";
+import RoomService from "../../services/RoomService";
+import {useTable} from "react-table";
 import "./Rooms.css";
 import AddRoom from "./AddRoom";
+import {Button} from "react-bootstrap/Button";
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState([]);
@@ -15,7 +16,7 @@ const Rooms = (props) => {
   }, []);
 
   const retriveRooms = () => {
-    RoomServicw.getAll()
+    RoomService.getAll()
         .then((response) => {
           setRooms(response.data);
         })
@@ -29,7 +30,7 @@ const Rooms = (props) => {
   };
 
   const removeAllTutorials = () => {
-    RoomServicw.removeAll()
+    RoomService.removeAll()
         .then((response) => {
           console.log(response.data);
           refreshList();
@@ -48,7 +49,7 @@ const Rooms = (props) => {
   const deleteTutorial = (rowIndex) => {
     const id = roomsRef.current[rowIndex].id;
 
-    RoomServicw.remove(id)
+    RoomService.remove(id)
         .then((response) => {
           props.history.push("/rooms");
 
@@ -62,6 +63,10 @@ const Rooms = (props) => {
         });
   };
 
+  const addTutorial = () => {
+    alert("")
+  };
+
   const columns = useMemo(
       () => [
         {
@@ -73,6 +78,28 @@ const Rooms = (props) => {
           accessor: "active",
           Cell: (props) => {
             return props.value ? "Active" : "Inactive";
+          },
+        },
+        {
+          Header: "Actions",
+          accessor: "actions",
+          Cell: (props) => {
+            const rowIdx = props.row.id;
+            return (
+              <div>
+                <span onClick={() => openTutorial(rowIdx)}>
+                  <i className="far fa-edit action mr-2 action_icon"/>
+                </span>
+
+                <span onClick={() => deleteTutorial(rowIdx)}>
+                  <i className="fas fa-trash action action_icon"/>
+                </span>
+
+                <span onClick={() => addTutorial()}>
+                  <i className="fas fa-plus-circle action action_icon"/>
+                </span>
+              </div>
+            );
           },
         }
       ],
@@ -91,38 +118,38 @@ const Rooms = (props) => {
   });
 
   return (
-        <div className="col-md-12 list table_style">
-          <table
-              className="table table-striped table-bordered"
-              {...getTableProps()}
-          >
-            <thead>
-            {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                      <th {...column.getHeaderProps()}>
-                        {column.render("Header")}
-                      </th>
-                  ))}
+      <div className="col-md-12 list table_style">
+        <table
+            className="table table-striped table-bordered"
+            {...getTableProps()}
+        >
+          <thead>
+          {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                    </th>
+                ))}
+              </tr>
+          ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+          {rows.map((row, i) => {
+            prepareRow(row);
+            return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    );
+                  })}
                 </tr>
-            ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-            {rows.map((row, i) => {
-              prepareRow(row);
-              return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => {
-                      return (
-                          <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                      );
-                    })}
-                  </tr>
-              );
-            })}
-            </tbody>
-          </table>
-        </div>
+            );
+          })}
+          </tbody>
+        </table>
+      </div>
   );
 };
 

@@ -12,7 +12,7 @@ export const HeadPhysicianNavigation = () => {
           <Nav.Link className="link_item" href="/patients">Patients</Nav.Link>
           <Nav.Link className="link_item" href="/operation_types">Operation types</Nav.Link>
           <Nav.Link className="link_item" href="/rooms">Rooms</Nav.Link>
-          <Nav.Link className="link_item" href="/add_room">Add Room</Nav.Link>
+          {/*<Nav.Link className="link_item" href="/add_room">Add Room</Nav.Link>*/}
           <Nav.Link className="link_item" href="/statistics">Statistics</Nav.Link>
       </React.Fragment>
   )

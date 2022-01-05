@@ -23,3 +23,36 @@ export const isSevereData = [{
   color: '#e18e92',
 },
 ];
+
+export const patientData = [{
+  text: 'Jan Nowak',
+  id: 1,
+  color: '#fcb65e',
+}, {
+  text: 'Stefan Wiśniewski',
+  id: 2,
+  color: '#e18e92',
+},
+];
+
+
+export const operationTypeData = [{
+  text: 'Usunięcie migdałka',
+  id: 1,
+  color: '#fcb65e',
+}
+];
+
+export const operatorData = [{
+  text: 'Mateusz Grabowski',
+  id: 1,
+  color: '#fcb65e',
+}
+];
+
+export const roomData = [{
+  text: 'Sala nr 1',
+  id: 1,
+  color: '#fcb65e',
+}
+];

@@ -2,7 +2,7 @@ import React from 'react';
 
 import Scheduler, {Resource} from 'devextreme-react/scheduler';
 
-import { data, isSevereData } from './data.js';
+import {data, isSevereData, operationTypeData, operatorData, patientData, roomData} from './data.js';
 
 const currentDate = new Date(2021, 3, 29);
 const views = ['day', 'week', 'workWeek', 'month'];
@@ -20,9 +20,27 @@ class OperationScheduler extends React.Component {
             startDayHour={9}
         >
           <Resource
-              dataSource={isSevereData}
-              fieldExpr="isSevereDataId"
-              label="isSevere"
+              dataSource={patientData}
+              fieldExpr="patientDataId"
+              label="Patient"
+              allowMultiple={false}
+          />
+          <Resource
+              dataSource={operationTypeData}
+              fieldExpr="operationTypeDataId"
+              label="Operation type"
+              allowMultiple={false}
+          />
+          <Resource
+              dataSource={operatorData}
+              fieldExpr="operatorDataId"
+              label="Operator"
+              allowMultiple={false}
+          />
+          <Resource
+              dataSource={roomData}
+              fieldExpr="roomDataId"
+              label="Room"
               allowMultiple={false}
           />
         </Scheduler>

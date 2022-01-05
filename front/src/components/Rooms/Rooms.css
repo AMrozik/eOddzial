@@ -8,3 +8,7 @@
 .table_style > * {
     width: 70%;
 }
+
+.action_icon {
+    margin-right: 8px;
+}
