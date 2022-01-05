@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Scheduler from 'devextreme-react/scheduler';
+import Scheduler, {Resource} from 'devextreme-react/scheduler';
 
-import { data } from './data.js';
+import { data, isSevereData } from './data.js';
 
 const currentDate = new Date(2021, 3, 29);
 const views = ['day', 'week', 'workWeek', 'month'];
@@ -14,12 +14,21 @@ class OperationScheduler extends React.Component {
             timeZone="America/Los_Angeles"
             dataSource={data}
             views={views}
-            defaultCurrentView="day"
+            defaultCurrentView="week"
             defaultCurrentDate={currentDate}
             height={600}
-            startDayHour={9} />
+            startDayHour={9}
+        >
+          <Resource
+              dataSource={isSevereData}
+              fieldExpr="isSevereDataId"
+              label="isSevere"
+              allowMultiple={false}
+          />
+        </Scheduler>
     );
   }
+
 }
 
 export default OperationScheduler;
