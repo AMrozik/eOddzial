@@ -13,7 +13,8 @@ from .views import (
     operation_by_id,
 
     all_rooms,
-    # room_by_id,
+    room_by_id,
+    active_rooms,
 
     all_operation_types,
     operation_type_by_id,
@@ -23,9 +24,8 @@ from .views import (
 
     all_NARs,
     NAR_by_id,
-    active_rooms,
 
-    dailyAlg, room_by_id,
+    dailyAlg,
 
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -50,8 +50,8 @@ urlpatterns = [
     path('operation/<id>/', operation_by_id, name='medic'),
 
     path('rooms/', all_rooms, name='rooms'),
-    path('rooms/<id>/', room_by_id, name='room'),
     path('rooms/active/', active_rooms, name='active_rooms'),
+    path('rooms/<id>/', room_by_id, name='room'),
 
     path('operation_types/', all_operation_types, name='operation_types'),
     path('operation_type/<id>/', operation_type_by_id, name='operation_type'),

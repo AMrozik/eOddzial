@@ -19,6 +19,7 @@ import {PlanistNavigation} from "./PlanistNavigation";
 import {SecretaryNavigation} from "./SecretaryNavigation";
 import AddRoom from "../Rooms/AddRoom";
 import EditRoom from "../Rooms/EditRoom";
+import Room from "../Rooms/Room";
 
 
 export const NavigationBar = () => {
@@ -82,6 +83,9 @@ export const NavigationBar = () => {
               </Route>
               <Route path="/edit_room" exact element={<PrivateRoute/>}>
                 <Route path="/edit_room" exact element={<EditRoom/>}/>
+              </Route>
+              <Route path="/room/" exact element={<PrivateRoute/>}>
+                <Route path="/room/" exact element={<Room/>}/>
               </Route>
               <Route path="/statistics" exact element={<PrivateRoute/>}>
                 <Route path="/statistics" exact element={<Statistics/>}/>

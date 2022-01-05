@@ -224,12 +224,11 @@ def all_rooms(request):
 # Nie działa, problem z migracją
 @api_view(['GET'])
 def active_rooms(request):
-    rooms = Room.objects.filter(active=True)
-    print(rooms)
-
     if request.method == 'GET':
+        rooms = Room.objects.filter(active=True)
         serializer = RoomSerializer(rooms, many=True)
         return Response(serializer.data)
+    return HttpResponse(status=405)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

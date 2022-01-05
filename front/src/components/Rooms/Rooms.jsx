@@ -29,10 +29,23 @@ const Rooms = (props) => {
     retriveRooms();
   };
 
-  const removeAllTutorials = () => {
-    RoomService.removeAll()
+  const openRoom = (rowIndex) => {
+    const id = roomsRef.current[rowIndex].id;
+
+    props.history.push("/rooms/" + id);
+  };
+
+  const deleteRoom = (rowIndex) => {
+    const id = roomsRef.current[rowIndex].id;
+
+    RoomService.remove(id)
         .then((response) => {
-          console.log(response.data);
+          props.history.push("/rooms");
+
+          let newRooms = [...roomsRef.current];
+          newRooms.splice(rowIndex, 1);
+
+          setRooms(newRooms);
           refreshList();
         })
         .catch((e) => {
@@ -40,30 +53,7 @@ const Rooms = (props) => {
         });
   };
 
-  const openTutorial = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
-
-    props.history.push("/rooms/" + id);
-  };
-
-  const deleteTutorial = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
-
-    RoomService.remove(id)
-        .then((response) => {
-          props.history.push("/rooms");
-
-          let newTutorials = [...roomsRef.current];
-          newTutorials.splice(rowIndex, 1);
-
-          setRooms(newTutorials);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-  };
-
-  const addTutorial = () => {
+  const addRoom = () => {
     alert("")
   };
 
@@ -87,15 +77,15 @@ const Rooms = (props) => {
             const rowIdx = props.row.id;
             return (
               <div>
-                <span onClick={() => openTutorial(rowIdx)}>
+                <span onClick={() => openRoom(rowIdx)}>
                   <i className="far fa-edit action mr-2 action_icon"/>
                 </span>
 
-                <span onClick={() => deleteTutorial(rowIdx)}>
+                <span onClick={() => deleteRoom(rowIdx)}>
                   <i className="fas fa-trash action action_icon"/>
                 </span>
 
-                <span onClick={() => addTutorial()}>
+                <span onClick={() => addRoom()}>
                   <i className="fas fa-plus-circle action action_icon"/>
                 </span>
               </div>
