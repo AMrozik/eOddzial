@@ -99,7 +99,6 @@ def all_patients(request):
 
 
 @api_view(['POST', ])
-@allow_access(permissions=['is_admin'])
 def create_patient(request):
     if request.method == 'POST':
         serializer = PatientSerializer(data=request.data)
@@ -108,30 +107,29 @@ def create_patient(request):
             serializer.save()
             data["success"] = "update successful"
             return Response(data=data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=400)
+    return HttpResponse(status=405)
 
 
 @api_view(['GET', ])
-@allow_access(permissions=['is_admin'])
 def patient_by_id(request, id):
-    try:
-        patient = Patient.objects.get(id=id)
-    except Patient.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'GET':
+        try:
+            patient = Patient.objects.get(id=id)
+        except Patient.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = PatientSerializer(patient)
         return Response(serializer.data)
+    return HttpResponse(status=405)
 
 
 @api_view(['PUT', ])
 def update_patient(request, id):
-    try:
-        patient = Patient.objects.get(id=id)
-    except Patient.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'PUT':
+        try:
+            patient = Patient.objects.get(id=id)
+        except Patient.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = PatientSerializer(patient, data=request.data)
         data = {}
         if serializer.is_valid():
@@ -139,16 +137,16 @@ def update_patient(request, id):
             data["success"] = "update successful"
             return Response(data=data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return HttpResponse(status=405)
 
 
 @api_view(['DELETE', ])
 def delete_patient(request, id):
-    try:
-        patient = Patient.objects.get(id=id)
-    except Patient.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'DELETE':
+        try:
+            patient = Patient.objects.get(id=id)
+        except Patient.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         operation = patient.delete()
         data = {}
         if operation:
@@ -156,6 +154,7 @@ def delete_patient(request, id):
         else:
             data["failure"] = "delete failed"
         return Response(data=data)
+    return HttpResponse(status=405)
 
 
 # Medic Views #

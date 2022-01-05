@@ -10,7 +10,7 @@ import {HeadPhysicianNavigation} from "./HeadPhysicianNavigation";
 import OperationScheduler from "../OperationScheduler/OperationScheduler";
 import Budget from "../Budget/Budget";
 import WorkingHours from "../WorkingHours/WorkingHours";
-import Patients from "../Patients";
+import Patients from "../Patients/Patients";
 import OperationTypes from "../OperationTypes/OperationTypes";
 import Rooms from "../Rooms/Rooms";
 import Statistics from "../Statistics/Statistics";
@@ -18,6 +18,7 @@ import {DoctorNavigation} from "./DoctorNavigation";
 import {PlanistNavigation} from "./PlanistNavigation";
 import {SecretaryNavigation} from "./SecretaryNavigation";
 import AddRoom from "../Rooms/AddRoom";
+import EditRoom from "../Rooms/EditRoom";
 
 
 export const NavigationBar = () => {
@@ -78,6 +79,9 @@ export const NavigationBar = () => {
               </Route>
               <Route path="/add_room" exact element={<PrivateRoute/>}>
                 <Route path="/add_room" exact element={<AddRoom/>}/>
+              </Route>
+              <Route path="/edit_room" exact element={<PrivateRoute/>}>
+                <Route path="/edit_room" exact element={<EditRoom/>}/>
               </Route>
               <Route path="/statistics" exact element={<PrivateRoute/>}>
                 <Route path="/statistics" exact element={<Statistics/>}/>
