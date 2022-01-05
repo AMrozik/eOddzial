@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-
-
-const Rooms = () => {
-
-  return (
-      <div>
-        <p>Rooms</p>
-      </div>
-  )
-}
-=======
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import RoomServicw from "../../services/RoomService";
 import { useTable } from "react-table";
@@ -138,6 +125,5 @@ const Rooms = (props) => {
         </div>
   );
 };
->>>>>>> 90db70cf8106d62f5e72c4f8845037e80487f438
 
 export default Rooms;
