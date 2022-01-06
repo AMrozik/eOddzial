@@ -1,0 +1,14 @@
+.table_style {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.table_style > * {
+    width: 70%;
+}
+
+.action_icon {
+    margin-right: 8px;
+}

@@ -1,23 +1,23 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
-import RoomService from "../../services/RoomService";
+import OperationTypeService from "../../services/OperationTypeService";
 import {useTable} from "react-table";
 import "./OperationTypes.css";
 import {Button} from "react-bootstrap/Button";
 
 const OperationTypes = (props) => {
-  const [rooms, setRooms] = useState([]);
-  const roomsRef = useRef();
+  const [operationTypes, setOperationTypes] = useState([]);
+  const operationTypesRef = useRef();
 
-  roomsRef.current = rooms;
+  operationTypesRef.current = operationTypes;
 
   useEffect(() => {
-    retriveRooms();
+    retrieveOperationTypes();
   }, []);
 
-  const retriveRooms = () => {
-    RoomService.getAll()
+  const retrieveOperationTypes = () => {
+    OperationTypeService.getAll()
         .then((response) => {
-          setRooms(response.data);
+          setOperationTypes(response.data);
         })
         .catch((e) => {
           console.log(e);
@@ -25,26 +25,26 @@ const OperationTypes = (props) => {
   };
 
   const refreshList = () => {
-    retriveRooms();
+    retrieveOperationTypes();
   };
 
-  const openRoom = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
+  const openOperationType = (rowIndex) => {
+    const id = operationTypesRef.current[rowIndex].id;
 
-    props.history.push("/rooms/" + id);
+    props.history.push("/operation_type/" + id);
   };
 
-  const deleteRoom = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
+  const deleteOperationType = (rowIndex) => {
+    const id = operationTypesRef.current[rowIndex].id;
 
-    RoomService.remove(id)
+    OperationTypeService.remove(id)
         .then((response) => {
-          props.history.push("/rooms");
+          props.history.push("/operation_type");
 
-          let newRooms = [...roomsRef.current];
-          newRooms.splice(rowIndex, 1);
+          let newOperationTypes = [...operationTypesRef.current];
+          newOperationTypes.splice(rowIndex, 1);
 
-          setRooms(newRooms);
+          setOperationTypes(newOperationTypes);
           refreshList();
         })
         .catch((e) => {
@@ -52,21 +52,33 @@ const OperationTypes = (props) => {
         });
   };
 
-  const addRoom = () => {
+  const addOperationType = () => {
     alert("")
   };
 
   const columns = useMemo(
       () => [
         {
-          Header: "Operation room name",
+          Header: "Name",
           accessor: "name",
         },
         {
-          Header: "Status",
-          accessor: "active",
+          Header: "ICD 9",
+          accessor: "ICD_code",
+        },
+        {
+          Header: "Cost",
+          accessor: "cost",
+        },
+        {
+          Header: "Duration",
+          accessor: "duration",
+        },
+        {
+          Header: "Difficulty",
+          accessor: "is_difficult",
           Cell: (props) => {
-            return props.value ? "Active" : "Inactive";
+            return props.value ? "Severe" : "Normal";
           },
         },
         {
@@ -76,15 +88,15 @@ const OperationTypes = (props) => {
             const rowIdx = props.row.id;
             return (
                 <div>
-                <span onClick={() => openRoom(rowIdx)}>
+                <span onClick={() => openOperationType(rowIdx)}>
                   <i className="far fa-edit action mr-2 action_icon"/>
                 </span>
 
-                  <span onClick={() => deleteRoom(rowIdx)}>
+                  <span onClick={() => deleteOperationType(rowIdx)}>
                   <i className="fas fa-trash action action_icon"/>
                 </span>
 
-                  <span onClick={() => addRoom()}>
+                  <span onClick={() => addOperationType()}>
                   <i className="fas fa-plus-circle action action_icon"/>
                 </span>
                 </div>
@@ -103,7 +115,7 @@ const OperationTypes = (props) => {
     prepareRow,
   } = useTable({
     columns,
-    data: rooms,
+    data: operationTypes,
   });
 
   return (

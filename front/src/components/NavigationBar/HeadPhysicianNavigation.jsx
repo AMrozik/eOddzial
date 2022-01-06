@@ -12,6 +12,7 @@ export const HeadPhysicianNavigation = () => {
           <Nav.Link className="link_item" href="/patients">Patients</Nav.Link>
           <Nav.Link className="link_item" href="/add_patient">Add Patient</Nav.Link>
           <Nav.Link className="link_item" href="/operation_types">Operation types</Nav.Link>
+          <Nav.Link className="link_item" href="/create_operation_type">Add operation type</Nav.Link>
           <Nav.Link className="link_item" href="/rooms">Rooms</Nav.Link>
           <Nav.Link className="link_item" href="/add_room">Add Room</Nav.Link>
           <Nav.Link className="link_item" href="/edit_room">Edit Room</Nav.Link>

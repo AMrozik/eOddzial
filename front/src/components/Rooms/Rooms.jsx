@@ -12,10 +12,10 @@ const Rooms = (props) => {
   roomsRef.current = rooms;
 
   useEffect(() => {
-    retriveRooms();
+    retrieveRooms();
   }, []);
 
-  const retriveRooms = () => {
+  const retrieveRooms = () => {
     RoomService.getAll()
         .then((response) => {
           setRooms(response.data);
@@ -26,7 +26,7 @@ const Rooms = (props) => {
   };
 
   const refreshList = () => {
-    retriveRooms();
+    retrieveRooms();
   };
 
   const openRoom = (rowIndex) => {
