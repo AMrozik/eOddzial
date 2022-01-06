@@ -1,9 +1,9 @@
-.form_style > * {
+.form_style_operation_type > * {
     margin-bottom: 24px;
     width: 50%;
 }
 
-.form_style {
+.form_style_operation_type {
     display: flex;
     justify-content: center;
     flex-direction: column;

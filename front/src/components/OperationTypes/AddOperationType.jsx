@@ -53,9 +53,9 @@ const AddOperationType = () => {
   };
 
   return (
-      <div className="submit-form form_style">
+      <div className="submit-form form_style_operation_type">
         {submitted ? (
-            <div className="form_style">
+            <div className="form_style_operation_type">
               <h4>You submitted successfully!</h4>
               <button className="btn btn-success" onClick={newOperationType}>
                 Add
@@ -63,7 +63,7 @@ const AddOperationType = () => {
             </div>
         ) : (
             <div>
-              <div className="form-group form_style ">
+              <div className="form-group form_style_operation_type ">
                 <label htmlFor="name">Operation type</label>
                 <input
                     type="text"
