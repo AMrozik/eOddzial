@@ -256,23 +256,23 @@ def room_by_id(request, id):
 # Operation_type Views #
 @api_view(['GET', ])
 def all_operation_types(request):
-    operation_types = [operation_type for operation_type in Operation_type.objects.all()]
-
     if request.method == 'GET':
+        operation_types = [operation_type for operation_type in Operation_type.objects.all()]
         serializer = OperationTypeSerializer(operation_types, many=True)
         return Response(serializer.data)
+    return HttpResponse(status=405)
 
 
 @api_view(['GET', ])
 def operation_type_by_id(request, id):
-    try:
-        operation_type = Operation_type.objects.get(id=id)
-    except Operation_type.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     if request.method == 'GET':
+        try:
+            operation_type = Operation_type.objects.get(id=id)
+        except Operation_type.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = OperationTypeSerializer(operation_type)
         return Response(serializer.data)
+    return HttpResponse(status=405)
 
 
 # NonAvailabilityMedic Views #
