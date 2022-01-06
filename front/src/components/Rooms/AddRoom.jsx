@@ -8,6 +8,7 @@ const AddRoom = () => {
     name: "",
     active: true
   };
+
   const [room, setRoom] = useState(initialRoomState);
   const [submitted, setSubmitted] = useState(false);
 

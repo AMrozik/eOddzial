@@ -20,6 +20,7 @@ import {SecretaryNavigation} from "./SecretaryNavigation";
 import AddRoom from "../Rooms/AddRoom";
 import EditRoom from "../Rooms/EditRoom";
 import Room from "../Rooms/Room";
+import AddPatient from "../Patients/AddPatient";
 
 
 export const NavigationBar = () => {
@@ -71,6 +72,9 @@ export const NavigationBar = () => {
               </Route>
               <Route path="/patients" exact element={<PrivateRoute/>}>
                 <Route path="/patients" exact element={<Patients/>}/>
+              </Route>
+              <Route path="/add_patient" exact element={<PrivateRoute/>}>
+                <Route path="/add_patient" exact element={<AddPatient/>}/>
               </Route>
               <Route path="/operation_types" exact element={<PrivateRoute/>}>
                 <Route path="/operation_types" exact element={<OperationTypes/>}/>
