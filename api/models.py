@@ -76,6 +76,7 @@ class Operation(models.Model):
     date = models.DateField(null=False)
     room = models.ForeignKey('Room', on_delete=models.CASCADE)
     start = models.TimeField()
+    done = models.BooleanField(default=False)
 
 
 class WardData(models.Model):
@@ -84,3 +85,24 @@ class WardData(models.Model):
     working_end_hour = models.TimeField()
     child_interval_hour = models.TimeField()
     difficult_interval_hour = models.TimeField()
+
+
+class BudgetYear(models.Model):
+    year = models.ForeignKey('BudgetMonth', on_delete=models.CASCADE)
+    value = models.IntegerField()
+
+
+class BudgetMonth(models.Model):
+    year = models.IntegerField(primary_key=True)
+    jan = models.FloatField()
+    feb = models.FloatField()
+    mar = models.FloatField()
+    apr = models.FloatField()
+    may = models.FloatField()
+    jun = models.FloatField()
+    jul = models.FloatField()
+    aug = models.FloatField()
+    sep = models.FloatField()
+    oct = models.FloatField()
+    nov = models.FloatField()
+    dec = models.FloatField()

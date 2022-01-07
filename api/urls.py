@@ -28,6 +28,7 @@ from .views import (
     dailyAlg,
     medicPresence,
     yearlyAlg,
+    statistics,
 
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -75,6 +76,9 @@ urlpatterns = [
 
     # MedicPressence
     path('medicPresence', medicPresence, name='medicPresence'),
+
+    # statistics
+    path('statistics', statistics, name='statistics'),
 
 
     # api documentation for development purposes
