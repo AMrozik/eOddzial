@@ -83,6 +83,7 @@ def allow_access(permissions: List[str]):
                 data['failure'] = "User does not have permissions to view this site"
                 data['user'] = str(user)
                 return Response(data=data, status=status.HTTP_403_FORBIDDEN)
+            kwargs['user'] = user
             return func(*args, **kwargs)
         return func_wrapper
     return allow_access_decorator
@@ -90,9 +91,19 @@ def allow_access(permissions: List[str]):
 
 # Patient Views #
 @api_view(['GET', ])
-# @allow_access(permissions=['is_admin'])
-def all_patients(request):
-    patients = [patient for patient in Patient.objects.all()]
+@allow_access(permissions=['is_planist', 'is_ordynator', 'is_medic'])
+def all_patients(request, *args, **kwargs):
+    user = kwargs['user']
+    if user.is_medic:
+        medic = user.medic
+        operations = Operation.objects.filter(medic=medic)
+        patients = []
+        for operation in operations:
+            patients.append(operation.patient)
+        patients = list(set(patients))
+
+    else:
+        patients = [patient for patient in Patient.objects.all()]
 
     if request.method == 'GET':
         serializer = PatientSerializer(patients, many=True)
@@ -100,8 +111,8 @@ def all_patients(request):
 
 
 @api_view(['POST', ])
-# @allow_access(permissions=['is_admin'])
-def create_patient(request):
+@allow_access(permissions=['is_planist', 'is_ordynator'])
+def create_patient(request, *args, **kwargs):
     if request.method == 'POST':
         serializer = PatientSerializer(data=request.data)
         data = {}
@@ -113,20 +124,34 @@ def create_patient(request):
 
 
 @api_view(['GET', ])
-@allow_access(permissions=['is_admin'])
-def patient_by_id(request, id):
+@allow_access(permissions=['is_planist', 'is_ordynator', 'is_medic'])
+def patient_by_id(request, id, *args, **kwargs):
     try:
         patient = Patient.objects.get(id=id)
     except Patient.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        serializer = PatientSerializer(patient)
-        return Response(serializer.data)
+    user = kwargs['user']
+    if user.is_medic:
+        medic = user.medic
+        operations = Operation.objects.filter(medic=medic)
+        patients = []
+        for operation in operations:
+            patients.append(operation.patient)
+        patients = list(set(patients))
+        if patient in patients:
+            serializer = PatientSerializer(patient)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = PatientSerializer(patient)
+    return Response(serializer.data)
 
 
 @api_view(['PUT'])
-def update_patient(request, id):
+@allow_access(permissions=['is_planist', 'is_ordynator'])
+def update_patient(request, id, *args, **kwargs):
     try:
         patient = Patient.objects.get(id=id)
     except Patient.DoesNotExist:
@@ -142,7 +167,8 @@ def update_patient(request, id):
 
 
 @api_view(['DELETE', ])
-def delete_patient(request, id):
+@allow_access(permissions=['is_planist', 'is_ordynator'])
+def delete_patient(request, id, *args, **kwargs):
     try:
         patient = Patient.objects.get(id=id)
     except Patient.DoesNotExist:
@@ -160,7 +186,8 @@ def delete_patient(request, id):
 
 # Medic Views #
 @api_view(['GET', 'POST', 'DELETE'])
-def all_medics(request):
+@allow_access(permissions=['is_ordynator', ])
+def all_medics(request, *args, **kwargs):
     medics = [medic for medic in Medic.objects.all()]
 
     if request.method == 'GET':
@@ -179,7 +206,8 @@ def all_medics(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def medic_by_id(request, id):
+@allow_access(permissions=['is_ordynator'])
+def medic_by_id(request, id, *args, **kwargs):
     try:
         medic = Medic.objects.get(id=id)
     except Medic.DoesNotExist:
@@ -201,14 +229,25 @@ def medic_by_id(request, id):
 
 
 # Operation Views #
-@api_view(['GET', 'POST', 'DELETE'])
-def all_operations(request):
-    operations = [operation for operation in Operation.objects.all()]
+@api_view(['GET'])
+@allow_access(permissions=['is_ordynator', 'is_planist', 'is_medic'])
+def all_operations(request, *args, **kwargs):
+    user = kwargs['user']
+    if user.is_medic:
+        medic = user.medic
+        operations = [operation for operation in Operation.objects.filter(medic=medic)]
+    else:
+        operations = [operation for operation in Operation.objects.all()]
 
     if request.method == 'GET':
         serializer = OperationSerializer(operations, many=True)
         return Response(serializer.data)
-    elif request.method == 'POST':
+
+
+@api_view(['POST', 'DELETE'])
+@allow_access(permissions=['is_ordynator', 'is_planist'])
+def edit_operations(request, *args, **kwargs):
+    if request.method == 'POST':
         room_data = JSONParser().parse(request)
         room_serializer = OperationSerializer(data=room_data)
         if room_serializer.is_valid():
@@ -220,17 +259,37 @@ def all_operations(request):
         return JsonResponse({'message': '{} Operations were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def operation_by_id(request, id):
+@api_view(['GET'])
+@allow_access(permissions=['is_ordynator', 'is_planist', 'is_medic'])
+def operation_by_id(request, id, *args, **kwargs):
+    user = kwargs['user']
     try:
         operation = Operation.objects.get(id=id)
     except Operation.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = OperationSerializer(operation)
-        return Response(serializer.data)
-    elif request.method == 'PUT':
+        if user.is_medic:
+            if user.medic == operation.medic:
+                serializer = OperationSerializer(operation)
+                return Response(serializer.data)
+            else:
+                data = []
+                return Response(data=data)
+        else:
+            serializer = OperationSerializer(operation)
+            return Response(serializer.data)
+
+
+@api_view(['PUT', 'DELETE'])
+@allow_access(permissions=['is_ordynator', 'is_planist'])
+def edit_operation_by_id(request, id, *args, **kwargs):
+    try:
+        operation = Operation.objects.get(id=id)
+    except Operation.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'PUT':
         data = JSONParser().parse(request)
         serializer = OperationSerializer(operation, data=data)
         if serializer.is_valid():
@@ -244,7 +303,8 @@ def operation_by_id(request, id):
 
 # Room Views #
 @api_view(['GET', 'POST', 'DELETE'])
-def all_rooms(request):
+@allow_access(permissions=['is_ordynator'])
+def all_rooms(request, *args, **kwargs):
     rooms = [room for room in Room.objects.all()]
 
     if request.method == 'GET':
@@ -263,7 +323,8 @@ def all_rooms(request):
 
 
 @api_view(['GET'])
-def active_rooms(request):
+@allow_access(permissions=['is_ordynator'])
+def active_rooms(request, *args, **kwargs):
     rooms = Room.objects.filter(active=True)
 
     if request.method == 'GET':
@@ -272,7 +333,8 @@ def active_rooms(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def room_by_id(request, id):
+@allow_access(permissions=['is_ordynator'])
+def room_by_id(request, id, *args, **kwargs):
     try:
         room = Room.objects.get(id=id)
     except Room.DoesNotExist:
@@ -295,7 +357,8 @@ def room_by_id(request, id):
 
 # Operation_type Views #
 @api_view(['GET', 'POST', 'DELETE'])
-def all_operation_types(request):
+@allow_access(permissions=['is_ordynator'])
+def all_operation_types(request, *args, **kwargs):
     operation_types = [operation_type for operation_type in Operation_type.objects.all()]
 
     if request.method == 'GET':
@@ -314,7 +377,8 @@ def all_operation_types(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def operation_type_by_id(request, id):
+@allow_access(permissions=['is_ordynator'])
+def operation_type_by_id(request, id, *args, **kwargs):
     try:
         operation_type = Operation_type.objects.get(id=id)
     except Operation_type.DoesNotExist:
@@ -337,7 +401,8 @@ def operation_type_by_id(request, id):
 
 # NonAvailabilityMedic Views #
 @api_view(['GET', 'POST', 'DELETE'])
-def all_NAMs(request):
+@allow_access(permissions=['is_ordynator'])
+def all_NAMs(request, *args, **kwargs):
     NAMs = [NAM for NAM in NonAvailabilityMedic.objects.all()]
 
     if request.method == 'GET':
@@ -356,7 +421,8 @@ def all_NAMs(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def NAM_by_id(request, id):
+@allow_access(permissions=['is_ordynator'])
+def NAM_by_id(request, id, *args, **kwargs):
     try:
         NAM = NonAvailabilityMedic.objects.get(id=id)
     except NonAvailabilityMedic.DoesNotExist:
@@ -379,7 +445,8 @@ def NAM_by_id(request, id):
 
 # NonAvailabilityRoom Views #
 @api_view(['GET', 'POST', 'DELETE'])
-def all_NARs(request):
+@allow_access(permissions=['is_ordynator'])
+def all_NARs(request, *args, **kwargs):
     NARs = [NAR for NAR in NonAvailabilityRoom.objects.all()]
 
     if request.method == 'GET':
@@ -398,7 +465,8 @@ def all_NARs(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def NAR_by_id(request, id):
+@allow_access(permissions=['is_ordynator'])
+def NAR_by_id(request, id, *args, **kwargs):
     try:
         NAR = NonAvailabilityRoom.objects.get(id=id)
     except NonAvailabilityRoom.DoesNotExist:
@@ -420,7 +488,8 @@ def NAR_by_id(request, id):
 
 
 @api_view(["POST"])
-def dailyAlg(request):
+@allow_access(permissions=['is_ordynator', 'is_planist'])
+def dailyAlg(request, *args, **kwargs):
     """
 
     Args:
@@ -440,7 +509,7 @@ def dailyAlg(request):
         medic_id = request.POST.get("medic_id")             # int
 
         if is_child is None or is_difficult is None or date_year is None or date_month is None or date_day is None or type_ICD is None or medic_id is None:
-            return Response(status= status.HTTP_422_UNPROCESSABLE_ENTITY)
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         else:
             day_date = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
             algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_ICD, medic_id)
@@ -449,4 +518,4 @@ def dailyAlg(request):
 
             return Response(status=status.HTTP_200_OK, data=json)
 
-    return Response(status= status.HTTP_405_METHOD_NOT_ALLOWED)
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
