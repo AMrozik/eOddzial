@@ -11,6 +11,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .utils.ALG import DailyHintALG
+from .utils.DoctorPresence import checkPresence
+from .utils.YearlyAlg import getPercenteges
 
 from api.serializers import (
     PatientSerializer,
@@ -30,6 +32,7 @@ from .models import (
     Operation_type,
     Room,
     NonAvailabilityRoom,
+    WardData,
 )
 
 
@@ -518,4 +521,56 @@ def dailyAlg(request, *args, **kwargs):
 
             return Response(status=status.HTTP_200_OK, data=json)
 
+      
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(["POST"])
+def medicPresence(request):
+    """
+
+    Args:
+        request: POST request with day and doctorId
+
+    Returns:
+        BOOLEAN of doctor presence in particular day
+
+    """
+
+    if request.method == "POST":
+        date_year = request.POST.get("date_year")
+        date_month = request.POST.get("date_month")
+        date_day = request.POST.get("date_day")
+        medic_id = request.POST.get("medic_id")
+
+        if date_year is None or date_month is None or date_day is None or medic_id is None:
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        else:
+            day = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
+            if checkPresence(day, medic_id) is True:
+                return Response(status=status.HTTP_200_OK, data="1")
+            else:
+                return Response(status=status.HTTP_200_OK, data="0")
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["POST"])
+def yearlyAlg(request):
+    data = {}
+
+    if request.method == "POST":
+        if len(WardData.objects.all()) == 0:
+            data["failure"] = "WardData is empty"
+            return Response(status=status.HTTP_409_CONFLICT, data=data)
+
+        year = request.POST.get("date_year")
+
+        if year is None:
+            data["failure"] = "year is None"
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
+
+        if len(Operation.objects.filter(date__year=year)) == 0:
+            data["failure"] = "There are no operations in this year"
+            return Response(status=status.HTTP_204_NO_CONTENT, data=data)
+
+        json = getPercenteges(year)
+        return Response(status=status.HTTP_200_OK, data=json)

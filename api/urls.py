@@ -28,6 +28,8 @@ from .views import (
     active_rooms,
   
     dailyAlg,
+    medicPresence,
+    yearlyAlg,
 
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -73,6 +75,10 @@ urlpatterns = [
 
     # Hint Alg
     path('dailyAlg', dailyAlg, name='dailyAlg'),
+    path('yearlyAlg', yearlyAlg, name='yearlyAlg'),
+
+    # MedicPressence
+    path('medicPresence', medicPresence, name='medicPresence'),
 
 
     # api documentation for development purposes
