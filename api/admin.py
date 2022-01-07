@@ -1,5 +1,5 @@
 from django.contrib import admin
-from api.models import Patient, Medic, Operation, Operation_type, Room, WardData, NonAvailabilityMedic, BudgetYear, BudgetMonth
+from api.models import Patient, Medic, Operation, Operation_type, Room, WardData, NonAvailabilityRoom, NonAvailabilityMedic, BudgetYear, BudgetMonth
 
 # Register your models here.
 admin.site.register(Patient)

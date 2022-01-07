@@ -10,10 +10,12 @@ from .views import (
     all_medics,
 
     all_operations,
+    edit_operations,
     operation_by_id,
+    edit_operation_by_id,
 
     all_rooms,
-    # room_by_id,
+    room_by_id,
 
     all_operation_types,
     operation_type_by_id,
@@ -50,10 +52,12 @@ urlpatterns = [
     path('medics/', all_medics, name='medics'),
 
     path('operations/', all_operations, name='medics'),
+    path('operations/edit/', edit_operations, name='medics'),
     path('operation/<id>/', operation_by_id, name='medic'),
+    path('operation/<id>/edit/', edit_operation_by_id, name='medic'),
 
     path('rooms/', all_rooms, name='rooms'),
-    # path('rooms/<id>/', room_by_id, name='room'),
+    path('rooms/<id>/', room_by_id, name='room'),
     path('rooms/active/', active_rooms, name='active_rooms'),
 
     path('operation_types/', all_operation_types, name='operation_types'),
