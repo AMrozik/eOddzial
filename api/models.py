@@ -1,11 +1,6 @@
 from django.db import models
 from datetime import date
 from .utils.pesel import Pesel
-import re
-
-
-def code(icd: str) -> bool:
-    return bool(re.match(r"^[0-9]{2,3}(\.[0-9]{1,5})?$", icd))
 
 
 class Patient(models.Model):
@@ -41,9 +36,6 @@ class Operation_type(models.Model):
     cost = models.IntegerField(null=False)
     is_difficult = models.BooleanField()
     duration = models.DurationField()
-
-    def validate_icd_code(self):
-        return code(str(self.ICD_code))
 
 
 class NonAvailabilityMedic(models.Model):

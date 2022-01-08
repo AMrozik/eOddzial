@@ -9,6 +9,11 @@ from .models import (
     NonAvailabilityRoom,
     Log,
 )
+import re
+
+
+def code(icd: str) -> bool:
+    return bool(re.match(r"^[0-9]{2,3}(\.[0-9]{1,5})?$", icd))
 
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -33,6 +38,12 @@ class OperationTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation_type
         fields = ('id', 'name', 'ICD_code', 'cost', 'is_difficult', 'duration')
+
+    def validate_ICD_code(self, value):
+        b = code(str(value))
+        if not b:
+            raise serializers.ValidationError("given ICD code is not valid")
+        return value
 
 
 class NonAvailabilityMedicSerializer(serializers.ModelSerializer):
