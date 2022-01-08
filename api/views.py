@@ -11,6 +11,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .utils.ALG import DailyHintALG
+from .utils.DoctorPresence import checkPresence
+from .utils.YearlyAlg import getPercenteges
+from .utils.Stats import getStats
 
 from api.serializers import (
     PatientSerializer,
@@ -32,6 +35,7 @@ from .models import (
     Room,
     NonAvailabilityRoom,
     Log,
+    WardData,
 )
 
 
@@ -647,13 +651,50 @@ def NAR_by_id(request, id, *args, **kwargs):
         return JsonResponse({'message': 'NAR was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET', ])
+def statistics(request):
+    """
+
+    Args:
+        request: GET holding date range for statistics
+
+    Returns:
+
+    """
+    data = {}
+
+    if request.method == 'GET':
+        start_year = request.GET.get("start_year")
+        start_month = request.GET.get("start_month")
+        start_day = request.GET.get("start_day")
+        end_year = request.GET.get("end_year")
+        end_month = request.GET.get("end_month")
+        end_day = request.GET.get("end_day")
+
+        # Check presence of request values
+        if start_year is None or start_month is None or start_day is None or end_year is None or end_month is None or end_day is None:
+            print(f'sy:{start_year}, sm:{start_month}, sd:{start_day}, ey:{end_year}, em:{end_month}, ed:{end_day}')
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        # Check is there any operations in range in DB
+        start_date = datetime.date(year=int(start_year), month=int(start_month), day=int(start_day))
+        end_date = datetime.date(year=int(end_year), month=int(end_month), day=int(end_day))
+        operations = Operation.objects.filter(date__range=[start_date, end_date])
+        if len(operations) == 0:
+            data["failure"] = "There are no operations in DB"
+            return Response(status=status.HTTP_204_NO_CONTENT, data=data)
+
+        data = getStats(operations)
+        return Response(status=status.HTTP_200_OK, data=data)
+
+
 @api_view(["POST"])
 @allow_access(permissions=['is_ordynator', 'is_planist'])
 def dailyAlg(request, *args, **kwargs):
     """
 
     Args:
-        request: POST request with isChild, isDifficult, year, month, day, type and medic information
+        request: POST request with is_child, is_difficult, year, month, day, type and medic information
 
     Returns:
         Valid, sorted JSON with data about possible operations
@@ -668,14 +709,68 @@ def dailyAlg(request, *args, **kwargs):
         type_ICD = request.POST.get("type_ICD")             # int
         medic_id = request.POST.get("medic_id")             # int
 
+        # Check presence of request values
         if is_child is None or is_difficult is None or date_year is None or date_month is None or date_day is None or type_ICD is None or medic_id is None:
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        else:
-            day_date = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
-            algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_ICD, medic_id)
 
-            json = algorithm.toJSON()
+        day_date = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
+        algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_ICD, medic_id)
 
-            return Response(status=status.HTTP_200_OK, data=json)
+        json = algorithm.toJSON()
 
+        return Response(status=status.HTTP_200_OK, data=json)
+
+      
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(["POST"])
+def medicPresence(request):
+    """
+
+    Args:
+        request: POST request with day and doctorId
+
+    Returns:
+        BOOLEAN of doctor presence in particular day
+
+    """
+
+    if request.method == "POST":
+        date_year = request.POST.get("date_year")
+        date_month = request.POST.get("date_month")
+        date_day = request.POST.get("date_day")
+        medic_id = request.POST.get("medic_id")
+
+        if date_year is None or date_month is None or date_day is None or medic_id is None:
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        else:
+            day = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
+            if checkPresence(day, medic_id) is True:
+                return Response(status=status.HTTP_200_OK, data="1")
+            else:
+                return Response(status=status.HTTP_200_OK, data="0")
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["POST"])
+def yearlyAlg(request):
+    """"""
+    data = {}
+
+    if request.method == "POST":
+        if len(WardData.objects.all()) == 0:
+            data["failure"] = "WardData is empty"
+            return Response(status=status.HTTP_409_CONFLICT, data=data)
+
+        year = request.POST.get("date_year")
+
+        if year is None:
+            data["failure"] = "year is None"
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
+
+        if len(Operation.objects.filter(date__year=year)) == 0:
+            data["failure"] = "There are no operations in this year"
+            return Response(status=status.HTTP_204_NO_CONTENT, data=data)
+
+        json = getPercenteges(year)
+        return Response(status=status.HTTP_200_OK, data=json)

@@ -1,5 +1,7 @@
 from django.contrib import admin
-from api.models import Patient, Medic, Operation, Operation_type, Room, WardData, NonAvailabilityRoom, Log
+
+from api.models import Patient, Medic, Operation, Operation_type, Room, WardData, NonAvailabilityRoom, NonAvailabilityMedic, BudgetYear, BudgetMonth, Log
+
 
 # Register your models here.
 admin.site.register(Patient)
@@ -10,4 +12,7 @@ admin.site.register(Room)
 admin.site.register(WardData)
 admin.site.register(NonAvailabilityRoom)
 admin.site.register(Log)
+admin.site.register(NonAvailabilityMedic)
+admin.site.register(BudgetYear)
+admin.site.register(BudgetMonth)
 
