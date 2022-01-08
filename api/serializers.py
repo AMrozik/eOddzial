@@ -7,6 +7,7 @@ from .models import (
     Operation_type,
     Room,
     NonAvailabilityRoom,
+    Log,
 )
 
 
@@ -50,3 +51,9 @@ class NonAvailabilityRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = NonAvailabilityRoom
         fields = ('id', 'room', 'date_start', 'date_end')
+
+
+class LogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Log
+        fields = ('user', 'token', 'event_description', 'time', 'http_method')
