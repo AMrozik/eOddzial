@@ -7,6 +7,7 @@ from .models import (
     Operation_type,
     Room,
     NonAvailabilityRoom,
+    WardData,
 )
 
 
@@ -50,3 +51,9 @@ class NonAvailabilityRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = NonAvailabilityRoom
         fields = ('id', 'room', 'date_start', 'date_end')
+
+
+class WardDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WardData
+        fields = ('id', 'operation_prepare_time', 'working_start_hour', 'working_end_hour', 'child_interval_hour', 'difficult_interval_hour')

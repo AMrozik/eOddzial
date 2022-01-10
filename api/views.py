@@ -23,6 +23,7 @@ from api.serializers import (
     NonAvailabilityMedicSerializer,
     RoomSerializer,
     NonAvailabilityRoomSerializer,
+    WardDataSerializer,
 )
 
 from .models import (
@@ -491,7 +492,42 @@ def NAR_by_id(request, id, *args, **kwargs):
         return JsonResponse({'message': 'NAR was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', ])
+@api_view(['GET', 'PUT'])
+@allow_access(permissions=['is_ordynator'])
+def update_ward_data(request, *args, **kwargs):
+    try:
+        ward = WardData.objects.all()[0]
+    except WardData.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = WardDataSerializer(ward)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        data["id"] = ward.id
+        serializer = WardDataSerializer(ward, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@allow_access(permissions=['is_ordynator'])
+def create_ward_data(request, *args, **kwargs):
+
+    if request.method == 'POST' and len(WardData.objects.all()) == 0:
+        data = JSONParser().parse(request)
+        serializer = WardDataSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_423_LOCKED)
+
+
+@api_view(['GET'])
 def statistics(request):
     """
 
@@ -513,7 +549,6 @@ def statistics(request):
 
         # Check presence of request values
         if start_year is None or start_month is None or start_day is None or end_year is None or end_month is None or end_day is None:
-            print(f'sy:{start_year}, sm:{start_month}, sd:{start_day}, ey:{end_year}, em:{end_month}, ed:{end_day}')
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         # Check is there any operations in range in DB
@@ -540,7 +575,13 @@ def dailyAlg(request, *args, **kwargs):
         Valid, sorted JSON with data about possible operations
 
     """
+    data = {}
+
     if request.method == "POST":
+        if len(WardData.objects.all()) == 0:
+            data["failure"] = "WardData is empty"
+            return Response(status=status.HTTP_409_CONFLICT, data=data)
+
         is_child = request.POST.get("is_child")             # 1 or 0
         is_difficult = request.POST.get("is_difficult")     # 1 or 0
         date_year = request.POST.get("date_year")           # int
@@ -560,8 +601,8 @@ def dailyAlg(request, *args, **kwargs):
 
         return Response(status=status.HTTP_200_OK, data=json)
 
-      
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 @api_view(["POST"])
 def medicPresence(request):
