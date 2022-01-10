@@ -492,7 +492,7 @@ def NAR_by_id(request, id, *args, **kwargs):
         return JsonResponse({'message': 'NAR was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'PUT', 'POST'])
+@api_view(['GET', 'PUT'])
 @allow_access(permissions=['is_ordynator'])
 def update_ward_data(request, *args, **kwargs):
     try:
@@ -501,22 +501,30 @@ def update_ward_data(request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = WardDataSerializer(ward, many=True)
+        serializer = WardDataSerializer(ward)
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
+        data["id"] = ward.id
         serializer = WardDataSerializer(ward, data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'POST':
+
+
+@api_view(['POST'])
+@allow_access(permissions=['is_ordynator'])
+def create_ward_data(request, *args, **kwargs):
+
+    if request.method == 'POST' and len(WardData.objects.all()) == 0:
         data = JSONParser().parse(request)
         serializer = WardDataSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_423_LOCKED)
 
 
 @api_view(['GET'])
