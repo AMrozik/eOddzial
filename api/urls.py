@@ -29,11 +29,11 @@ from .views import (
 
     view_logs,
     view_logs_by_id,
-  
+
     dailyAlg,
     medicPresence,
     yearlyAlg,
-    statistics,
+    statistics, update_ward_data, create_ward_data,
 
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -71,6 +71,9 @@ urlpatterns = [
 
     path('not_available_medics/', all_NAMs, name='operation_types'),
     path('not_available_medic/<id>/', NAM_by_id, name='operation_type'),
+
+    path('ward_data/', update_ward_data, name='ward_data'),
+    path('create_ward_data/', create_ward_data, name='create_ward_data'),
 
     # JWT
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
