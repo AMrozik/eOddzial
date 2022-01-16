@@ -31,12 +31,6 @@ class Patient(models.Model):
         return p.age(date.today())
 
 
-# class Day(models.Model):
-#     year = models.IntegerField(null=False)
-#     month = models.IntegerField(null=False)
-#     day = models.IntegerField(null=False)
-
-
 class Medic(models.Model):
     name = models.CharField(max_length=200, null=False)
 
@@ -87,6 +81,15 @@ class WardData(models.Model):
     difficult_interval_hour = models.TimeField()
 
 
+
+class Log(models.Model):
+    user = models.CharField(max_length=150)
+    token = models.TextField()
+    event_description = models.TextField()
+    time = models.DateTimeField(auto_now_add=True)
+    http_method = models.CharField(max_length=20)
+
+
 class BudgetYear(models.Model):
     year = models.ForeignKey('BudgetMonth', on_delete=models.CASCADE)
     value = models.IntegerField()
@@ -106,3 +109,4 @@ class BudgetMonth(models.Model):
     oct = models.FloatField()
     nov = models.FloatField()
     dec = models.FloatField()
+

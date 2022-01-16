@@ -27,6 +27,9 @@ from .views import (
     NAR_by_id,
     active_rooms,
 
+    view_logs,
+    view_logs_by_id,
+
     dailyAlg,
     medicPresence,
     yearlyAlg,
@@ -76,6 +79,10 @@ urlpatterns = [
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', BlacklistTokenView.as_view(), name='logout'),
+
+    # Logs
+    path('token/refresh/', view_logs, name='logs'),
+    path('logout/', view_logs_by_id, name='log'),
 
     # Hint Alg
     path('dailyAlg', dailyAlg, name='dailyAlg'),
