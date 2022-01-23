@@ -3,69 +3,70 @@ import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext()
-
+export default AuthContext;
 export const AuthProvider = ({children}) => {
 
-    let [authTokens, setAuthTokens] = useState(()=> localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
-    let [user, setUser] = useState(()=> localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null)
+    const apiUrl = 'http://127.0.0.1:8000/api'
+    const aT = 'authTokens'
+    const jwtToken = localStorage.getItem(aT)
+    let [authTokens, setAuthTokens]  = useState(()=> jwtToken ? JSON.parse(jwtToken) : null)
+    let [user, setUser] = useState(()=> jwtToken ? jwt_decode(jwtToken) : null)
     let [loading, setLoading] = useState(true)
     let navigate = useNavigate()
+    const ref = {'refresh':authTokens?.refresh}
+    const head = {'Content-Type':'application/json'}
+    const met = 'POST'
+    const str = JSON.stringify
 
-    let loginUser = async (event ) => {
+    let loginUser = async (event) => {
         event.preventDefault()
-        let response = await fetch('http://127.0.0.1:8000/api/token/', {
-            method: 'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body: JSON.stringify({
-                'email': event.target.email.value, 
+        let response = await fetch(apiUrl + '/token/', {
+            method:met,
+            headers:head,
+            body:str({
+                'email': event.target.email.value,
                 'password': event.target.password.value
             })
         })
         let data = await response.json()
-        if(response.status === 200){
+        if(response.status !== 200){
+            alert('Error!')
+        }else{
             setAuthTokens(data)
             setUser(jwt_decode(data.access))
-            localStorage.setItem('authTokens', JSON.stringify(data))
+            localStorage.setItem(aT, str(data))
             navigate('/home');
-        }else{
-            alert('Error!')
         }
     }
 
     let logoutUser = async () => {
-        let response = await fetch('http://127.0.0.1:8000/api/logout/', {
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({'refresh':authTokens?.refresh})
+        let response = await fetch(apiUrl + '/logout/', {
+            method:met,
+            headers:head,
+            body:str(ref)
         })
         setAuthTokens(null)
         setUser(null)
-        localStorage.removeItem('authTokens')
+        localStorage.removeItem(aT)
         navigate('/login')
     }
 
     let updateToken = async ()=> {
 
-        let response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({'refresh':authTokens?.refresh})
+        let response = await fetch(apiUrl + '/token/refresh/', {
+            method:met,
+            headers:head,
+            body:str(ref)
         })
 
         let data = await response.json()
-        
-        if (response.status === 200){
+
+        if (response.status !== 200){
+            logoutUser()
+        }else{
             setAuthTokens(data)
             setUser(jwt_decode(data.access))
-            localStorage.setItem('authTokens', JSON.stringify(data))
-        }else{
-            logoutUser()
+            localStorage.setItem(aT, str(data))
         }
 
         if(loading){
@@ -83,25 +84,25 @@ export const AuthProvider = ({children}) => {
     useEffect(()=> {
 
         if(loading){
-            updateToken()
+            if(authTokens){
+                updateToken()
+            } else {
+                setLoading(false)
+            }
         }
 
-        let fourMinutes = 1000 * 60 * 4
-
-        let interval =  setInterval(()=> {
+        let interval = setInterval(()=> {
             if(authTokens){
                 updateToken()
             }
-        }, fourMinutes)
+        }, 240000)
         return ()=> clearInterval(interval)
 
     }, [authTokens, loading])
 
     return(
         <AuthContext.Provider value={contextData}>
-            {loading ? null : children}
+            {!loading && children}
         </AuthContext.Provider>
     )
 }
-
-export default AuthContext;
