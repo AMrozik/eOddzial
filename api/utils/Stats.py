@@ -1,6 +1,6 @@
 import datetime
 from statistics import mean
-from api.models import Operation_type, BudgetMonth, BudgetYear
+from api.models import Operation_type, BudgetYear
 from decimal import *
 
 
@@ -17,11 +17,11 @@ def procedures(operations, types):
     data["zab_typy_proc"] = types_proc
 
     # Not done operations
-    data["ndone_int"] = 0
+    data["nie_wyk_int"] = 0
     for operation in operations:
         if not operation.done:
-            data["ndone_int"] += 1
-    data["ndone_proc"] = Decimal(data["ndone_int"])/Decimal(data["zab"])
+            data["nie_wyk_int"] += 1
+    data["nie_wyk_proc"] = Decimal(data["nie_wyk_int"])/Decimal(data["zab"])
 
     return data
 
@@ -69,51 +69,69 @@ def patients(operations):
     return data
 
 
-def budged(operations, types):
+def budged(operations, types, start_date, end_date):
     data = {}
 
-    temp_list = list(operations)
-    # start_year = temp_list[0].date.year()
-    # end_year = temp_list[-1].date.year()
+    year_amount = end_date.year - start_date.year + 1
+    start_month = start_date.month
+    end_month = end_date.month
 
-    # Budget
-    budget = 0
-    for i in range(temp_list[0].date.year - temp_list[-1].date.year + 1):
-        for month in range(1, 13):
-            print(f'year:{i}, month:{month}')
+    # Yearly scope budget
+    budget_y = 0
+    for i in range(year_amount):
+        budget_y += BudgetYear.objects.get(year=start_date.year+i).given_budget
+    data["bud_rok"] = budget_y
+
+    # Monthly scope budget - is sum of months percentage times yearly budget
+    # WARNING!!! This is not checking does monthly percentages sum to more than 1!
+
+    # Prepare months list
+    if year_amount > 1:
+        months_list = [(start_month, 12)]
+        for i in range(year_amount-2):
+            months_list.append((1, 12))
+        months_list.append((1, end_month))
+    else:
+        months_list = [(start_month, end_month)]
+
+    budget_m = 0
+    for i in range(year_amount):
+        year = BudgetYear.objects.get(year=start_date.year+i)
+        for month in range(months_list[i][0], months_list[i][1]+1):
+            # TODO: get rid of if else and do maybe dict
             if month == 1:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).jan
+                budget_m += year.given_budget * year.jan
             elif month == 2:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).feb
+                budget_m += year.given_budget * year.feb
             elif month == 3:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).mar
+                budget_m += year.given_budget * year.mar
             elif month == 4:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).apr
+                budget_m += year.given_budget * year.apr
             elif month == 5:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).may
+                budget_m += year.given_budget * year.may
             elif month == 6:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).jun
+                budget_m += year.given_budget * year.jun
             elif month == 7:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).jul
+                budget_m += year.given_budget * year.jul
             elif month == 8:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).aug
+                budget_m += year.given_budget * year.aug
             elif month == 9:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).sep
+                budget_m += year.given_budget * year.sep
             elif month == 10:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).oct
+                budget_m += year.given_budget * year.oct
             elif month == 11:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).nov
+                budget_m += year.given_budget * year.nov
             elif month == 12:
-                budget += BudgetYear.objects.get(year=temp_list[0].date.year+i).value * BudgetMonth.objects.get(year=temp_list[0].date.year).dec
-    data["bud"] = budget
+                budget_m += year.given_budget * year.dec
+    data["bud_mon"] = budget_m
 
-    # Total cost
+    # Total cost of all operations
     cost = 0
     for operation in operations:
         cost += operation.type.cost
-    data["cos"] = cost
+    data["wyk_koszt_int"] = cost
 
-    # Operations
+    # Operations done/planned amount and percentages of overall operations
     data["wyk_int"] = 0
     data["zap_int"] = 0
     for operation in operations:
@@ -126,7 +144,7 @@ def budged(operations, types):
     data["wyk_proc"] = Decimal(data["wyk_int"])/Decimal(len(operations))
     data["zap_proc"] = Decimal(data["zap_int"])/Decimal(len(operations))
 
-    # Types
+    # Types of all operations
     types_int = {}
     types_proc = {}
     for key in types.keys():
@@ -139,10 +157,12 @@ def budged(operations, types):
     return data
 
 
-def getStats(operations):
+def getStats(operations, start_date, end_date):
     """
 
     Args:
+        start_date: starting DATE taken from frontend
+        end_date: ending DATE taken from frontend
         operations: QUERYSET with already filtered operations
 
     Returns:
@@ -162,6 +182,6 @@ def getStats(operations):
 
     data.update(procedures(operations, types))
     data.update(patients(operations))
-    data.update(budged(operations, types))
+    data.update(budged(operations, types, start_date, end_date))
 
     return data

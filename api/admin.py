@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import Patient, Medic, Operation, Operation_type, Room, WardData, NonAvailabilityRoom, NonAvailabilityMedic, BudgetYear, BudgetMonth, Log
+from api.models import Patient, Medic, Operation, Operation_type, Room, WardData, NonAvailabilityRoom, NonAvailabilityMedic, BudgetYear, Log
 
 
 # Register your models here.
@@ -14,5 +14,4 @@ admin.site.register(NonAvailabilityRoom)
 admin.site.register(Log)
 admin.site.register(NonAvailabilityMedic)
 admin.site.register(BudgetYear)
-admin.site.register(BudgetMonth)
 

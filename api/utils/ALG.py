@@ -101,6 +101,7 @@ class DailyHintALG:
             medic: MEDIC object of selected medic
 
         """
+        # TODO: Make this safe from front end point of view !!!!
         daily_operations = Operation.objects.raw("SELECT * FROM api_operation WHERE date = %s", [self.day_date])
         operation_type = Operation_type.objects.get(ICD_code=self.type_ICD)
         medic = Medic.objects.get(id=self.medic_id)
@@ -154,13 +155,13 @@ class DailyHintALG:
 
         """
         is_in_interval = False
-        if self.is_child and hour < dateTimeToInt(self.ward_child_hour):
+        if self.is_child and not self.is_difficult and hour < dateTimeToInt(self.ward_child_hour):
             is_in_interval = True
-        elif self.is_difficult and hour > dateTimeToInt(self.ward_difficult_hour):
+        elif not self.is_child and self.is_difficult and hour >= dateTimeToInt(self.ward_difficult_hour):
             is_in_interval = True
         elif self.is_child and self.is_difficult:
             is_in_interval = True
-        elif self.is_child is False and self.is_difficult is False and dateTimeToInt(self.ward_child_hour) < hour < dateTimeToInt(self.ward_difficult_hour):
+        elif not self.is_child and not self.is_difficult and dateTimeToInt(self.ward_child_hour) <= hour < dateTimeToInt(self.ward_difficult_hour):
             is_in_interval = True
 
         return is_in_interval

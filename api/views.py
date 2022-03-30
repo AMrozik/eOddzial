@@ -38,6 +38,7 @@ from .models import (
     NonAvailabilityRoom,
     Log,
     WardData,
+    BudgetYear,
 )
 
 
@@ -653,27 +654,6 @@ def NAR_by_id(request, id, *args, **kwargs):
         return JsonResponse({'message': 'NAR was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET', 'PUT'])
-@allow_access(permissions=['is_ordynator'])
-def update_ward_data(request, *args, **kwargs):
-    try:
-        ward = WardData.objects.all()[0]
-    except WardData.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = WardDataSerializer(ward)
-        return Response(serializer.data)
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        data["id"] = ward.id
-        serializer = WardDataSerializer(ward, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 @api_view(['POST'])
 @allow_access(permissions=['is_ordynator'])
 def create_ward_data(request, *args, **kwargs):
@@ -688,8 +668,32 @@ def create_ward_data(request, *args, **kwargs):
     return Response(status=status.HTTP_423_LOCKED)
 
 
+@api_view(['GET', 'PUT'])
+@allow_access(permissions=['is_ordynator'])
+def update_ward_data(request, *args, **kwargs):
+    data = {}
+    try:
+        ward = WardData.objects.all()[0]
+    except IndexError:
+        data["failure"] = "Please config ward data first"
+        return Response(status=status.HTTP_409_CONFLICT, data=data)
+
+    if request.method == 'GET':
+        serializer = WardDataSerializer(ward)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        data["id"] = ward.id
+        serializer = WardDataSerializer(ward, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
-def statistics(request):
+@allow_access(permissions=['is_ordynator', 'is_planist'])
+def statistics(request, *args, **kwargs):
     """
 
     Args:
@@ -720,53 +724,17 @@ def statistics(request):
             data["failure"] = "There are no operations in DB"
             return Response(status=status.HTTP_204_NO_CONTENT, data=data)
 
-        data = getStats(operations)
+        try:
+            data = getStats(operations, start_date, end_date)
+        except BudgetYear.DoesNotExist:
+            data["failure"] = "BudgetYear is empty"
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
         return Response(status=status.HTTP_200_OK, data=data)
 
 
 @api_view(["POST"])
 @allow_access(permissions=['is_ordynator', 'is_planist'])
-def dailyAlg(request, *args, **kwargs):
-    """
-
-    Args:
-        request: POST request with is_child, is_difficult, year, month, day, type and medic information
-
-    Returns:
-        Valid, sorted JSON with data about possible operations
-
-    """
-    data = {}
-
-    if request.method == "POST":
-        if len(WardData.objects.all()) == 0:
-            data["failure"] = "WardData is empty"
-            return Response(status=status.HTTP_409_CONFLICT, data=data)
-
-        is_child = request.POST.get("is_child")             # 1 or 0
-        is_difficult = request.POST.get("is_difficult")     # 1 or 0
-        date_year = request.POST.get("date_year")           # int
-        date_month = request.POST.get("date_month")         # int
-        date_day = request.POST.get("date_day")             # int
-        type_ICD = request.POST.get("type_ICD")             # int
-        medic_id = request.POST.get("medic_id")             # int
-
-        # Check presence of request values
-        if is_child is None or is_difficult is None or date_year is None or date_month is None or date_day is None or type_ICD is None or medic_id is None:
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-        day_date = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
-        algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_ICD, medic_id)
-
-        json = algorithm.toJSON()
-
-        return Response(status=status.HTTP_200_OK, data=json)
-
-    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
-@api_view(["POST"])
-def medicPresence(request):
+def medicPresence(request, *args, **kwargs):
     """
 
     Args:
@@ -794,14 +762,63 @@ def medicPresence(request):
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(["POST"])
-def yearlyAlg(request):
-    """"""
+@allow_access(permissions=['is_ordynator', 'is_planist'])
+def dailyAlg(request, *args, **kwargs):
+    """
+
+    Args:
+        request: POST request with is_child, is_difficult, year, month, day, type and medic information
+
+    Returns:
+        Valid, sorted JSON with data about possible operations
+
+    """
     data = {}
 
     if request.method == "POST":
         if len(WardData.objects.all()) == 0:
-            data["failure"] = "WardData is empty"
+            data["failure"] = "Please config ward data first"
+            return Response(status=status.HTTP_409_CONFLICT, data=data)
+
+        is_child = request.POST.get("is_child")             # 1 or 0
+        is_difficult = request.POST.get("is_difficult")     # 1 or 0
+        date_year = request.POST.get("date_year")           # int
+        date_month = request.POST.get("date_month")         # int
+        date_day = request.POST.get("date_day")             # int
+        type_ICD = request.POST.get("type_ICD")             # int
+        medic_id = request.POST.get("medic_id")             # int
+
+        # Check presence of request values
+        if is_child is None or is_difficult is None or date_year is None or date_month is None or date_day is None or type_ICD is None or medic_id is None:
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        day_date = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
+        algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_ICD, medic_id)
+
+        json = algorithm.toJSON()
+
+        return Response(status=status.HTTP_200_OK, data=json)
+
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(["POST"])
+def yearlyAlg(request):
+    """
+
+    Args:
+        request: POST data with
+
+    Returns: JSON with dates and percentage fill of the day
+
+    """
+    data = {}
+
+    if request.method == "POST":
+        if len(WardData.objects.all()) == 0:
+            data["failure"] = "Please config ward data first"
             return Response(status=status.HTTP_409_CONFLICT, data=data)
 
         year = request.POST.get("date_year")

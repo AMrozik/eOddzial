@@ -53,8 +53,7 @@ class NonAvailabilityMedic(models.Model):
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=70, blank=False)
-    active = models.BooleanField(default=True)
+    room_number = models.IntegerField(null=False)
 
 
 class NonAvailabilityRoom(models.Model):
@@ -91,11 +90,6 @@ class Log(models.Model):
 
 
 class BudgetYear(models.Model):
-    year = models.ForeignKey('BudgetMonth', on_delete=models.CASCADE)
-    value = models.IntegerField()
-
-
-class BudgetMonth(models.Model):
     year = models.IntegerField(primary_key=True)
     jan = models.FloatField()
     feb = models.FloatField()
@@ -109,4 +103,5 @@ class BudgetMonth(models.Model):
     oct = models.FloatField()
     nov = models.FloatField()
     dec = models.FloatField()
+    given_budget = models.FloatField()
 
