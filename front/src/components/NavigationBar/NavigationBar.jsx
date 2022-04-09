@@ -37,7 +37,7 @@ export const NavigationBar = () => {
   if (user) {
     SignInOutNavigation = <Nav.Link className="link_item" onClick={logoutUser} href="/logout">Sign out</Nav.Link>
   } else {
-    SignInOutNavigation = <Nav.Link className="link_item" href="/login"/>
+    SignInOutNavigation = <Nav.Link className="link_item" href="/login"> Sign Out </Nav.Link>
   }
 
   return (

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import RoomServicw from "../../services/RoomService";
+import RoomService from "../../services/RoomService";
 import { useTable } from "react-table";
 import "./Rooms.css";
-import AddRoom from "./AddRoom";
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState([]);
@@ -15,7 +14,7 @@ const Rooms = (props) => {
   }, []);
 
   const retriveRooms = () => {
-    RoomServicw.getAll()
+    RoomService.getAll()
         .then((response) => {
           setRooms(response.data);
         })
@@ -29,7 +28,7 @@ const Rooms = (props) => {
   };
 
   const removeAllTutorials = () => {
-    RoomServicw.removeAll()
+    RoomService.removeAll()
         .then((response) => {
           console.log(response.data);
           refreshList();
@@ -48,7 +47,7 @@ const Rooms = (props) => {
   const deleteTutorial = (rowIndex) => {
     const id = roomsRef.current[rowIndex].id;
 
-    RoomServicw.remove(id)
+    RoomService.remove(id)
         .then((response) => {
           props.history.push("/rooms");
 
@@ -65,16 +64,9 @@ const Rooms = (props) => {
   const columns = useMemo(
       () => [
         {
-          Header: "Operation room name",
-          accessor: "name",
+          Header: "Operation room",
+          accessor: "room_number",
         },
-        {
-          Header: "Status",
-          accessor: "active",
-          Cell: (props) => {
-            return props.value ? "Active" : "Inactive";
-          },
-        }
       ],
       []
   );

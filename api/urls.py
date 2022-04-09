@@ -81,8 +81,8 @@ urlpatterns = [
     path('logout/', BlacklistTokenView.as_view(), name='logout'),
 
     # Logs
-    path('token/refresh/', view_logs, name='logs'),
-    path('logout/', view_logs_by_id, name='log'),
+    path('logs/', view_logs, name='logs'),
+    path('logs/<id>', view_logs_by_id, name='log'),
 
     # Hint Alg
     path('dailyAlg', dailyAlg, name='dailyAlg'),

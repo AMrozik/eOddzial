@@ -4,8 +4,7 @@ import RoomService from "../../services/RoomService";
 const Room = props => {
   const initialRoomState = {
     id: null,
-    name: "",
-    active: true
+    room_number: 0,
   };
   const [currentRoom, setCurrentRoom] = useState(initialRoomState);
   const [message, setMessage] = useState("");
@@ -27,14 +26,13 @@ const Room = props => {
 
   const handleInputChange = event => {
     const { name, value } = event.target;
-    setCurrentRoom({ ...currentRoom, [name]: value });
+    setCurrentRoom({ ...currentRoom, [room_number]: value });
   };
 
   const updateActive = status => {
     let data = {
       id: currentRoom.id,
-      name: currentRoom.name,
-      active: status
+      room_number: currentRoom.room_number,
     };
 
     RoomService.update(currentRoom.id, data)
@@ -83,35 +81,11 @@ const Room = props => {
                       className="form-control"
                       id="name"
                       name="name"
-                      value={currentRoom.name}
+                      value={currentRoom.room_number}
                       onChange={handleInputChange}
                   />
                 </div>
-
-
-                <div className="form-group">
-                  <label>
-                    <strong>Status:</strong>
-                  </label>
-                  {currentRoom.active ? "Active" : "Inactive"}
-                </div>
               </form>
-
-              {currentRoom.active ? (
-                  <button
-                      className="badge badge-primary mr-2"
-                      onClick={() => updateActive(false)}
-                  >
-                    Deactivate
-                  </button>
-              ) : (
-                  <button
-                      className="badge badge-primary mr-2"
-                      onClick={() => updateActive(true)}
-                  >
-                    Activate
-                  </button>
-              )}
 
               <button className="badge badge-danger mr-2" onClick={deleteRoom}>
                 Delete
