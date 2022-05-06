@@ -1,5 +1,6 @@
 .footer {
     width: 100%;
+    position: fixed;
     z-index: 300;
     bottom: 0;
     overflow: -moz-scrollbars-none;

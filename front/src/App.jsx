@@ -19,6 +19,7 @@ function App() {
                     <NavigationBar/>
                 </AuthProvider>
             </BrowserRouter>
+            <div id="yolo"></div>
             <Footer/>
         </div>
     );
