@@ -38,7 +38,7 @@ def patients(operations):
     # Filling dictionary with values
     # Gender
     for operation in operations:
-        if operation.patient.gender == "male":
+        if operation.patient.gender == 'male':
             data["men_int"] += 1
         else:
             data["kob_int"] += 1
@@ -53,7 +53,7 @@ def patients(operations):
 
     # Child
     for operation in operations:
-        if operation.patient.age < datetime.date.today().year:
+        if operation.patient.age < 18:
             data["dzi_int"] += 1
     data["dzi_proc"] = Decimal(data["dzi_int"])/Decimal(len(operations)) * 100
 
@@ -63,10 +63,9 @@ def patients(operations):
         ages.append(operation.patient.age)
     ages.sort()
 
-    year = datetime.date.today().year
-    data["wiek_min_int"] = year - ages[0]
-    data["wiek_max_int"] = year - ages[-1]
-    data["wiek_sred"] = year - mean(ages)
+    data["wiek_min_int"] = ages[0]
+    data["wiek_max_int"] = ages[-1]
+    data["wiek_sred"] = mean(ages)
 
     return data
 
