@@ -17,11 +17,11 @@ def procedures(operations, types):
     data["zab_typy_proc"] = types_proc
 
     # Not done operations
-    data["nie_wyk_int"] = 0
-    for operation in operations:
-        if not operation.done:
-            data["nie_wyk_int"] += 1
-    data["nie_wyk_proc"] = Decimal(data["nie_wyk_int"])/Decimal(data["zab"])
+    # data["nie_wyk_int"] = 0
+    # for operation in operations:
+    #     if not operation.done:
+    #         data["nie_wyk_int"] += 1
+    # data["nie_wyk_proc"] = Decimal(data["nie_wyk_int"])/Decimal(data["zab"])
 
     return data
 
@@ -42,29 +42,31 @@ def patients(operations):
             data["men_int"] += 1
         else:
             data["kob_int"] += 1
-    data["men_proc"] = Decimal(data["men_int"])/Decimal(len(operations))
-    data["kob_proc"] = Decimal(data["kob_int"])/Decimal(len(operations))
+    data["men_proc"] = Decimal(data["men_int"])/Decimal(len(operations)) * 100
+    data["kob_proc"] = Decimal(data["kob_int"])/Decimal(len(operations)) * 100
 
     # Difficulty
     for operation in operations:
-        if operation.type.is_difficult == "True":
+        if operation.type.is_difficult:
             data["tru_int"] += 1
-    data["tru_proc"] = Decimal(data["tru_int"])/Decimal(len(operations))
+    data["tru_proc"] = Decimal(data["tru_int"])/Decimal(len(operations)) * 100
 
     # Child
     for operation in operations:
-        if operation.patient.age < 18:
+        if operation.patient.age < datetime.date.today().year:
             data["dzi_int"] += 1
-    data["dzi_proc"] = Decimal(data["dzi_int"])/Decimal(len(operations))
+    data["dzi_proc"] = Decimal(data["dzi_int"])/Decimal(len(operations)) * 100
 
     # Age
     ages = []
     for operation in operations:
         ages.append(operation.patient.age)
     ages.sort()
-    data["wiek_min_int"] = ages[0]
-    data["wiek_max_int"] = ages[-1]
-    data["wiek_sred"] = mean(ages)
+
+    year = datetime.date.today().year
+    data["wiek_min_int"] = year - ages[0]
+    data["wiek_max_int"] = year - ages[-1]
+    data["wiek_sred"] = year - mean(ages)
 
     return data
 
@@ -129,27 +131,29 @@ def budged(operations, types, start_date, end_date):
     cost = 0
     for operation in operations:
         cost += operation.type.cost
-    data["wyk_koszt_int"] = cost
+    data["zab_koszt_int"] = cost
 
     # Operations done/planned amount and percentages of overall operations
     data["wyk_int"] = 0
+    data["wyk_koszt_int"] = 0
     data["zap_int"] = 0
     for operation in operations:
-        if operation.date < datetime.date.today():
+        if operation.done:
             # Done
             data["wyk_int"] += 1
+            data["wyk_koszt_int"] += operation.type.cost
         else:
             # Planned
             data["zap_int"] += 1
-    data["wyk_proc"] = Decimal(data["wyk_int"])/Decimal(len(operations))
-    data["zap_proc"] = Decimal(data["zap_int"])/Decimal(len(operations))
+    data["wyk_proc"] = Decimal(data["wyk_int"])/Decimal(len(operations)) * 100
+    data["zap_proc"] = Decimal(data["zap_int"])/Decimal(len(operations)) * 100
 
     # Types of all operations
     types_int = {}
     types_proc = {}
     for key in types.keys():
         types_int[key] = Decimal(Operation_type.objects.filter(ICD_code=key)[0].cost) * Decimal(types[key])
-        types_proc[key] = Decimal(types_int[key])/Decimal(cost)
+        types_proc[key] = Decimal(types_int[key])/Decimal(cost) * 100
 
     data["bud_typy_int"] = types_int
     data["bud_typy_proc"] = types_proc
