@@ -88,11 +88,11 @@ urlpatterns = [
     path('dailyAlg', dailyAlg, name='dailyAlg'),
     path('yearlyAlg', yearlyAlg, name='yearlyAlg'),
 
-    # MedicPressence
+    # MedicPresence
     path('medicPresence', medicPresence, name='medicPresence'),
 
     # statistics
-    path('statistics', statistics, name='statistics'),
+    path('statistics/', statistics, name='statistics'),
 
 
     # api documentation for development purposes

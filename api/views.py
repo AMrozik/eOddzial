@@ -702,7 +702,6 @@ def statistics(request, *args, **kwargs):
     Returns:
 
     """
-    data = {}
 
     if request.method == 'GET':
         start_year = request.GET.get("start_year")
@@ -721,15 +720,18 @@ def statistics(request, *args, **kwargs):
         end_date = datetime.date(year=int(end_year), month=int(end_month), day=int(end_day))
         operations = Operation.objects.filter(date__range=[start_date, end_date])
         if len(operations) == 0:
+            data = {}
             data["failure"] = "There are no operations in DB"
             return Response(status=status.HTTP_204_NO_CONTENT, data=data)
 
         try:
             data = getStats(operations, start_date, end_date)
+            result = [data]
         except BudgetYear.DoesNotExist:
+            data = {}
             data["failure"] = "BudgetYear is empty"
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
-        return Response(status=status.HTTP_200_OK, data=data)
+        return Response(status=status.HTTP_200_OK, data=result)
 
 
 @api_view(["POST"])
