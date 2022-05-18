@@ -4,29 +4,27 @@ import './AddRoom.css';
 
 const AddRoom = () => {
   const initialRoomState = {
-    id: null,
-    name: "",
-    active: true
+    room_number: ""
   };
   const [room, setRoom] = useState(initialRoomState);
   const [submitted, setSubmitted] = useState(false);
 
   const handleInputChange = event => {
     const { name, value } = event.target;
+    console.log(name)
+    console.log(value)
     setRoom({ ...room, [name]: value });
   };
 
   const saveRoom = () => {
     let data = {
-      name: room.name
+      room_number: room.room_number
     };
 
     RoomService.create(data)
         .then(response => {
           setRoom({
-            id: response.data.id,
-            name: response.data.name,
-            active: response.data.active
+            room_number: response.data.room_number
           });
           setSubmitted(true);
           console.log(response.data);
@@ -45,15 +43,15 @@ const AddRoom = () => {
       <div className="submit-form form_style">
         {submitted ? (
             <div className="form_style">
-              <h4>You submitted successfully!</h4>
+              <h4>Utworzono nowy pokoj!</h4>
               <button className="btn btn-success" onClick={newRoom}>
-                Add
+                Dodaj
               </button>
             </div>
         ) : (
             <div>
               <div className="form-group form_style ">
-                <label htmlFor="name">Room Name</label>
+                <label htmlFor="name">Numer Pokoju</label>
                 <input
                     type="text"
                     className="form-control"
@@ -61,12 +59,12 @@ const AddRoom = () => {
                     required
                     value={room.name}
                     onChange={handleInputChange}
-                    name="name"
+                    name="room_number"
                 />
               </div>
 
               <button onClick={saveRoom} className="btn btn-success">
-                Submit
+                Zapisz
               </button>
             </div>
         )}

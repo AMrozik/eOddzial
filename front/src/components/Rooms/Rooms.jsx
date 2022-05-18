@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import RoomService from "../../services/RoomService";
 import { useTable } from "react-table";
+import { Link } from "react-router-dom"
 import "./Rooms.css";
+import PrivateRoute from '../../PrivateRoute';
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState([]);
@@ -27,39 +29,39 @@ const Rooms = (props) => {
     retriveRooms();
   };
 
-  const removeAllTutorials = () => {
-    RoomService.removeAll()
-        .then((response) => {
-          console.log(response.data);
-          refreshList();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-  };
+//   const removeAllTutorials = () => {
+//     RoomService.removeAll()
+//         .then((response) => {
+//           console.log(response.data);
+//           refreshList();
+//         })
+//         .catch((e) => {
+//           console.log(e);
+//         });
+//   };
 
-  const openTutorial = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
-
-    props.history.push("/rooms/" + id);
-  };
-
-  const deleteTutorial = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
-
-    RoomService.remove(id)
-        .then((response) => {
-          props.history.push("/rooms");
-
-          let newTutorials = [...roomsRef.current];
-          newTutorials.splice(rowIndex, 1);
-
-          setRooms(newTutorials);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-  };
+//   const openTutorial = (rowIndex) => {
+//     const id = roomsRef.current[rowIndex].id;
+//
+//     props.history.push("/rooms/" + id);
+//   };
+//
+//   const deleteTutorial = (rowIndex) => {
+//     const id = roomsRef.current[rowIndex].id;
+//
+//     RoomService.remove(id)
+//         .then((response) => {
+//           props.history.push("/rooms");
+//
+//           let newTutorials = [...roomsRef.current];
+//           newTutorials.splice(rowIndex, 1);
+//
+//           setRooms(newTutorials);
+//         })
+//         .catch((e) => {
+//           console.log(e);
+//         });
+//   };
 
   const columns = useMemo(
       () => [
@@ -84,6 +86,7 @@ const Rooms = (props) => {
 
   return (
         <div className="col-md-12 list table_style">
+        <a href='/add_room'>dodaj</a>
           <table
               className="table table-striped table-bordered"
               {...getTableProps()}
@@ -106,7 +109,7 @@ const Rooms = (props) => {
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell) => {
                       return (
-                          <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                          <td {...cell.getCellProps()}>{cell.render("Cell")}<a href={'/room/'+row.original.id}>edytuj</a></td>
                       );
                     })}
                   </tr>

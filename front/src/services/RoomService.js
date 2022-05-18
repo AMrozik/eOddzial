@@ -18,19 +18,45 @@ export const getAll = () => {
 };
 
 export const get = id => {
-    return http.get(`/room/${id}`);
+    let a = JSON.parse(localStorage.getItem('authTokens'));
+
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    return instance.get(`/rooms/${id}/`);
 };
 
 export const create = data => {
-    return http.post("/rooms/", data);
+    let a = JSON.parse(localStorage.getItem('authTokens'));
+
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    return instance.post("/rooms/", data);
 };
 
 export const update = (id, data) => {
-    return http.put(`/rooms/${id}`, data);
+    let a = JSON.parse(localStorage.getItem('authTokens'));
+
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    console.log(data)
+
+    return instance.put(`/rooms/${id}/`, data);
 };
 
 export const remove = id => {
-    return http.delete(`/rooms/${id}`);
+    return http.delete(`/rooms/${id}/`);
 };
 
 export const removeAll = () => {

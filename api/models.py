@@ -80,7 +80,6 @@ class WardData(models.Model):
     difficult_interval_hour = models.TimeField()
 
 
-
 class Log(models.Model):
     user = models.CharField(max_length=150)
     token = models.TextField()
