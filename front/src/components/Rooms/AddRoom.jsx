@@ -11,8 +11,6 @@ const AddRoom = () => {
 
   const handleInputChange = event => {
     const { name, value } = event.target;
-    console.log(name)
-    console.log(value)
     setRoom({ ...room, [name]: value });
   };
 
@@ -43,7 +41,7 @@ const AddRoom = () => {
       <div className="submit-form form_style">
         {submitted ? (
             <div className="form_style">
-              <h4>Utworzono nowy pokoj!</h4>
+              <h4>Created new room!</h4>
               <button className="btn btn-success" onClick={newRoom}>
                 Dodaj
               </button>

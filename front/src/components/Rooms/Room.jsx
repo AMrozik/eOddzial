@@ -24,16 +24,14 @@ const Room = (props) => {
 
   useEffect(() => {
     getRoom();
-  },
-//   Nie mam pojecia co to jest! ale [] trzeba zostawic bo inaczej mamy refresh loop
-//   [props.match.params.id]
-  []);
+  }, []);
 
   const handleInputChange = event => {
     const { name, value } = event.target;
     setCurrentRoom({ ...currentRoom, [name]: value });
   };
 
+// Maybe, we have to consider it in later version
 //   const updateActive = status => {
 //     let data = {
 //       id: currentRoom.id,
@@ -54,8 +52,7 @@ const Room = (props) => {
   const updateRoom = () => {
     RoomService.update(id, currentRoom)
         .then(response => {
-          console.log(response.data);
-//        Redirect/Link na "/rooms/"
+//        TODO: Chciales tutaj andrzeju wrzucic redirecta na liste pokoi (i chyba mozna wywalic ten message ale to jak juz chcesz)
           setMessage("The room was updated successfully!");
         })
         .catch(e => {
@@ -63,20 +60,9 @@ const Room = (props) => {
         });
   };
 
-//   const deleteRoom = () => {
-//     RoomService.remove(currentRoom.id)
-//         .then(response => {
-//           console.log(response.data);
-//           props.history.push("/rooms");
-//         })
-//         .catch(e => {
-//           console.log(e);
-//         });
-//   };
-
   return (
       <div>
-{/*        {currentRoom ? ( */}
+{/*        This has to be so deeep in because submit button goes crazy otherwise*/}
             <div className="edit-form">
               <form>
                 <div className="form-group">
@@ -93,10 +79,6 @@ const Room = (props) => {
                 </div>
               </form>
 
-{/*               <button className="badge badge-danger mr-2" onClick={deleteRoom}> */}
-{/*                 Delete */}
-{/*               </button> */}
-
               <button
                   type="submit"
                   className="btn btn-success"
@@ -106,12 +88,6 @@ const Room = (props) => {
               </button>
               <p>{message}</p>
             </div>
-{/*         ) : ( */}
-{/*             <div> */}
-{/*               <br /> */}
-{/*               <p>Please click on a Room...</p> */}
-{/*             </div> */}
-{/*         )} */}
       </div>
   );
 };

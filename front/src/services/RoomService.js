@@ -12,8 +12,6 @@ export const getAll = () => {
         headers: {'Authorization': 'Bearer ' + a['access']}
     });
 
-
-    // return http.get("/rooms/", {"Authorization":"Bearer "+a['access']});
     return instance.get('/rooms/')
 };
 
@@ -50,18 +48,24 @@ export const update = (id, data) => {
         headers: {'Authorization': 'Bearer ' + a['access']}
     });
 
-    console.log(data)
-
     return instance.put(`/rooms/${id}/`, data);
 };
 
 export const remove = id => {
-    return http.delete(`/rooms/${id}/`);
-};
+    let a = JSON.parse(localStorage.getItem('authTokens'));
 
-export const removeAll = () => {
-    return http.delete(`/rooms/`);
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    return instance.delete(`/rooms/${id}/`);
 };
+// I will leave this here just in case one day we need it (remember to uncomment export)
+//export const removeAll = () => {
+//    return http.delete(`/rooms/`);
+//};
 
 export default {
     getAll,
@@ -69,5 +73,5 @@ export default {
     create,
     update,
     remove,
-    removeAll
+//    removeAll
 };
