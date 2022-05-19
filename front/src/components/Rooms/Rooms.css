@@ -8,3 +8,7 @@
 .table_style > * {
     width: 70%;
 }
+
+a {
+    all: initial;
+}

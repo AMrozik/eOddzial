@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import RoomService from "../../services/RoomService";
+import {useParams} from "react-router-dom"
+import './AddRoom.css';
 
-const Room = props => {
+const Room = (props) => {
   const initialRoomState = {
     id: null,
     room_number: 0,
   };
+  const {id} = useParams()
   const [currentRoom, setCurrentRoom] = useState(initialRoomState);
   const [message, setMessage] = useState("");
 
-  const getRoom = id => {
+  const getRoom = () => {
     RoomService.get(id)
         .then(response => {
           setCurrentRoom(response.data);
-          console.log(response.data);
         })
         .catch(e => {
           console.log(e);
@@ -21,47 +23,37 @@ const Room = props => {
   };
 
   useEffect(() => {
-    getRoom(props.match.params.id);
-  }, [props.match.params.id]);
+    getRoom();
+  }, []);
 
   const handleInputChange = event => {
     const { name, value } = event.target;
-    setCurrentRoom({ ...currentRoom, [room_number]: value });
+    setCurrentRoom({ ...currentRoom, [name]: value });
   };
 
-  const updateActive = status => {
-    let data = {
-      id: currentRoom.id,
-      room_number: currentRoom.room_number,
-    };
-
-    RoomService.update(currentRoom.id, data)
-        .then(response => {
-          setCurrentRoom({ ...currentRoom, active: status });
-          console.log(response.data);
-          setMessage("The status was updated successfully!");
-        })
-        .catch(e => {
-          console.log(e);
-        });
-  };
+// Maybe, we have to consider it in later version
+//   const updateActive = status => {
+//     let data = {
+//       id: currentRoom.id,
+//       room_number: currentRoom.room_number,
+//     };
+//
+//     RoomService.update(currentRoom.id, data)
+//         .then(response => {
+//           setCurrentRoom({ ...currentRoom, active: status });
+//           console.log(response.data);
+//           setMessage("The status was updated successfully!");
+//         })
+//         .catch(e => {
+//           console.log(e);
+//         });
+//   };
 
   const updateRoom = () => {
-    RoomService.update(currentRoom.id, currentRoom)
+    RoomService.update(id, currentRoom)
         .then(response => {
-          console.log(response.data);
+//        TODO: Chciales tutaj andrzeju wrzucic redirecta na liste pokoi (i chyba mozna wywalic ten message ale to jak juz chcesz)
           setMessage("The room was updated successfully!");
-        })
-        .catch(e => {
-          console.log(e);
-        });
-  };
-
-  const deleteRoom = () => {
-    RoomService.remove(currentRoom.id)
-        .then(response => {
-          console.log(response.data);
-          props.history.push("/rooms");
         })
         .catch(e => {
           console.log(e);
@@ -70,42 +62,32 @@ const Room = props => {
 
   return (
       <div>
-        {currentRoom ? (
+{/*        This has to be so deeep in because submit button goes crazy otherwise*/}
             <div className="edit-form">
-              <h4>Tutorial</h4>
               <form>
                 <div className="form-group">
-                  <label htmlFor="name">Name</label>
+                  <label htmlFor="name">Edytuj numer pokoju</label>
                   <input
                       type="text"
                       className="form-control"
                       id="name"
-                      name="name"
+                      required
+                      name="room_number"
                       value={currentRoom.room_number}
                       onChange={handleInputChange}
                   />
                 </div>
               </form>
 
-              <button className="badge badge-danger mr-2" onClick={deleteRoom}>
-                Delete
-              </button>
-
               <button
                   type="submit"
-                  className="badge badge-success"
+                  className="btn btn-success"
                   onClick={updateRoom}
               >
-                Update
+                Zapisz
               </button>
               <p>{message}</p>
             </div>
-        ) : (
-            <div>
-              <br />
-              <p>Please click on a Room...</p>
-            </div>
-        )}
       </div>
   );
 };

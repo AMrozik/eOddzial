@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import RoomService from "../../services/RoomService";
 import { useTable } from "react-table";
+import { Link, useNavigate } from "react-router-dom"
 import "./Rooms.css";
+import PrivateRoute from '../../PrivateRoute';
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState([]);
   const roomsRef = useRef();
+  const navigate = useNavigate();
 
   roomsRef.current = rooms;
 
@@ -27,36 +30,18 @@ const Rooms = (props) => {
     retriveRooms();
   };
 
-  const removeAllTutorials = () => {
-    RoomService.removeAll()
-        .then((response) => {
-          console.log(response.data);
-          refreshList();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-  };
+  const deletionAlert = (id) => {
+    if(prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego pokoju bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE"){
+        deleteRoom(id)
+    }
+  }
 
-  const openTutorial = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
-
-    props.history.push("/rooms/" + id);
-  };
-
-  const deleteTutorial = (rowIndex) => {
-    const id = roomsRef.current[rowIndex].id;
-
+  const deleteRoom = (id) => {
     RoomService.remove(id)
-        .then((response) => {
-          props.history.push("/rooms");
-
-          let newTutorials = [...roomsRef.current];
-          newTutorials.splice(rowIndex, 1);
-
-          setRooms(newTutorials);
+        .then(response => {
+          window.location.reload();
         })
-        .catch((e) => {
+        .catch(e => {
           console.log(e);
         });
   };
@@ -84,6 +69,8 @@ const Rooms = (props) => {
 
   return (
         <div className="col-md-12 list table_style">
+{/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
+        <a href='/add_room'>dodaj</a>
           <table
               className="table table-striped table-bordered"
               {...getTableProps()}
@@ -106,7 +93,12 @@ const Rooms = (props) => {
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell) => {
                       return (
-                          <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                          <td {...cell.getCellProps()}>
+                          {cell.render("Cell")}
+{/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
+                          <a href={'/room/'+row.original.id}> edytuj </a>
+                          <button type="submit" className="btn btn-success" onClick={() => {deletionAlert(row.original.id)}}> usun </button>
+                          </td>
                       );
                     })}
                   </tr>

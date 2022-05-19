@@ -85,11 +85,11 @@ urlpatterns = [
     path('logs/<id>', view_logs_by_id, name='log'),
 
     # Hint Alg
-    path('dailyAlg', dailyAlg, name='dailyAlg'),
-    path('yearlyAlg', yearlyAlg, name='yearlyAlg'),
+    path('dailyAlg/', dailyAlg, name='dailyAlg'),
+    path('yearlyAlg/', yearlyAlg, name='yearlyAlg'),
 
     # MedicPresence
-    path('medicPresence', medicPresence, name='medicPresence'),
+    path('medicPresence/', medicPresence, name='medicPresence'),
 
     # statistics
     path('statistics/', statistics, name='statistics'),

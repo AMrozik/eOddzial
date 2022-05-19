@@ -12,30 +12,60 @@ export const getAll = () => {
         headers: {'Authorization': 'Bearer ' + a['access']}
     });
 
-
-    // return http.get("/rooms/", {"Authorization":"Bearer "+a['access']});
     return instance.get('/rooms/')
 };
 
 export const get = id => {
-    return http.get(`/room/${id}`);
+    let a = JSON.parse(localStorage.getItem('authTokens'));
+
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    return instance.get(`/rooms/${id}/`);
 };
 
 export const create = data => {
-    return http.post("/rooms/", data);
+    let a = JSON.parse(localStorage.getItem('authTokens'));
+
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    return instance.post("/rooms/", data);
 };
 
 export const update = (id, data) => {
-    return http.put(`/rooms/${id}`, data);
+    let a = JSON.parse(localStorage.getItem('authTokens'));
+
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    return instance.put(`/rooms/${id}/`, data);
 };
 
 export const remove = id => {
-    return http.delete(`/rooms/${id}`);
-};
+    let a = JSON.parse(localStorage.getItem('authTokens'));
 
-export const removeAll = () => {
-    return http.delete(`/rooms/`);
+    const instance = axios.create({
+        baseURL: 'http://localhost:8000/api',
+        timeout: 1000,
+        headers: {'Authorization': 'Bearer ' + a['access']}
+    });
+
+    return instance.delete(`/rooms/${id}/`);
 };
+// I will leave this here just in case one day we need it (remember to uncomment export)
+//export const removeAll = () => {
+//    return http.delete(`/rooms/`);
+//};
 
 export default {
     getAll,
@@ -43,5 +73,5 @@ export default {
     create,
     update,
     remove,
-    removeAll
+//    removeAll
 };
