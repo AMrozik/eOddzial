@@ -8,6 +8,7 @@ const AddRoom = () => {
   };
   const [room, setRoom] = useState(initialRoomState);
   const [submitted, setSubmitted] = useState(false);
+  console.log()
 
   const handleInputChange = event => {
     const { name, value } = event.target;
@@ -25,7 +26,6 @@ const AddRoom = () => {
             room_number: response.data.room_number
           });
           setSubmitted(true);
-          console.log(response.data);
         })
         .catch(e => {
           console.log(e);
@@ -61,9 +61,7 @@ const AddRoom = () => {
                 />
               </div>
 
-              <button onClick={saveRoom} className="btn btn-success">
-                Zapisz
-              </button>
+              <button onClick={saveRoom} className="btn btn-success"> Zapisz </button>
             </div>
         )}
       </div>
