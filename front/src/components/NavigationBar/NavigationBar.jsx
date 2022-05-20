@@ -26,6 +26,8 @@ export const NavigationBar = () => {
   let NavigationLinks;
   let SignInOutNavigation;
 
+
+
   if (user && user.is_ordynator) {
     NavigationLinks = <HeadPhysicianNavigation/>
   } else if (user && user.is_medic) {
@@ -42,17 +44,18 @@ export const NavigationBar = () => {
   }
 
   return (
-      <div className="navigation_style">
-        <div className="row">
-          <div className="col-md-12">
-            <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
+      <div className="content">
+            <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="navbar">
               <Navbar.Toggle aria-controls="basic-navbar-nav"/>
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
 
+                  <div className="float_container">
+
                   {NavigationLinks}
 
                   {SignInOutNavigation}
+                  </div>
 
                 </Nav>
               </Navbar.Collapse>
@@ -92,8 +95,6 @@ export const NavigationBar = () => {
               <Route path="/login" element={<Login/>}/>
               <Route path="/logout" element={<Logout/>}/>
             </Routes>
-          </div>
-        </div>
       </div>
   )
 };
