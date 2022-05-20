@@ -10,5 +10,11 @@
 }
 
 a {
-    all: initial;
+    text-decoration: none;
+    color: white !important;
+}
+
+.table_button{
+    float: right;
+    margin-right: 10px;
 }
