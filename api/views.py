@@ -665,7 +665,7 @@ def create_ward_data(request, *args, **kwargs):
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_423_LOCKED)
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET', 'PUT'])
@@ -689,6 +689,7 @@ def update_ward_data(request, *args, **kwargs):
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])

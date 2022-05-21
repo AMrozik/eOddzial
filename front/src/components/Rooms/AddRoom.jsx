@@ -8,7 +8,6 @@ const AddRoom = () => {
   };
   const [room, setRoom] = useState(initialRoomState);
   const [submitted, setSubmitted] = useState(false);
-  console.log()
 
   const handleInputChange = event => {
     const { name, value } = event.target;
