@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import RoomService from "../../services/RoomService";
+import RoomsService from "../../services/RoomsService";
 import { useTable } from "react-table";
 import { Link, useNavigate } from "react-router-dom"
 import "./Rooms.css";

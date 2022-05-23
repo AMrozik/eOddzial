@@ -16,7 +16,7 @@ const AddPatient = () => {
   };
 
   const savePatient = (e) => {
-//   this prevents norma behavior of form on submit
+//   this prevents normal behavior of form on submit
     e.preventDefault();
 
     let data = {
@@ -47,9 +47,7 @@ const AddPatient = () => {
         {submitted ? (
             <div className="form_style">
               <h4>Created new patient!</h4>
-              <button className="btn btn-success" onClick={newPatient}>
-                Dodaj
-              </button>
+              <button className="btn btn-success" onClick={newPatient}> Dodaj </button>
             </div>
         ) : (
             <div>

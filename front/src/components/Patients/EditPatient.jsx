@@ -12,7 +12,6 @@ const Patient = (props) => {
   const {id} = useParams()
   const [currentPatient, setCurrentPatient] = useState(initialPatientState);
   const [message, setMessage] = useState("");
-  console.log(currentPatient);
 
   const getPatient = () => {
     PatientsService.get(id)
@@ -38,10 +37,11 @@ const Patient = (props) => {
 //   const updateActive = status => {
 //     let data = {
 //       id: currentPatient.id,
-//       room_number: currentPatient.room_number,
+//       name: currentPatient.name,
+//       PESEL: currentPatient.PESEL,
 //     };
 //
-//     RoomService.update(currentPatient.id, data)
+//     PatientsService.update(currentPatient.id, data)
 //         .then(response => {
 //           currentPatient({ ...currentPatient, active: status });
 //           console.log(response.data);
@@ -59,7 +59,7 @@ const Patient = (props) => {
     PatientsService.update(id, currentPatient)
         .then(response => {
 //        TODO: Chciales tutaj andrzeju wrzucic redirecta na liste pokoi (i chyba mozna wywalic ten message ale to jak juz chcesz)
-          setMessage("The room was updated successfully!");
+          setMessage("The patient was updated successfully!");
         })
         .catch(e => {
           console.log(e);
@@ -68,7 +68,6 @@ const Patient = (props) => {
 
   return (
       <div>
-{/*        This has to be so deeep in because submit button goes crazy otherwise*/}
             <div className="edit-form">
               <form onSubmit={updatePatient}>
                 <div className="form-group">

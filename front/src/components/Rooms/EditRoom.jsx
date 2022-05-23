@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import RoomService from "../../services/RoomService";
+import RoomsService from "../../services/RoomsService";
 import {useParams} from "react-router-dom"
 import './AddRoom.css';
 

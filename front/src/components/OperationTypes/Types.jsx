@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import PatientsService from "../../services/PatientsService";
+import TypesService from "../../services/TypesService";
 import { useTable } from "react-table";
 import { Link, useNavigate } from "react-router-dom"
-import "./Patients.css";
+import "./Types.css";
 import PrivateRoute from '../../PrivateRoute';
 
-const Patients = (props) => {
-  const [patients, setPatients] = useState([]);
-  const patientsRef = useRef();
+const Types = (props) => {
+  const [types, setTypes] = useState([]);
+  const typesRef = useRef();
   const navigate = useNavigate();
 
-  patientsRef.current = patients;
+  typesRef.current = types;
 
   useEffect(() => {
-    retrivePatients();
+    retriveTypes();
   }, []);
 
-  const retrivePatients = () => {
-    PatientsService.getAll()
+  const retriveTypes = () => {
+    TypesService.getAll()
         .then((response) => {
-          setPatients(response.data);
+          setTypes(response.data);
         })
         .catch((e) => {
           console.log(e);
@@ -27,17 +27,17 @@ const Patients = (props) => {
   };
 
   const refreshList = () => {
-    retrivePatients();
+    retriveTypes();
   };
 
   const deletionAlert = (id) => {
     if(prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego pokoju bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE"){
-        deletePatients(id)
+        deleteTypes(id)
     }
   }
 
-  const deletePatients = (id) => {
-    PatientsService.remove(id)
+  const deleteTypes = (id) => {
+    TypesService.remove(id)
         .then(response => {
           window.location.reload();
         })
@@ -49,7 +49,7 @@ const Patients = (props) => {
   const columns = useMemo(
       () => [
         {
-          Header: "Patients",
+          Header: "Type",
           accessor: "name",
         },
       ],
@@ -64,13 +64,12 @@ const Patients = (props) => {
     prepareRow,
   } = useTable({
     columns,
-    data: patients,
+    data: types,
   });
 
   return (
         <div className="col-md-12 list table_style">
-{/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
-        <a href='/add_patient'>dodaj</a>
+            <a href='/add_type'>dodaj</a>
           <table
               className="table table-striped table-bordered"
               {...getTableProps()}
@@ -96,7 +95,7 @@ const Patients = (props) => {
                           <td {...cell.getCellProps()}>
                           {cell.render("Cell")}
 {/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
-                          <a href={'/patient/'+row.original.id}> edytuj </a>
+                          <a href={'/type/'+row.original.id}> edytuj </a>
                           <button type="submit" className="btn btn-success" onClick={() => {deletionAlert(row.original.id)}}> usun </button>
                           </td>
                       );
@@ -110,4 +109,4 @@ const Patients = (props) => {
   );
 };
 
-export default Patients;
+export default Types;

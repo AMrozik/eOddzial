@@ -13,13 +13,15 @@ import Logout from '../Login/Logout';
 import OperationScheduler from "../OperationScheduler/OperationScheduler";
 import Statistics from "../Statistics/Statistics";
 import Patients from "../Patients/Patients";
-import EditPatient from "../Patients/Patient";
+import EditPatient from "../Patients/EditPatient";
 import AddPatients from "../Patients/AddPatients";
 import Medics from "../Medics/Medics";
 import Rooms from "../Rooms/Rooms";
-import EditRoom from "../Rooms/Room";
+import EditRoom from "../Rooms/EditRoom";
 import AddRoom from "../Rooms/AddRoom";
-import OperationTypes from "../OperationTypes/OperationTypes";
+import Types from "../OperationTypes/Types";
+import EditType from "../OperationTypes/EditType";
+import AddTypes from "../OperationTypes/AddTypes";
 import WardData from "../WardData/WardData";
 import AddWardData from "../WardData/AddWardData";
 
@@ -78,7 +80,7 @@ export const NavigationBar = () => {
                 <Route path="/rooms" exact element={<Rooms/>}/>
               </Route>
               <Route path="/operation_types" exact element={<PrivateRoute/>}>
-                <Route path="/operation_types" exact element={<OperationTypes/>}/>
+                <Route path="/operation_types" exact element={<Types/>}/>
               </Route>
               <Route path="/wardData" exact element={<PrivateRoute/>}>
                 <Route path="/wardData" exact element={<WardData/>}/>
@@ -92,11 +94,18 @@ export const NavigationBar = () => {
                 <Route path="/room/:id" exact element={<EditRoom/>}/>
               </Route>
 
-              <Route path="/create_patient" exact element={<PrivateRoute/>}>
-                <Route path="/create_patient" exact element={<AddPatients/>}/>
+              <Route path="/add_patient" exact element={<PrivateRoute/>}>
+                <Route path="/add_patient" exact element={<AddPatients/>}/>
               </Route>
               <Route path="/patient/:id" exact element={<PrivateRoute/>}>
                 <Route path="/patient/:id" exact element={<EditPatient/>}/>
+              </Route>
+
+              <Route path="/add_type" exact element={<PrivateRoute/>}>
+                <Route path="/add_type" exact element={<AddTypes/>}/>
+              </Route>
+              <Route path="/type/:id" exact element={<PrivateRoute/>}>
+                <Route path="/type/:id" exact element={<EditType/>}/>
               </Route>
 
               <Route path="/add_ward_data" exact element={<PrivateRoute/>}>
