@@ -19,6 +19,9 @@ import Medics from "../Medics/Medics";
 import Rooms from "../Rooms/Rooms";
 import EditRoom from "../Rooms/EditRoom";
 import AddRoom from "../Rooms/AddRoom";
+import RoomsBreaks from "../Rooms/Breaks/RoomsBreaks";
+import EditRoomBreak from "../Rooms/Breaks/EditRoomBreak";
+import AddRoomBreak from "../Rooms/Breaks/AddRoomBreak";
 import Types from "../OperationTypes/Types";
 import EditType from "../OperationTypes/EditType";
 import AddTypes from "../OperationTypes/AddTypes";
@@ -92,6 +95,15 @@ export const NavigationBar = () => {
               </Route>
               <Route path="/room/:id" exact element={<PrivateRoute/>}>
                 <Route path="/room/:id" exact element={<EditRoom/>}/>
+              </Route>
+              <Route path="/rooms_breaks" exact element={<PrivateRoute/>}>
+                <Route path="/rooms_breaks" exact element={<RoomsBreaks/>}/>
+              </Route>
+              <Route path="/add_room_break/:id" exact element={<PrivateRoute/>}>
+                <Route path="/add_room_break/:id" exact element={<AddRoomBreak/>}/>
+              </Route>
+              <Route path="/room_break/:id" exact element={<PrivateRoute/>}>
+                <Route path="/room_break/:id" exact element={<EditRoomBreak/>}/>
               </Route>
 
               <Route path="/add_patient" exact element={<PrivateRoute/>}>

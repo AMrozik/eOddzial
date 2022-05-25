@@ -13,7 +13,7 @@ const Room = (props) => {
   const [message, setMessage] = useState("");
 
   const getRoom = () => {
-    RoomService.get(id)
+    RoomsService.get(id)
         .then(response => {
           setCurrentRoom(response.data);
         })
@@ -38,7 +38,7 @@ const Room = (props) => {
 //       room_number: currentRoom.room_number,
 //     };
 //
-//     RoomService.update(currentRoom.id, data)
+//     RoomsService.update(currentRoom.id, data)
 //         .then(response => {
 //           setCurrentRoom({ ...currentRoom, active: status });
 //           console.log(response.data);
@@ -50,7 +50,7 @@ const Room = (props) => {
 //   };
 
   const updateRoom = () => {
-    RoomService.update(id, currentRoom)
+    RoomsService.update(id, currentRoom)
         .then(response => {
 //        TODO: Chciales tutaj andrzeju wrzucic redirecta na liste pokoi (i chyba mozna wywalic ten message ale to jak juz chcesz)
           setMessage("The room was updated successfully!");

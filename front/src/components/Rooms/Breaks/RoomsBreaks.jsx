@@ -1,25 +1,42 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import RoomsService from "../../services/RoomsService";
+import RoomsBreaksService from "../../../services/RoomsBreaksService";
+import RoomsService from "../../../services/RoomsService";
 import { useTable } from "react-table";
 import { Link, useNavigate } from "react-router-dom"
-import "./Rooms.css";
-import PrivateRoute from '../../PrivateRoute';
+import "./RoomsBreaks.css";
+import PrivateRoute from '../../../PrivateRoute';
 
-const Rooms = (props) => {
-  const [rooms, setRooms] = useState([]);
-  const roomsRef = useRef();
+const RoomsBreaks = (props) => {
+  const [roomsBreaks, setRoomsBreaks] = useState([]);
+  const roomsBreaksRef = useRef();
   const navigate = useNavigate();
 
-  roomsRef.current = rooms;
+  roomsBreaksRef.current = roomsBreaks;
 
   useEffect(() => {
-    retriveRooms();
+    retriveRoomsBreaks();
   }, []);
 
-  const retriveRooms = () => {
-    RoomsService.getAll()
+  const retriveRoomsBreaks = () => {
+    RoomsBreaksService.getAll()
         .then((response) => {
-          setRooms(response.data);
+          let temp = response.data;
+          RoomsService.getAll().then((resp)=>{
+            let temp2 = [];
+            temp2 = resp.data;
+            for(var i=0; i<temp.length; i++){
+                for(var j=0; j<temp2.length; j++){
+                    if(temp2[j].id == temp[i]["room"]){
+                        temp[i]["room_number"] = temp2[j]["room_number"];
+                    }
+                }
+                var temp_date_start = new Date(temp[i]["date_start"]);
+                temp[i]["date_start"] = temp_date_start.toLocaleString();
+                var temp_date_end = new Date(temp[i]["date_end"]);
+                temp[i]["date_end"] = temp_date_end.toLocaleString();
+            }
+            setRoomsBreaks(temp);
+          });
         })
         .catch((e) => {
           console.log(e);
@@ -27,17 +44,17 @@ const Rooms = (props) => {
   };
 
   const refreshList = () => {
-    retriveRooms();
+    retriveRoomsBreaks();
   };
 
   const deletionAlert = (id) => {
     if(prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego pokoju bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE"){
-        deleteRoom(id)
+        deleteRoomBreak(id)
     }
   }
 
-  const deleteRoom = (id) => {
-    RoomsService.remove(id)
+  const deleteRoomBreak = (id) => {
+    RoomsBreaksService.remove(id)
         .then(response => {
           window.location.reload();
         })
@@ -52,6 +69,14 @@ const Rooms = (props) => {
           Header: "Operation room",
           accessor: "room_number",
         },
+        {
+          Header: "Start",
+          accessor: "date_start",
+        },
+        {
+          Header: "End",
+          accessor: "date_end",
+        },
       ],
       []
   );
@@ -64,14 +89,11 @@ const Rooms = (props) => {
     prepareRow,
   } = useTable({
     columns,
-    data: rooms,
+    data: roomsBreaks,
   });
 
   return (
         <div className="col-md-12 list table_style">
-{/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
-        <a href='/add_room'>dodaj</a>
-        <a href='/rooms_breaks'>przerwy</a>
           <table
               className="table table-striped table-bordered"
               {...getTableProps()}
@@ -96,13 +118,14 @@ const Rooms = (props) => {
                       return (
                           <td {...cell.getCellProps()}>
                           {cell.render("Cell")}
-{/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
-                          <a href={'/room/'+row.original.id}> edytuj </a>
-                          <a href={'/add_room_break/'+row.original.id}> dodaj przerwe </a>
-                          <button type="submit" className="btn btn-success" onClick={() => {deletionAlert(row.original.id)}}> usun </button>
                           </td>
                       );
                     })}
+                    <td>
+{/*                   ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
+                      <a href={'/room_break/'+row.original.id}> edytuj </a>
+                      <button type="submit" className="btn btn-success" onClick={() => {deletionAlert(row.original.id)}}> usun </button>
+                    </td>
                   </tr>
               );
             })}
@@ -112,4 +135,4 @@ const Rooms = (props) => {
   );
 };
 
-export default Rooms;
+export default RoomsBreaks;

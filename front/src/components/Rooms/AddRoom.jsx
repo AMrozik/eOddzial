@@ -14,7 +14,7 @@ const AddRoom = () => {
     setRoom({ ...room, [name]: value });
   };
 
-  const saveRoom = () => {
+  const saveRoom = (e) => {
 //   this prevents normal behavior of form on submit
     e.preventDefault();
 
@@ -22,7 +22,7 @@ const AddRoom = () => {
       room_number: room.room_number
     };
 
-    RoomService.create(data)
+    RoomsService.create(data)
         .then(response => {
           setRoom({
             room_number: response.data.room_number

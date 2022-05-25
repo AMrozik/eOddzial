@@ -34,10 +34,10 @@ const AddTypes = () => {
         .then(response => {
           setType({
             name: response.data.name,
-            ICD_code: "",
-            cost: 0,
-            is_difficult: false,
-            duration: "",
+            ICD_code: response.data.ICD_code,
+            cost: response.data.cost,
+            is_difficult: response.data.is_difficult,
+            duration: response.data.duration,
           });
           setSubmitted(true);
         })
