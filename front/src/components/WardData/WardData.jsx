@@ -16,29 +16,33 @@ const WardData = (props) => {
   const [message, setMessage] = useState("");
   const [exist, setExist] = useState(false);
 
-  const checkExistence = () => {
-      WardDataService.get()
-            .then(response => {
-                if (response.data) { setExist(true); }
-            })
-            .catch(e => {
-                if (e.response.status === 409) { setExist(false); }
-                console.log(e);
-            });
-  };
+//   const checkExistence = () => {
+//       WardDataService.get()
+//             .then(response => {
+//                 if (response.data) { setExist(true); }
+//             })
+//             .catch(e => {
+//                 if (e.response.status === 409) { setExist(false); }
+//                 console.log(e);
+//             });
+//   };
 
   const getWardData = () => {
     WardDataService.get()
         .then(response => {
-          setCurrentWardData(response.data);
+            if (response.data) {
+                setExist(true);
+                setCurrentWardData(response.data);
+            }
         })
         .catch(e => {
-          console.log(e);
+            if (e.response.status === 409) { setExist(false); }
+            else { console.log(e); }
         });
   };
 
   useEffect(() => {
-    checkExistence();
+//     checkExistence();
     getWardData();
   }, []);
 
@@ -126,8 +130,10 @@ const WardData = (props) => {
             </div>
         ) : (
             <div>
-                <head><meta httpEquiv="refresh" content="2; /home"/></head>
+{/*              staralem sie bawic w fajne przekierowania, ale meta w tym miejscu wywala nawet na widoku od edycji ward data*/}
+{/*                 <head><meta httpEquiv="refresh" content="2; /add_ward_data"/></head> */}
                 <h1>NIC TU NIE MA SAMA TRAWA</h1>
+                <a href="/add_ward_data">Udaj sie do przygotowania konfiguracji</a>
             </div>
         )}
 

@@ -14,7 +14,7 @@ const AddWardData = () => {
 
   const [wardData, setWardData] = useState(initialWardDataState);
   const [submitted, setSubmitted] = useState(false);
-  const [exist, setExist] = useState(true);
+  const [exist, setExist] = useState(false);
 
   const checkExistence = () => {
       WardDataService.get()
@@ -28,7 +28,7 @@ const AddWardData = () => {
   };
 
   useEffect(() => {
-//     checkExistence();
+    checkExistence();
   }, []);
 
   const handleInputChange = event => {
@@ -57,6 +57,9 @@ const AddWardData = () => {
           setSubmitted(true);
         })
         .catch(e => {
+            if (e.response.status === 400){
+                alert("Prosze poprawic czas przygotowania sali operacyjnej!\nFormat: HH:MM:SS");
+            }
           console.log(e);
         });
   };
