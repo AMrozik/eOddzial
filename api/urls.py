@@ -66,11 +66,11 @@ urlpatterns = [
     path('operation_types/', all_operation_types, name='operation_types'),
     path('operation_type/<id>/', operation_type_by_id, name='operation_type'),
 
-    path('not_available_rooms/', all_NARs, name='operation_types'),
-    path('not_available_room/<id>/', NAR_by_id, name='operation_type'),
+    path('not_available_rooms/', all_NARs, name='not_available_rooms'),
+    path('not_available_room/<id>/', NAR_by_id, name='not_available_room'),
 
-    path('not_available_medics/', all_NAMs, name='operation_types'),
-    path('not_available_medic/<id>/', NAM_by_id, name='operation_type'),
+    path('not_available_medics/', all_NAMs, name='not_available_medics'),
+    path('not_available_medic/<id>/', NAM_by_id, name='not_available_medic'),
 
     path('ward_data/', update_ward_data, name='ward_data'),
     path('create_ward_data/', create_ward_data, name='create_ward_data'),

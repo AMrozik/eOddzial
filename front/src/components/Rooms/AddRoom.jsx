@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import RoomService from "../../services/RoomService";
+import RoomsService from "../../services/RoomsService";
 import './AddRoom.css';
 
 const AddRoom = () => {
@@ -14,18 +14,20 @@ const AddRoom = () => {
     setRoom({ ...room, [name]: value });
   };
 
-  const saveRoom = () => {
+  const saveRoom = (e) => {
+//   this prevents normal behavior of form on submit
+    e.preventDefault();
+
     let data = {
       room_number: room.room_number
     };
 
-    RoomService.create(data)
+    RoomsService.create(data)
         .then(response => {
           setRoom({
             room_number: response.data.room_number
           });
           setSubmitted(true);
-          console.log(response.data);
         })
         .catch(e => {
           console.log(e);
@@ -42,28 +44,26 @@ const AddRoom = () => {
         {submitted ? (
             <div className="form_style">
               <h4>Created new room!</h4>
-              <button className="btn btn-success" onClick={newRoom}>
-                Dodaj
-              </button>
+              <button className="btn btn-success" onClick={newRoom}> Dodaj </button>
             </div>
         ) : (
             <div>
-              <div className="form-group form_style ">
-                <label htmlFor="name">Numer Pokoju</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={room.name}
-                    onChange={handleInputChange}
-                    name="room_number"
-                />
-              </div>
+                <form onSubmit={saveRoom}>
+                  <div className="form-group form_style ">
+                    <label htmlFor="name">Numer Pokoju</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={room.name}
+                        onChange={handleInputChange}
+                        name="room_number"
+                    />
+                  </div>
 
-              <button onClick={saveRoom} className="btn btn-success">
-                Zapisz
-              </button>
+                  <button className="btn btn-success"> Zapisz </button>
+              </form>
             </div>
         )}
       </div>

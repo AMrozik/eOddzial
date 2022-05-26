@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
-import RoomService from "../../services/RoomService";
+import RoomsService from "../../services/RoomsService";
 import {useTable} from "react-table";
 import {Link, useNavigate} from "react-router-dom"
 import "./Rooms.css";
@@ -17,7 +17,7 @@ const Rooms = (props) => {
     }, []);
 
     const retriveRooms = () => {
-        RoomService.getAll()
+        RoomsService.getAll()
             .then((response) => {
                 setRooms(response.data);
             })
@@ -37,7 +37,7 @@ const Rooms = (props) => {
     }
 
     const deleteRoom = (id) => {
-        RoomService.remove(id)
+        RoomsService.remove(id)
             .then(response => {
                 window.location.reload();
             })
@@ -93,6 +93,16 @@ const Rooms = (props) => {
                                     </svg>
                                     <a href='/add_room'>dodaj</a>
                                 </button>
+                                <button type="submit" className="btn btn-success table_button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         className="bi bi-plus-circle" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path
+                                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                    </svg>
+                                    <a href='/rooms_breaks'>przerwy</a>
+                                </button>
 
                             </th>
                         ))}
@@ -138,6 +148,17 @@ const Rooms = (props) => {
                                             </svg>
                                             <a href={'/room/' + row.original.id}> edytuj </a>
                                         </button>
+
+                                        <button type="submit" className="btn btn-success table_button">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                                <path
+                                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                            </svg>
+                                            <a href={'/add_room_break/' + row.original.id}> dodaj przerwe </a>
+                                        </button>
                                     </td>
                                 );
                             })}
@@ -147,7 +168,7 @@ const Rooms = (props) => {
                 </tbody>
             </table>
         </div>
-    );
+  );
 };
 
 export default Rooms;
