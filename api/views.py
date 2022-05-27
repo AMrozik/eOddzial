@@ -731,7 +731,7 @@ def statistics(request, *args, **kwargs):
         except BudgetYear.DoesNotExist:
             data = {}
             data["failure"] = "BudgetYear is empty"
-            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
+            return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data=data)
         return Response(status=status.HTTP_200_OK, data=result)
 
 

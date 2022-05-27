@@ -1,112 +1,151 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import TypesService from "../../services/TypesService";
-import { useTable } from "react-table";
-import { Link, useNavigate } from "react-router-dom"
-import "./Types.css";
-import PrivateRoute from '../../PrivateRoute';
+import {useTable} from "react-table";
+import {Link, useNavigate} from "react-router-dom"
 
 const Types = (props) => {
-  const [types, setTypes] = useState([]);
-  const typesRef = useRef();
-  const navigate = useNavigate();
+    const [types, setTypes] = useState([]);
+    const typesRef = useRef();
+    const navigate = useNavigate();
 
-  typesRef.current = types;
+    typesRef.current = types;
 
-  useEffect(() => {
-    retriveTypes();
-  }, []);
+    useEffect(() => {
+        retriveTypes();
+    }, []);
 
-  const retriveTypes = () => {
-    TypesService.getAll()
-        .then((response) => {
-          setTypes(response.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-  };
+    const retriveTypes = () => {
+        TypesService.getAll()
+            .then((response) => {
+                setTypes(response.data);
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    };
 
-  const refreshList = () => {
-    retriveTypes();
-  };
+    const refreshList = () => {
+        retriveTypes();
+    };
 
-  const deletionAlert = (id) => {
-    if(prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego pokoju bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE"){
-        deleteTypes(id)
+    const deletionAlert = (id) => {
+        if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego pokoju bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
+            deleteTypes(id)
+        }
     }
-  }
 
-  const deleteTypes = (id) => {
-    TypesService.remove(id)
-        .then(response => {
-          window.location.reload();
-        })
-        .catch(e => {
-          console.log(e);
-        });
-  };
+    const deleteTypes = (id) => {
+        TypesService.remove(id)
+            .then(response => {
+                window.location.reload();
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
 
-  const columns = useMemo(
-      () => [
-        {
-          Header: "Type",
-          accessor: "name",
-        },
-      ],
-      []
-  );
+    const columns = useMemo(
+        () => [
+            {
+                Header: "Type",
+                accessor: "name",
+            },
+        ],
+        []
+    );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({
-    columns,
-    data: types,
-  });
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow,
+    } = useTable({
+        columns,
+        data: types,
+    });
 
-  return (
+    return (
         <div className="col-md-12 list table_style">
-            <a href='/add_type'>dodaj</a>
-          <table
-              className="table table-striped table-bordered"
-              {...getTableProps()}
-          >
-            <thead>
-            {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                      <th {...column.getHeaderProps()}>
-                        {column.render("Header")}
-                      </th>
-                  ))}
-                </tr>
-            ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-            {rows.map((row, i) => {
-              prepareRow(row);
-              return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => {
-                      return (
-                          <td {...cell.getCellProps()}>
-                          {cell.render("Cell")}
-{/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
-                          <a href={'/type/'+row.original.id}> edytuj </a>
-                          <button type="submit" className="btn btn-success" onClick={() => {deletionAlert(row.original.id)}}> usun </button>
-                          </td>
-                      );
-                    })}
-                  </tr>
-              );
-            })}
-            </tbody>
-          </table>
+
+            <table
+                className="table table-striped table-bordered"
+                {...getTableProps()}
+            >
+                <thead>
+                {headerGroups.map((headerGroup) => (
+                    <tr {...headerGroup.getHeaderGroupProps()}>
+                        {headerGroup.headers.map((column) => (
+                            <th {...column.getHeaderProps()}>
+                                {column.render("Header")}
+
+
+                                <button type="submit" className="btn btn-success table_button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         className="bi bi-plus-circle" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path
+                                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                    </svg>
+                                    <a href='/add_type'> dodaj</a>
+                                </button>
+
+
+                            </th>
+                        ))}
+                    </tr>
+                ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                {rows.map((row, i) => {
+                    prepareRow(row);
+                    return (
+                        <tr {...row.getRowProps()}>
+                            {row.cells.map((cell) => {
+                                return (
+                                    <td {...cell.getCellProps()}>
+                                        {cell.render("Cell")}
+                                        {/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
+
+
+
+
+
+                                        <button type="submit" className="btn btn-success table_button">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                                <path
+                                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                            </svg>
+                                            <a href={'/type/' + row.original.id}> edytuj </a>
+                                        </button>
+
+
+                                        <button type="submit" className="btn btn-danger table_button" onClick={() => {
+                                            deletionAlert(row.original.id)
+                                        }}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 fill="currentColor" className="bi bi-dash-circle" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                                <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+                                            </svg> usun
+                                        </button>
+
+
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    );
+                })}
+                </tbody>
+            </table>
         </div>
-  );
+    );
 };
 
 export default Types;

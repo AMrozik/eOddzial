@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RoomsBreaksService from "../../../services/RoomsBreaksService";
 import {useParams} from "react-router-dom"
-import './AddRoomBreak.css';
 
 const RoomBreak = (props) => {
   const initialRoomBreakState = {
@@ -104,7 +103,7 @@ const RoomBreak = (props) => {
 
     RoomsBreaksService.update(id, data)
         .then(response => {
-          setMessage("The roomBreak was updated successfully!");
+          setMessage("Zaktualizowano");
         })
         .catch(e => {
           console.log(e);
@@ -112,9 +111,9 @@ const RoomBreak = (props) => {
   };
 
   return (
-      <div>
+      <div class="submit-form form_style">
 {/*        This has to be so deeep in because submit button goes crazy otherwise*/}
-            <div className="edit-form">
+            <div className="submit-form form_style">
               <form>
                 <div className="form-group">
                   <label htmlFor="name">poczatek</label>
@@ -136,6 +135,7 @@ const RoomBreak = (props) => {
                         onChange={handleInputChange}
                         name="time_start"
                     />
+                    <br/>
                     <label htmlFor="name">koniec</label>
                     <input
                         type="date"

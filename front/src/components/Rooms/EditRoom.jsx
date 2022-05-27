@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RoomsService from "../../services/RoomsService";
 import {useParams} from "react-router-dom"
-import './AddRoom.css';
 
 const Room = (props) => {
     const initialRoomState = {

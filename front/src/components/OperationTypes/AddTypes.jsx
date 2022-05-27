@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import TypesService from "../../services/TypesService";
-import './AddTypes.css';
 
 const AddTypes = () => {
   const initialTypeState = {
@@ -102,8 +101,8 @@ const AddTypes = () => {
                     name="cost"
                 />
                 <label htmlFor="name">Czy operacja jest trudna</label>
-                <p id="is_difficult" onClick={changeDifficulty}> {type.is_difficult.toString()} </p>
-                <button onClick={changeDifficulty}>Change</button>
+                <button className="btn btn-primary" onClick={changeDifficulty}> {type.is_difficult ? "Prawda" : "Fałsz"} </button>
+                {/*<button onClick={changeDifficulty}>Change</button>*/}
                 <label htmlFor="name">Czas trwania</label>
                 <input
                     type="text"
