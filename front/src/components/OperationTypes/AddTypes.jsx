@@ -59,6 +59,14 @@ const AddTypes = () => {
     setType({ ...type});
   }
 
+  const check_difficulty = () => {
+    if (type.is_difficult) {
+      return "Prawda"
+    }else {
+      return "Fałsz"
+    }
+  }
+
   return (
       <div className="submit-form form_style">
         {submitted ? (
@@ -101,7 +109,7 @@ const AddTypes = () => {
                     name="cost"
                 />
                 <label htmlFor="name">Czy operacja jest trudna</label>
-                <button className="btn btn-primary" onClick={changeDifficulty}> {type.is_difficult ? "Prawda" : "Fałsz"} </button>
+                <button className="btn btn-primary" onClick={changeDifficulty}> {check_difficulty()} </button>
                 {/*<button onClick={changeDifficulty}>Change</button>*/}
                 <label htmlFor="name">Czas trwania</label>
                 <input

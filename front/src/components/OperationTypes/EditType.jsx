@@ -75,6 +75,14 @@ const Type = (props) => {
     setCurrentType({ ...currentType});
   }
 
+    const check_difficulty = () => {
+    if (currentType.is_difficult) {
+      return "Prawda"
+    }else {
+      return "Fałsz"
+    }
+  }
+
   return (
       <div className="submit-form form_style">
             <div className="edit-form form_style">
@@ -114,7 +122,7 @@ const Type = (props) => {
                 />
                   <br/>
                 <label htmlFor="name">Czy operacja jest trudna</label>
-                <button className="btn btn-primary" onClick={changeDifficulty}>{currentType.is_difficult ? "Prawda" : "Fałsz"}</button>
+                <button className="btn btn-primary" onClick={changeDifficulty}>{check_difficulty()}</button>
                   <br/><br/>
                 {/*<button onClick={changeDifficulty}>Zmień</button><br/><br/>*/}
                 <label htmlFor="name">Czas trwania</label>
