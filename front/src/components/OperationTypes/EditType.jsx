@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TypesService from "../../services/TypesService";
 import {useParams} from "react-router-dom"
-import './AddTypes.css';
 
 const Type = (props) => {
   const initialTypeState = {
@@ -61,7 +60,7 @@ const Type = (props) => {
     TypesService.update(id, currentType)
         .then(response => {
 //        TODO: Chciales tutaj andrzeju wrzucic redirecta na liste pokoi (i chyba mozna wywalic ten message ale to jak juz chcesz)
-          setMessage("The type was updated successfully!");
+          setMessage("Zaktualizowano");
         })
         .catch(e => {
           console.log(e);
@@ -76,9 +75,17 @@ const Type = (props) => {
     setCurrentType({ ...currentType});
   }
 
+    const check_difficulty = () => {
+    if (currentType.is_difficult) {
+      return "Prawda"
+    }else {
+      return "Fałsz"
+    }
+  }
+
   return (
-      <div>
-            <div className="edit-form">
+      <div className="submit-form form_style">
+            <div className="edit-form form_style">
               <form onSubmit={updateType}>
                 <div className="form-group">
                 <label htmlFor="name">Nazwa typu</label>
@@ -91,6 +98,7 @@ const Type = (props) => {
                     onChange={handleInputChange}
                     name="name"
                 />
+                  <br/>
                 <label htmlFor="name">Kod ICD</label>
                 <input
                     type="text"
@@ -101,6 +109,7 @@ const Type = (props) => {
                     onChange={handleInputChange}
                     name="ICD_code"
                 />
+                  <br/>
                 <label htmlFor="name">Koszt</label>
                 <input
                     type="number"
@@ -111,9 +120,11 @@ const Type = (props) => {
                     onChange={handleInputChange}
                     name="cost"
                 />
+                  <br/>
                 <label htmlFor="name">Czy operacja jest trudna</label>
-                <p id="difficulty" onClick={changeDifficulty}>{currentType.is_difficult.toString()}</p>
-                <button onClick={changeDifficulty}>Change</button>
+                <button className="btn btn-primary" onClick={changeDifficulty}>{check_difficulty()}</button>
+                  <br/><br/>
+                {/*<button onClick={changeDifficulty}>Zmień</button><br/><br/>*/}
                 <label htmlFor="name">Czas trwania</label>
                 <input
                     type="text"

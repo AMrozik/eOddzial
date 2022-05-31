@@ -1,5 +1,62 @@
+/* MAIN CONTENT */
 .content {
     text-align: center;
     font-size: 24px;
     min-height: 100vh;
+}
+
+
+
+
+/* FORMS*/
+.form_style > * {
+    margin-bottom: 24px;
+    width: 30%;
+}
+
+.separation_style > * {
+    margin-bottom: 24px;
+    width: 30%;
+}
+
+.form_style {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.submit_margin_top {
+    margin-top: 24px;
+}
+
+
+/* TABLES & BUTTONS */
+a {
+    all: initial;
+    text-decoration: none;
+    color: white !important;
+    font-size: 18px;
+}
+
+.table_button{
+    float: right;
+    margin-right: 10px;
+    color: white !important;
+    font-size: 18px;
+}
+
+.table_style {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.table_style > * {
+    width: 70%;
+}
+
+.stat_table{
+    margin-bottom: 40px;
 }

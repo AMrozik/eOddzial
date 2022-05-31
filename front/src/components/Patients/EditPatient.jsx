@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PatientsService from "../../services/PatientsService";
 import {useParams} from "react-router-dom"
-import './AddPatients.css';
+
 
 const Patient = (props) => {
   const initialPatientState = {
@@ -67,7 +67,7 @@ const Patient = (props) => {
   };
 
   return (
-      <div>
+      <div className="submit-form form_style">
             <div className="edit-form">
               <form onSubmit={updatePatient}>
                 <div className="form-group">
