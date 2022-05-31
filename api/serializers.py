@@ -9,6 +9,7 @@ from .models import (
     NonAvailabilityRoom,
     Log,
     WardData,
+    BudgetYear,
 
 )
 
@@ -66,3 +67,8 @@ class WardDataSerializer(serializers.ModelSerializer):
         model = WardData
         fields = ('id', 'operation_prepare_time', 'working_start_hour', 'working_end_hour', 'child_interval_hour', 'difficult_interval_hour')
 
+
+class BudgetYearsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BudgetYear
+        fields = ('year', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', 'given_budget')

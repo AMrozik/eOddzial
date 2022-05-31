@@ -16,7 +16,7 @@ const Patient = (props) => {
   const getPatient = () => {
     PatientsService.get(id)
         .then(response => {
-          console.log(response.data);
+//           console.log(response.data);
           setCurrentPatient(response.data);
         })
         .catch(e => {

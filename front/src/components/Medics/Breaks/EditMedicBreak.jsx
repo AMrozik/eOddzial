@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import RoomsBreaksService from "../../../services/RoomsBreaksService";
+import MedicsBreaksService from "../../../services/MedicsBreaksService";
 import {useParams} from "react-router-dom"
 
-const RoomBreak = (props) => {
-  const initialRoomBreakState = {
+const MedicBreak = (props) => {
+  const initialMedicBreakState = {
     id: null,
+    medic: null,
     date_start: "",
     date_end: ""
   };
@@ -15,16 +16,16 @@ const RoomBreak = (props) => {
     time_end: "",
   };
   const {id} = useParams()
-  const [currentRoomBreak, setCurrentRoomBreak] = useState(initialRoomBreakState);
+  const [currentMedicBreak, setCurrentMedicBreak] = useState(initialMedicBreakState);
   const [time, setTime] = useState(initialTimeState);
   const [message, setMessage] = useState("");
 //   console.log(time);
-//   console.log(currentRoomBreak);
+//   console.log(currentMedicBreak);
 
-  const getRoomBreak = () => {
-    RoomsBreaksService.get(id)
+  const getMedicBreak = () => {
+    MedicsBreaksService.get(id)
         .then(response => {
-          setCurrentRoomBreak(response.data);
+          setCurrentMedicBreak(response.data);
           var date_start = response.data["date_start"];
           var date_end = response.data["date_end"];
           let tempTimeState = {
@@ -41,7 +42,7 @@ const RoomBreak = (props) => {
   };
 
   useEffect(() => {
-    getRoomBreak();
+    getMedicBreak();
   }, []);
 
   const handleInputChange = event => {
@@ -52,13 +53,13 @@ const RoomBreak = (props) => {
 // Maybe, we have to consider it in later version
 //   const updateActive = status => {
 //     let data = {
-//       id: currentRoomBreak.id,
-//       roomBreak_number: currentRoomBreak.roomBreak_number,
+//       id: currentMedicBreak.id,
+//       MedicBreak_number: currentMedicBreak.MedicBreak_number,
 //     };
 //
-//     RoomsBreaksService.update(currentRoomBreak.id, data)
+//     MedicsBreaksService.update(currentMedicBreak.id, data)
 //         .then(response => {
-//           setCurrentRoomBreak({ ...currentRoomBreak, active: status });
+//           setCurrentMedicBreak({ ...currentMedicBreak, active: status });
 //           console.log(response.data);
 //           setMessage("The status was updated successfully!");
 //         })
@@ -67,10 +68,10 @@ const RoomBreak = (props) => {
 //         });
 //   };
 
-  const updateRoomBreak = () => {
+  const updateMedicBreak = () => {
 //     var date_start = new Date(time.date_start +"T"+time.time_start);
 //     var date_end = new Date(time.date_end +"T"+ time.time_end);
-    var date_start = new Date(currentRoomBreak.date_start);
+    var date_start = new Date(currentMedicBreak.date_start);
 //     console.log(date_start)
     date_start.setDate(time.date_start.slice(8,10));
     date_start.setMonth(time.date_start.slice(5,7)-1);
@@ -82,7 +83,7 @@ const RoomBreak = (props) => {
 //     date_start = date_start.slice(0, 16) + "+02:00";
 //     console.log(date_start);
 
-    var date_end = new Date(currentRoomBreak.date_end);
+    var date_end = new Date(currentMedicBreak.date_end);
 //     console.log(date_end)
     date_end.setDate(time.date_end.slice(8,10));
     date_end.setMonth(time.date_end.slice(5,7)-1);
@@ -94,14 +95,14 @@ const RoomBreak = (props) => {
 //     date_end = date_end.slice(0, 16) + "+02:00";
 
     let data = {
-        id: currentRoomBreak.id,
-        room: currentRoomBreak.room,
+        id: currentMedicBreak.id,
+        medic: currentMedicBreak.medic,
         date_start: date_start.toISOString(),
         date_end: date_end.toISOString()
     };
 //     console.log(data)
 
-    RoomsBreaksService.update(id, data)
+    MedicsBreaksService.update(id, data)
         .then(response => {
           setMessage("Zaktualizowano");
         })
@@ -111,7 +112,7 @@ const RoomBreak = (props) => {
   };
 
   return (
-      <div class="submit-form form_style">
+      <div className="submit-form form_style">
 {/*        This has to be so deeep in because submit button goes crazy otherwise*/}
             <div className="submit-form form_style">
               <form>
@@ -161,7 +162,7 @@ const RoomBreak = (props) => {
               <button
                   type="submit"
                   className="btn btn-success"
-                  onClick={updateRoomBreak}
+                  onClick={updateMedicBreak}
               >
                 Zapisz
               </button>
@@ -171,4 +172,4 @@ const RoomBreak = (props) => {
   );
 };
 
-export default RoomBreak;
+export default MedicBreak;
