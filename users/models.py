@@ -36,6 +36,10 @@ class MyAccountManager(BaseUserManager):
             raise ValueError('Superuser must have is_admin=True.')
         return self.create_user(email, password, **extra_fields)
 
+    def get_by_natural_key(self, email):
+        print(email)
+        return self.get(email=email)
+
 
 class Account(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name="email", max_length=80, unique=True)
@@ -59,6 +63,16 @@ class Account(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     objects = MyAccountManager()
+
+    def save(self, *args, **kwargs):
+        user = super(Account, self)
+        if self.is_medic:
+            medic = Medic(name=self.first_name + " " + self.last_name)
+            medic.save()
+            self.medic = medic
+
+        user.save()
+        return user
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} - {self.email}'

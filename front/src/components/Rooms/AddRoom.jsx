@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import RoomsService from "../../services/RoomsService";
-import './AddRoom.css';
 
 const AddRoom = () => {
   const initialRoomState = {

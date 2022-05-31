@@ -1,6 +1,5 @@
 import React, { useState, useEffect, Redirect } from "react";
 import WardDataService from "../../services/WardDataService";
-// import './AddRoom.css';
 
 const AddWardData = () => {
   const initialWardDataState = {
@@ -76,8 +75,8 @@ const AddWardData = () => {
 {/*                  Obviously meta should not be part of body but no one really knows that this is here XD, also redirects don't work fsr*/}
 {/*                  Remember to not set content on 0 because it causes logout*/}
                 <head><meta httpEquiv="refresh" content="2; /home"/></head>
-                <h1>NIC TU NIE MA SAMA TRAWA</h1>
-                <a href="/home"> take me home country road </a>
+                <h1>Już Skonfigurowano</h1>
+                {/*<a href="/home"> take me home country road </a>*/}
             </div>
         ) : (submitted ? (
                 <div className="form_style">
@@ -87,7 +86,7 @@ const AddWardData = () => {
             ) : (
                 <div>
                   <div className="form-group form_style ">
-                    <label htmlFor="name">operation_prepare_time</label>
+                    <label htmlFor="name">Czas przygotowania operacji</label>
                     <input
                         type="text"
                         className="form-control"
@@ -96,7 +95,7 @@ const AddWardData = () => {
                         value={wardData.operation_prepare_time}
                         onChange={handleInputChange}
                         name="operation_prepare_time"
-                    /><label htmlFor="name">working_start_hour</label>
+                    /><label htmlFor="name">Godzina rozpoczęcia pracy</label>
                     <input
                         type="time"
                         className="form-control"
@@ -105,7 +104,7 @@ const AddWardData = () => {
                         value={wardData.working_start_hour}
                         onChange={handleInputChange}
                         name="working_start_hour"
-                    /><label htmlFor="name">working_end_hour</label>
+                    /><label htmlFor="name">Godzina zakończenia pracy</label>
                     <input
                         type="time"
                         className="form-control"
@@ -114,7 +113,7 @@ const AddWardData = () => {
                         value={wardData.working_end_hour}
                         onChange={handleInputChange}
                         name="working_end_hour"
-                    /><label htmlFor="name">child_interval_hour</label>
+                    /><label htmlFor="name">Godzina zakończenia strefy dziecięcej</label>
                     <input
                         type="time"
                         className="form-control"
@@ -123,7 +122,7 @@ const AddWardData = () => {
                         value={wardData.child_interval_hour}
                         onChange={handleInputChange}
                         name="child_interval_hour"
-                    /><label htmlFor="name">difficult_interval_hour</label>
+                    /><label htmlFor="name">Godzina rozpoczęcia strefy trudnych operacji</label>
                     <input
                         type="time"
                         className="form-control"

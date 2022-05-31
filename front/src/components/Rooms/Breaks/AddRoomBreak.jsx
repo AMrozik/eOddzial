@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import RoomsBreaksService from "../../../services/RoomsBreaksService";
 import {useParams} from "react-router-dom"
-import './AddRoomBreak.css';
 
 const AddRoomBreak = () => {
   const initialRoomBreakState = {

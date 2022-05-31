@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PatientsService from "../../services/PatientsService";
-import './AddPatients.css';
+
 
 const AddPatient = () => {
   const initialPatientState = {

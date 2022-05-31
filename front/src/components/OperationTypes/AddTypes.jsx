@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import TypesService from "../../services/TypesService";
-import './AddTypes.css';
 
 const AddTypes = () => {
   const initialTypeState = {
@@ -60,6 +59,14 @@ const AddTypes = () => {
     setType({ ...type});
   }
 
+  const check_difficulty = () => {
+    if (type.is_difficult) {
+      return "Prawda"
+    }else {
+      return "Fałsz"
+    }
+  }
+
   return (
       <div className="submit-form form_style">
         {submitted ? (
@@ -102,8 +109,8 @@ const AddTypes = () => {
                     name="cost"
                 />
                 <label htmlFor="name">Czy operacja jest trudna</label>
-                <p id="is_difficult" onClick={changeDifficulty}> {type.is_difficult.toString()} </p>
-                <button onClick={changeDifficulty}>Change</button>
+                <button className="btn btn-primary" onClick={changeDifficulty}> {check_difficulty()} </button>
+                {/*<button onClick={changeDifficulty}>Change</button>*/}
                 <label htmlFor="name">Czas trwania</label>
                 <input
                     type="text"
