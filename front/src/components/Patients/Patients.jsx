@@ -18,7 +18,7 @@ const Patients = (props) => {
         PatientsService.getAll()
             .then((response) => {
                 setPatients(response.data);
-                console.log(response)
+//                 console.log(response)
             })
             .catch((e) => {
                 console.log(e);
@@ -30,7 +30,7 @@ const Patients = (props) => {
     };
 
     const deletionAlert = (id) => {
-        if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego pokoju bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
+        if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
             deletePatients(id)
         }
     }

@@ -33,7 +33,11 @@ from .views import (
     dailyAlg,
     medicPresence,
     yearlyAlg,
-    statistics, update_ward_data, create_ward_data,
+    statistics,
+    update_ward_data,
+    create_ward_data,
+    budget_years,
+    budget_year,
 
 )
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -93,6 +97,10 @@ urlpatterns = [
 
     # statistics
     path('statistics/', statistics, name='statistics'),
+
+    # budget years
+    path('budget_years/', budget_years, name='budgetYears'),
+    path('budget_year/<year>/', budget_year, name='budgetYear'),
 
 
     # api documentation for development purposes

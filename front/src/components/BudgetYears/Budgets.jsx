@@ -1,23 +1,24 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
-import TypesService from "../../services/TypesService";
+import BudgetYearsService from "../../services/BudgetYearsService";
 import {useTable} from "react-table";
 import {Link, useNavigate} from "react-router-dom"
 
-const Types = (props) => {
-    const [types, setTypes] = useState([]);
-    const typesRef = useRef();
+const Budgets = (props) => {
+    const [budgets, setBudgets] = useState([]);
+    const budgetsRef = useRef();
     const navigate = useNavigate();
 
-    typesRef.current = types;
+    budgetsRef.current = budgets;
 
     useEffect(() => {
-        retriveTypes();
+        retriveBudgets();
     }, []);
 
-    const retriveTypes = () => {
-        TypesService.getAll()
+    const retriveBudgets = () => {
+        BudgetYearsService.getAll()
             .then((response) => {
-                setTypes(response.data);
+                setBudgets(response.data);
+                console.log(response.data)
             })
             .catch((e) => {
                 console.log(e);
@@ -25,17 +26,17 @@ const Types = (props) => {
     };
 
     const refreshList = () => {
-        retriveTypes();
+        retriveBudgets();
     };
 
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
-            deleteTypes(id)
+            deleteBudgets(id)
         }
     }
 
-    const deleteTypes = (id) => {
-        TypesService.remove(id)
+    const deleteBudgets = (id) => {
+        BudgetYearsService.remove(id)
             .then(response => {
                 window.location.reload();
             })
@@ -59,9 +60,13 @@ const Types = (props) => {
     const columns = useMemo(
         () => [
             {
-                Header: "Type",
-                accessor: "name",
+                Header: "Rok",
+                accessor: "year",
             },
+//             {
+//                 Header: "Wartosc",
+//                 accessor: "given_budget",
+//             },
         ],
         []
     );
@@ -72,14 +77,14 @@ const Types = (props) => {
         headerGroups,
         rows,
         prepareRow,
-
     } = useTable({
         columns,
-        data: types,
+        data: budgets,
     });
 
     return (
         <div className="col-md-12 list table_style">
+            {/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
 
             <table
                 className="table table-striped table-bordered"
@@ -91,10 +96,13 @@ const Types = (props) => {
                         {headerGroup.headers.map((column) => (
                             <th {...column.getHeaderProps()}>
                                 {column.render("Header")}
+
+
                                 <button type="submit" className="btn btn-success table_button">
                                     {buttonSVG()}
-                                    <a href='/add_type'> dodaj</a>
+                                    <a href='/add_budget_year'> dodaj</a>
                                 </button>
+
                             </th>
                         ))}
                     </tr>
@@ -110,21 +118,24 @@ const Types = (props) => {
                                     <td {...cell.getCellProps()}>
                                         {cell.render("Cell")}
                                         {/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
+
+
                                         <button type="submit" className="btn btn-success table_button">
                                             {buttonSVG()}
-                                            <a href={'/type/' + row.original.id}> edytuj </a>
+                                            <a href={'/budget_year/' + row.original.year}> edytuj </a>
                                         </button>
+
+
                                         <button type="submit" className="btn btn-danger table_button" onClick={() => {
-                                            deletionAlert(row.original.id)
+                                            deletionAlert(row.original.year)
                                         }}>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                  fill="currentColor" className="bi bi-dash-circle" viewBox="0 0 16 16">
                                                 <path
                                                     d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
-                                            </svg> usun
+                                            </svg> usuń
                                         </button>
-
 
                                     </td>
                                 );
@@ -138,4 +149,4 @@ const Types = (props) => {
     );
 };
 
-export default Types;
+export default Budgets;

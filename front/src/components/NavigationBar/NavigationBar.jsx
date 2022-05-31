@@ -16,6 +16,9 @@ import Patients from "../Patients/Patients";
 import EditPatient from "../Patients/EditPatient";
 import AddPatients from "../Patients/AddPatients";
 import Medics from "../Medics/Medics";
+import MedicsBreaks from "../Medics/Breaks/MedicsBreaks";
+import EditMedicBreak from "../Medics/Breaks/EditMedicBreak";
+import AddMedicBreak from "../Medics/Breaks/AddMedicBreak";
 import Rooms from "../Rooms/Rooms";
 import EditRoom from "../Rooms/EditRoom";
 import AddRoom from "../Rooms/AddRoom";
@@ -24,7 +27,10 @@ import EditRoomBreak from "../Rooms/Breaks/EditRoomBreak";
 import AddRoomBreak from "../Rooms/Breaks/AddRoomBreak";
 import Types from "../OperationTypes/Types";
 import EditType from "../OperationTypes/EditType";
-import AddTypes from "../OperationTypes/AddTypes";
+import AddType from "../OperationTypes/AddType";
+import Budgets from "../BudgetYears/Budgets";
+import EditBudget from "../BudgetYears/EditBudget";
+import AddBudget from "../BudgetYears/AddBudget";
 import WardData from "../WardData/WardData";
 import AddWardData from "../WardData/AddWardData";
 
@@ -88,6 +94,9 @@ export const NavigationBar = () => {
               <Route path="/operation_types" exact element={<PrivateRoute/>}>
                 <Route path="/operation_types" exact element={<Types/>}/>
               </Route>
+              <Route path="/budget_years" exact element={<PrivateRoute/>}>
+                <Route path="/budget_years" exact element={<Budgets/>}/>
+              </Route>
               <Route path="/wardData" exact element={<PrivateRoute/>}>
                 <Route path="/wardData" exact element={<WardData/>}/>
               </Route>
@@ -109,6 +118,16 @@ export const NavigationBar = () => {
                 <Route path="/room_break/:id" exact element={<EditRoomBreak/>}/>
               </Route>
 
+              <Route path="/medics_breaks" exact element={<PrivateRoute/>}>
+                <Route path="/medics_breaks" exact element={<MedicsBreaks/>}/>
+              </Route>
+              <Route path="/add_medic_break/:id" exact element={<PrivateRoute/>}>
+                <Route path="/add_medic_break/:id" exact element={<AddMedicBreak/>}/>
+              </Route>
+              <Route path="/medic_break/:id" exact element={<PrivateRoute/>}>
+                <Route path="/medic_break/:id" exact element={<EditMedicBreak/>}/>
+              </Route>
+
               <Route path="/add_patient" exact element={<PrivateRoute/>}>
                 <Route path="/add_patient" exact element={<AddPatients/>}/>
               </Route>
@@ -117,10 +136,17 @@ export const NavigationBar = () => {
               </Route>
 
               <Route path="/add_type" exact element={<PrivateRoute/>}>
-                <Route path="/add_type" exact element={<AddTypes/>}/>
+                <Route path="/add_type" exact element={<AddType/>}/>
               </Route>
               <Route path="/type/:id" exact element={<PrivateRoute/>}>
                 <Route path="/type/:id" exact element={<EditType/>}/>
+              </Route>
+
+              <Route path="/add_budget_year" exact element={<PrivateRoute/>}>
+                <Route path="/add_budget_year" exact element={<AddBudget/>}/>
+              </Route>
+              <Route path="/budget_year/:year" exact element={<PrivateRoute/>}>
+                <Route path="/budget_year/:year" exact element={<EditBudget/>}/>
               </Route>
 
               <Route path="/add_ward_data" exact element={<PrivateRoute/>}>

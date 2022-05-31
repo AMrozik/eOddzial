@@ -25,6 +25,7 @@ from api.serializers import (
     NonAvailabilityRoomSerializer,
     LogSerializer,
     WardDataSerializer,
+    BudgetYearsSerializer,
 
 )
 
@@ -654,15 +655,80 @@ def NAR_by_id(request, id, *args, **kwargs):
         return JsonResponse({'message': 'NAR was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET', 'POST', 'DELETE'])
+@allow_access(permissions=['is_ordynator'])
+def budget_years(request, *args, **kwargs):
+    user = kwargs['user']
+    token = kwargs['token']
+    years = [year for year in BudgetYear.objects.all()]
+
+    if request.method == 'GET':
+        serializer = BudgetYearsSerializer(years, many=True)
+        create_log(request.method, user, token,
+        f"Użytkownik {user} wyświetlił listę lat budzetowych poprzez url api/budget_years/")
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = BudgetYearsSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            create_log(request.method, user, token,
+            f"Użytkownik {user} dodal nowy rok budzetowy poprzez url api/budget_years/")
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        count = BudgetYearsSerializer.objects.all().delete()
+        create_log(request.method, user, token,
+        f"Użytkownik {user} usunął {count[0]} lat budzetowych poprzez url api/budget_years/")
+        return JsonResponse({'message': '{} Rooms were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@allow_access(permissions=['is_ordynator'])
+def budget_year(request, year, *args, **kwargs):
+    user = kwargs['user']
+    token = kwargs['token']
+    try:
+        budget_year = BudgetYear.objects.get(year=year)
+    except BudgetYear.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = BudgetYearsSerializer(budget_year)
+        create_log(request.method, user, token,
+        f"Użytkownik {user} wyświetlił rok {year} poprzez url api/budget_year/<id>/")
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = BudgetYearsSerializer(budget_year, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            create_log(request.method, user, token,
+            f"Użytkownik {user} edytował rok {year} poprzez url api/budget_year/<id>/")
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        budget_year.delete()
+        create_log(request.method, user, token,
+        f"Użytkownik {user} usunął rok {year} poprzez url api/budget_year/<id>/")
+        return JsonResponse({'message': 'Year was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
 @api_view(['POST'])
 @allow_access(permissions=['is_ordynator'])
 def create_ward_data(request, *args, **kwargs):
-
-    if request.method == 'POST' and len(WardData.objects.all()) == 0:
+    user = kwargs['user']
+    token = kwargs['token']
+    try:
         data = JSONParser().parse(request)
         serializer = WardDataSerializer(data=data)
+    except serializer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'POST' and len(WardData.objects.all()) == 0:
         if serializer.is_valid():
             serializer.save()
+            create_log(request.method, user, token,
+            f"Użytkownik {user} stworzyl nowa konfiguracje poprzez url api/create_ward_data/")
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_404_NOT_FOUND)
@@ -672,6 +738,8 @@ def create_ward_data(request, *args, **kwargs):
 @allow_access(permissions=['is_ordynator'])
 def update_ward_data(request, *args, **kwargs):
     data = {}
+    user = kwargs['user']
+    token = kwargs['token']
     try:
         ward = WardData.objects.all()[0]
     except IndexError:
@@ -680,6 +748,8 @@ def update_ward_data(request, *args, **kwargs):
 
     if request.method == 'GET':
         serializer = WardDataSerializer(ward)
+        create_log(request.method, user, token,
+        f"Użytkownik {user} wyświetlił konfiguracje poprzez url api/ward_data/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
@@ -687,6 +757,8 @@ def update_ward_data(request, *args, **kwargs):
         serializer = WardDataSerializer(ward, data=data)
         if serializer.is_valid():
             serializer.save()
+            create_log(request.method, user, token,
+            f"Użytkownik {user} zaktualizował konfiguracje poprzez url api/ward_data/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse(status=status.HTTP_404_NOT_FOUND)
@@ -703,6 +775,9 @@ def statistics(request, *args, **kwargs):
     Returns:
 
     """
+
+    user = kwargs['user']
+    token = kwargs['token']
 
     if request.method == 'GET':
         start_year = request.GET.get("start_year")
@@ -723,11 +798,13 @@ def statistics(request, *args, **kwargs):
         if len(operations) == 0:
             data = {}
             data["failure"] = "There are no operations in DB"
-            return Response(status=status.HTTP_204_NO_CONTENT, data=data)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=data)
 
         try:
             data = getStats(operations, start_date, end_date)
             result = [data]
+            create_log(request.method, user, token,
+            f"Użytkownik {user} wyświetlił statystyki poprzez url api/statistics/")
         except BudgetYear.DoesNotExist:
             data = {}
             data["failure"] = "BudgetYear is empty"
@@ -748,6 +825,9 @@ def medicPresence(request, *args, **kwargs):
 
     """
 
+    user = kwargs['user']
+    token = kwargs['token']
+
     if request.method == "POST":
         date_year = request.POST.get("date_year")
         date_month = request.POST.get("date_month")
@@ -759,6 +839,8 @@ def medicPresence(request, *args, **kwargs):
         else:
             day = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
             if checkPresence(day, medic_id) is True:
+                create_log(request.method, user, token,
+                f"Użytkownik {user} wyświetlił obecnosc lekarzana z daty {date_year}-{date_month}-{date_day} poprzez url api/medicPresence/")
                 return Response(status=status.HTTP_200_OK, data="1")
             else:
                 return Response(status=status.HTTP_200_OK, data="0")
@@ -778,6 +860,8 @@ def dailyAlg(request, *args, **kwargs):
         Valid, sorted JSON with data about possible operations
 
     """
+    user = kwargs['user']
+    token = kwargs['token']
     data = {}
 
     if request.method == "POST":
@@ -801,6 +885,8 @@ def dailyAlg(request, *args, **kwargs):
         algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_ICD, medic_id)
 
         json = algorithm.toJSON()
+        create_log(request.method, user, token,
+        f"Użytkownik {user} zebral dane o mozliwych operacjach poprzez url api/dailyAlg/")
 
         return Response(status=status.HTTP_200_OK, data=json)
 
@@ -808,7 +894,8 @@ def dailyAlg(request, *args, **kwargs):
 
 
 @api_view(["POST"])
-def yearlyAlg(request):
+@allow_access(permissions=['is_ordynator', 'is_planist'])
+def yearlyAlg(request, *args, **kwargs):
     """
 
     Args:
@@ -817,6 +904,8 @@ def yearlyAlg(request):
     Returns: JSON with dates and percentage fill of the day
 
     """
+    user = kwargs['user']
+    token = kwargs['token']
     data = {}
 
     if request.method == "POST":
@@ -835,4 +924,6 @@ def yearlyAlg(request):
             return Response(status=status.HTTP_204_NO_CONTENT, data=data)
 
         json = getPercenteges(year)
+        create_log(request.method, user, token,
+        f"Użytkownik {user} zebral dane o dniach z operacjami oraz ich zapelnieniu poprzez url api/yearlyAlg/")
         return Response(status=status.HTTP_200_OK, data=json)

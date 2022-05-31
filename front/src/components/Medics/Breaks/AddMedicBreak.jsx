@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import RoomsBreaksService from "../../../services/RoomsBreaksService";
+import MedicsBreaksService from "../../../services/MedicsBreaksService";
 import {useParams} from "react-router-dom"
 
-const AddRoomBreak = () => {
-  const initialRoomBreakState = {
-    room: 0,
+const AddMedicBreak = () => {
+  const initialMedicBreakState = {
+    medic: null,
     date_start: null,
     date_end: null
   };
@@ -15,33 +15,33 @@ const AddRoomBreak = () => {
     time_end: "",
   };
   const {id} = useParams();
-  const [roomBreak, setRoomBreak] = useState(initialRoomBreakState);
+  const [medicBreak, setMedicBreak] = useState(initialMedicBreakState);
   const [time, setTime] = useState(initialTimeState);
   const [submitted, setSubmitted] = useState(false);
 //   console.log(time);
-//   console.log(roomBreak);
+//   console.log(medicBreak);
 
   const handleInputChange = event => {
     const { name, value } = event.target;
     setTime({ ...time, [name]: value });
   };
 
-  const saveRoomBreak = (e) => {
+  const saveMedicBreak = (e) => {
 //   this prevents normal behavior of form on submit
     e.preventDefault();
     var date_start = new Date(time.date_start +"T"+time.time_start);
     var date_end = new Date(time.date_end +"T"+ time.time_end);
 
     let data = {
-        room: id,
+        medic: id,
         date_start: date_start.toISOString(),
         date_end: date_end.toISOString()
     };
 
-    RoomsBreaksService.create(data)
+    MedicsBreaksService.create(data)
         .then(response => {
-          setRoomBreak({
-            room: response.data.room,
+          setMedicBreak({
+            medic: response.data.medic,
             date_start: response.data.date_start,
             date_end: response.data.date_end
           });
@@ -52,8 +52,8 @@ const AddRoomBreak = () => {
         });
   };
 
-  const newRoomBreak = () => {
-    setRoomBreak(initialRoomBreakState);
+  const newMedicBreak = () => {
+    setMedicBreak(initialMedicBreakState);
     setSubmitted(false);
   };
 
@@ -61,12 +61,12 @@ const AddRoomBreak = () => {
       <div className="submit-form form_style">
         {submitted ? (
             <div className="form_style">
-              <h4>Created new roomBreak!</h4>
-              <button className="btn btn-success" onClick={newRoomBreak}> Dodaj </button>
+              <h4>Created new MedicBreak!</h4>
+              <button className="btn btn-success" onClick={newMedicBreak}> Dodaj </button>
             </div>
         ) : (
             <div>
-                <form onSubmit={saveRoomBreak}>
+                <form onSubmit={saveMedicBreak}>
                   <div className="form-group form_style ">
                     <label htmlFor="name">poczatek</label>
                     <input
@@ -116,4 +116,4 @@ const AddRoomBreak = () => {
   );
 };
 
-export default AddRoomBreak;
+export default AddMedicBreak;

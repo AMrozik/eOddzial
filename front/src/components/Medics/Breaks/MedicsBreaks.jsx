@@ -1,31 +1,31 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
-import RoomsBreaksService from "../../../services/RoomsBreaksService";
-import RoomsService from "../../../services/RoomsService";
+import MedicsBreaksService from "../../../services/MedicsBreaksService";
+import MedicsService from "../../../services/MedicsService";
 import {useTable} from "react-table";
 import {Link, useNavigate} from "react-router-dom"
 
-const RoomsBreaks = (props) => {
-    const [roomsBreaks, setRoomsBreaks] = useState([]);
-    const roomsBreaksRef = useRef();
+const MedicsBreaks = (props) => {
+    const [medicsBreaks, setMedicsBreaks] = useState([]);
+    const medicsBreaksRef = useRef();
     const navigate = useNavigate();
 
-    roomsBreaksRef.current = roomsBreaks;
+    medicsBreaksRef.current = medicsBreaks;
 
     useEffect(() => {
-        retriveRoomsBreaks();
+        retriveMedicsBreaks();
     }, []);
 
-    const retriveRoomsBreaks = () => {
-        RoomsBreaksService.getAll()
+    const retriveMedicsBreaks = () => {
+        MedicsBreaksService.getAll()
             .then((response) => {
                 let temp = response.data;
-                RoomsService.getAll().then((resp) => {
+                MedicsService.getAll().then((resp) => {
                     let temp2 = [];
                     temp2 = resp.data;
                     for (var i = 0; i < temp.length; i++) {
                         for (var j = 0; j < temp2.length; j++) {
-                            if (temp2[j].id == temp[i]["room"]) {
-                                temp[i]["room_number"] = temp2[j]["room_number"];
+                            if (temp2[j].id == temp[i]["medic"]) {
+                                temp[i]["name"] = temp2[j]["name"];
                             }
                         }
                         var temp_date_start = new Date(temp[i]["date_start"]);
@@ -33,7 +33,7 @@ const RoomsBreaks = (props) => {
                         var temp_date_end = new Date(temp[i]["date_end"]);
                         temp[i]["date_end"] = temp_date_end.toLocaleString();
                     }
-                    setRoomsBreaks(temp);
+                    setMedicsBreaks(temp);
                 });
             })
             .catch((e) => {
@@ -42,7 +42,7 @@ const RoomsBreaks = (props) => {
     };
 
     const refreshList = () => {
-        retriveRoomsBreaks();
+        retriveMedicsBreaks();
     };
 
     const deletionAlert = (id) => {
@@ -52,7 +52,7 @@ const RoomsBreaks = (props) => {
     }
 
     const deleteRoomBreak = (id) => {
-        RoomsBreaksService.remove(id)
+        MedicsBreaksService.remove(id)
             .then(response => {
                 window.location.reload();
             })
@@ -64,8 +64,8 @@ const RoomsBreaks = (props) => {
     const columns = useMemo(
         () => [
             {
-                Header: "Number pokoj",
-                accessor: "room_number",
+                Header: "Lekarz",
+                accessor: "name",
             },
             {
                 Header: "Start",
@@ -87,7 +87,7 @@ const RoomsBreaks = (props) => {
         prepareRow,
     } = useTable({
         columns,
-        data: roomsBreaks,
+        data: medicsBreaks,
     });
 
     return (
@@ -143,7 +143,7 @@ const RoomsBreaks = (props) => {
                                         <path
                                             d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                                     </svg>
-                                    <a href={'/room_break/' + row.original.id}> edytuj </a>
+                                    <a href={'/medic_break/' + row.original.id}> edytuj </a>
                                 </button>
                             </td>
                         </tr>
@@ -155,4 +155,4 @@ const RoomsBreaks = (props) => {
     );
 };
 
-export default RoomsBreaks;
+export default MedicsBreaks;
