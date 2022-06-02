@@ -47,8 +47,8 @@ const AddRoomBreak = () => {
           });
           setSubmitted(true);
         })
-        .catch(e => {
-          console.log(e);
+        .catch(error => {
+          console.log(error);
         });
   };
 

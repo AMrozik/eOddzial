@@ -1,12 +1,10 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
 import MedicsService from "../../services/MedicsService";
 import {useTable} from "react-table";
-import {Link, useNavigate} from "react-router-dom"
 
 const Medics = (props) => {
     const [medics, setMedics] = useState([]);
     const medicsRef = useRef();
-    const navigate = useNavigate();
 
     medicsRef.current = medics;
 

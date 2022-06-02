@@ -1,7 +1,7 @@
 import datetime
 from json import dumps, loads, JSONEncoder
 from api.models import Operation, WardData
-from .ALG import dateTimeToInt, intToDateTime
+from .ALG import datetime_to_int, int_to_datetime
 
 
 def getPercenteges(year):
@@ -9,7 +9,7 @@ def getPercenteges(year):
     operations = Operation.objects.filter(date__year=year).order_by('date')
     hour_end = WardData.objects.all()[0].working_end_hour
     hour_start = WardData.objects.all()[0].working_start_hour
-    hour_amount = dateTimeToInt(hour_end) - dateTimeToInt(hour_start)
+    hour_amount = datetime_to_int(hour_end) - datetime_to_int(hour_start)
     # hour_amount = datetime.datetime(second=hour_amount)
 
     # sum hours of operations

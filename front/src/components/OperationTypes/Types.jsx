@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
 import TypesService from "../../services/TypesService";
 import {useTable} from "react-table";
-import {Link, useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router-dom"
 
 const Types = (props) => {
     const [types, setTypes] = useState([]);

@@ -1,12 +1,10 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
 import RoomsService from "../../services/RoomsService";
 import {useTable} from "react-table";
-import {Link, useNavigate} from "react-router-dom"
 
 const Rooms = (props) => {
     const [rooms, setRooms] = useState([]);
     const roomsRef = useRef();
-    const navigate = useNavigate();
 
     roomsRef.current = rooms;
 
@@ -24,9 +22,9 @@ const Rooms = (props) => {
             });
     };
 
-    const refreshList = () => {
-        retriveRooms();
-    };
+    // const refreshList = () => {
+    //     retriveRooms();
+    // };
 
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
@@ -112,7 +110,7 @@ const Rooms = (props) => {
 
                 </thead>
                 <tbody {...getTableBodyProps()}>
-                {rows.map((row, i) => {
+                {rows.map((row, _i) => {
                     prepareRow(row);
                     return (
                         <tr {...row.getRowProps()}>

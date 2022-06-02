@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
 import PatientsService from "../../services/PatientsService";
 import {useTable} from "react-table";
-import {Link, useNavigate} from "react-router-dom"
+import {useNavigate} from "react-router-dom"
 
 const Patients = (props) => {
     const [patients, setPatients] = useState(["JD"]);

@@ -1,7 +1,6 @@
-import datetime
 from statistics import mean
-from api.models import Operation_type, BudgetYear
-from decimal import *
+from api.models import OperationType, BudgetYear
+from decimal import Decimal, getcontext
 
 
 def procedures(operations, types):
@@ -151,7 +150,7 @@ def budged(operations, types, start_date, end_date):
     types_int = {}
     types_proc = {}
     for key in types.keys():
-        types_int[key] = Decimal(Operation_type.objects.filter(ICD_code=key)[0].cost) * Decimal(types[key])
+        types_int[key] = Decimal(OperationType.objects.filter(ICD_code=key)[0].cost) * Decimal(types[key])
         types_proc[key] = Decimal(types_int[key])/Decimal(cost) * 100
 
     data["bud_typy_int"] = types_int
@@ -160,7 +159,7 @@ def budged(operations, types, start_date, end_date):
     return data
 
 
-def getStats(operations, start_date, end_date):
+def get_stats(operations, start_date, end_date):
     """
 
     Args:

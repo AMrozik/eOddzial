@@ -12,18 +12,18 @@ class Pesel:
         #     raise InvalidPesel("Month not in range")
         # if not _valid_birth_day(pesel):
         #     raise InvalidPesel("Day not in range")
-        self.pesel = pesel
+        self._pesel = pesel
 
     @property
     def gender(self) -> str:
         return 'female' if self._is_female() else 'male'
 
     def _is_female(self):
-        return int(self.pesel[-2]) % 2 == 0
+        return int(self._pesel[-2]) % 2 == 0
 
     @property
     def year(self) -> int:
-        month = int(self.pesel[2:4])
+        month = int(self._pesel[2:4])
 
         if 0 < month < 13:
             year = 1900
@@ -38,11 +38,11 @@ class Pesel:
         else:
             year = 0
 
-        return year + int(self.pesel[0:2])
+        return year + int(self._pesel[0:2])
 
     @property
     def month(self) -> int:
-        pesel_month = int(self.pesel[2:4])
+        pesel_month = int(self._pesel[2:4])
 
         if 0 < pesel_month < 13:
             return pesel_month
@@ -59,7 +59,7 @@ class Pesel:
 
     @property
     def day(self) -> int:
-        return int(self.pesel[4:6])
+        return int(self._pesel[4:6])
 
     def age(self, _date: datetime.date) -> int:
         if _date.month > self.month:
@@ -70,12 +70,12 @@ class Pesel:
             return _date.year - self.year - 1
 
     def __str__(self):
-        return self.pesel
+        return self._pesel
 
     def __eq__(self, other):
         if not isinstance(other, Pesel):
             return NotImplemented
-        return self.pesel == other.pesel
+        return self._pesel == other._pesel
 
 
 def _proper_format(pesel: str) -> bool:

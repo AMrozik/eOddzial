@@ -2,9 +2,9 @@ import datetime
 
 from django.test import TestCase
 from django.db.models import Count
-from .utils.ALG import DailyHintALG, PossibleOperation, dateTimeToInt, intToDateTime
+from .utils.ALG import DailyHintALG, PossibleOperation, datetime_to_int, int_to_datetime
 from .utils.DoctorPresence import checkPresence
-from .models import WardData, Operation, Operation_type, Medic, Patient, Room, NonAvailabilityMedic
+from .models import WardData, Operation, OperationType, Medic, Patient, Room, NonAvailabilityMedic
 
 # Create your tests here.
 
@@ -18,17 +18,17 @@ class DailyHintingTest(TestCase):
                                 child_interval_hour="10:00",
                                 difficult_interval_hour="15:00")
 
-        Operation_type.objects.create(name="type1",
-                                      ICD_code="12",
-                                      cost=12000,
-                                      is_difficult=True,
-                                      duration="1:00")
+        OperationType.objects.create(name="type1",
+                                     ICD_code="12",
+                                     cost=12000,
+                                     is_difficult=True,
+                                     duration="1:00")
 
-        Operation_type.objects.create(name="type2",
-                                      ICD_code="12b",
-                                      cost=12001,
-                                      is_difficult=False,
-                                      duration="1:05")
+        OperationType.objects.create(name="type2",
+                                     ICD_code="12b",
+                                     cost=12001,
+                                     is_difficult=False,
+                                     duration="1:05")
 
         Medic.objects.create(name="Krzysztof")
 
@@ -41,42 +41,42 @@ class DailyHintingTest(TestCase):
         Room.objects.create(room_number=2)
         Room.objects.create(room_number=16)
 
-        Operation.objects.create(type=Operation_type.objects.get(ICD_code="12"),
+        Operation.objects.create(type=OperationType.objects.get(ICD_code="12"),
                                  medic=Medic.objects.get(name="Oleg"),
                                  patient=Patient.objects.get(name="Karol"),
                                  date="2021-10-10",
                                  room=Room.objects.get(room_number=2),
                                  start="12:00")
 
-        Operation.objects.create(type=Operation_type.objects.get(ICD_code="12b"),
+        Operation.objects.create(type=OperationType.objects.get(ICD_code="12b"),
                                  medic=Medic.objects.get(name="Krzysztof"),
                                  patient=Patient.objects.get(name="Karol"),
                                  date="2021-10-10",
                                  room=Room.objects.get(room_number=3),
                                  start="14:00")
 
-        Operation.objects.create(type=Operation_type.objects.get(ICD_code="12b"),
+        Operation.objects.create(type=OperationType.objects.get(ICD_code="12b"),
                                  medic=Medic.objects.get(name="Krzysztof"),
                                  patient=Patient.objects.get(name="Karol"),
                                  date="2021-10-10",
                                  room=Room.objects.get(room_number=2),
                                  start="15:00")
 
-        Operation.objects.create(type=Operation_type.objects.get(ICD_code="12b"),
+        Operation.objects.create(type=OperationType.objects.get(ICD_code="12b"),
                                  medic=Medic.objects.get(name="Krzysztof"),
                                  patient=Patient.objects.get(name="Karol"),
                                  date="2021-10-10",
                                  room=Room.objects.get(room_number=3),
                                  start="10:00")
 
-        Operation.objects.create(type=Operation_type.objects.get(ICD_code="12b"),
+        Operation.objects.create(type=OperationType.objects.get(ICD_code="12b"),
                                  medic=Medic.objects.get(name="Krzysztof"),
                                  patient=Patient.objects.get(name="Karol"),
                                  date="2021-10-10",
                                  room=Room.objects.get(room_number=2),
                                  start="9:00")
 
-        Operation.objects.create(type=Operation_type.objects.get(ICD_code="12b"),
+        Operation.objects.create(type=OperationType.objects.get(ICD_code="12b"),
                                  medic=Medic.objects.get(name="Krzysztof"),
                                  patient=Patient.objects.get(name="Karol"),
                                  date="2021-10-10",
@@ -110,7 +110,7 @@ class DailyHintingTest(TestCase):
         medic_id = Medic.objects.get(name="Krzysztof").id
         algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
-        (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
+        (daily_operations, operation_type, medic, rooms) = algorithm.gather_data_from_db()
 
         operations_amount = len(Operation.objects.filter(date=day))
         self.assertTrue(len(daily_operations) == operations_amount)
@@ -127,7 +127,7 @@ class DailyHintingTest(TestCase):
         medic_id = Medic.objects.get(name="Krzysztof").id
         algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
-        (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
+        (daily_operations, operation_type, medic, rooms) = algorithm.gather_data_from_db()
 
         operations_amount = len(Operation.objects.filter(date=day))
         self.assertTrue(len(daily_operations) == operations_amount)
@@ -146,13 +146,13 @@ class DailyHintingTest(TestCase):
         day = datetime.date(year=2021, month=10, day=10)
         medic_id = Medic.objects.get(name="Krzysztof").id
         algorithm = DailyHintALG(True, True, day, "12b", medic_id)
-        (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
+        (daily_operations, operation_type, medic, rooms) = algorithm.gather_data_from_db()
 
-        sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
+        sorted_list = algorithm.sort_list_based_on_rooms(daily_operations, rooms)
 
         rooms_in_ward = len(Room.objects.all())
         rooms_amount = 0
-        for e in range(rooms_in_ward):
+        for _ in range(rooms_in_ward):
             rooms_amount += 1
 
         self.assertTrue(len(sorted_list) == rooms_amount)
@@ -163,7 +163,7 @@ class DailyHintingTest(TestCase):
     def testDateTimeToInt(self):
         time = datetime.time(hour=16, minute=20, second=5)
 
-        conversed = dateTimeToInt(time)
+        conversed = datetime_to_int(time)
 
         self.assertTrue(conversed == 16*60*60 + 20*60 + 5)
 
@@ -171,7 +171,7 @@ class DailyHintingTest(TestCase):
         time = datetime.time(hour=16, minute=20, second=5)
         value = 16*60*60 + 20*60 + 5
 
-        conversed = intToDateTime(value)
+        conversed = int_to_datetime(value)
 
         self.assertTrue(conversed == time)
 
@@ -434,7 +434,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
         time = datetime.time(hour=9, minute=0, second=0)
-        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalChildDifficultInNormalInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -442,7 +442,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
         time = datetime.time(hour=12, minute=0, second=0)
-        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalChildDifficultInDifficultInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -450,7 +450,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(True, True, day, "12b", medic_id)
 
         time = datetime.time(hour=16, minute=0, second=0)
-        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(algorithm.check_is_in_interval(datetime_to_int(time)))
 
     # Child
     def testIsInProperIntervalChildInChildInterval(self):
@@ -459,7 +459,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(True, False, day, "12b", medic_id)
 
         time = datetime.time(hour=9, minute=0, second=0)
-        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalChildInNormalInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -467,7 +467,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(True, False, day, "12b", medic_id)
 
         time = datetime.time(hour=12, minute=0, second=0)
-        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(not algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalChildInDifficultInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -475,7 +475,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(True, False, day, "12b", medic_id)
 
         time = datetime.time(hour=16, minute=0, second=0)
-        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(not algorithm.check_is_in_interval(datetime_to_int(time)))
 
     # Difficult
     def testIsInProperIntervalDifficultInChildInterval(self):
@@ -484,7 +484,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(False, True, day, "12b", medic_id)
 
         time = datetime.time(hour=9, minute=0, second=0)
-        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(not algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalDifficultInNormalInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -492,7 +492,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(False, True, day, "12b", medic_id)
 
         time = datetime.time(hour=12, minute=0, second=0)
-        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(not algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalDifficultInDifficultInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -500,7 +500,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(False, True, day, "12b", medic_id)
 
         time = datetime.time(hour=16, minute=0, second=0)
-        self.assertTrue( algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(algorithm.check_is_in_interval(datetime_to_int(time)))
 
     # Normal
     def testIsInProperIntervalNormalInChildInterval(self):
@@ -509,7 +509,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(False, False, day, "12b", medic_id)
 
         time = datetime.time(hour=9, minute=0, second=0)
-        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(not algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalNormalInNormalInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -517,7 +517,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(False, False, day, "12b", medic_id)
 
         time = datetime.time(hour=12, minute=0, second=0)
-        self.assertTrue(algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(algorithm.check_is_in_interval(datetime_to_int(time)))
 
     def testIsInProperIntervalNormalInDifficultInterval(self):
         day = datetime.date(year=2021, month=10, day=10)
@@ -525,7 +525,7 @@ class DailyHintingTest(TestCase):
         algorithm = DailyHintALG(False, False, day, "12b", medic_id)
 
         time = datetime.time(hour=16, minute=0, second=0)
-        self.assertTrue(not algorithm.checkIsInInterval(dateTimeToInt(time)))
+        self.assertTrue(not algorithm.check_is_in_interval(datetime_to_int(time)))
 
     # -----------------------------------------------------------------------------------------------------------------
     # PROCESS DATA TESTS
@@ -534,22 +534,27 @@ class DailyHintingTest(TestCase):
         day = datetime.date(year=2021, month=10, day=10)
         medic_id = Medic.objects.get(name="Krzysztof").id
         algorithm = DailyHintALG(True, True, day, "12b", medic_id)
-        (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
-        sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
-        possibilities = algorithm.processData(sorted_list, medic, operation_type.duration, rooms)
+        (daily_operations, operation_type, medic, rooms) = algorithm.gather_data_from_db()
+        sorted_list = algorithm.sort_list_based_on_rooms(daily_operations, rooms)
+        possibilities = algorithm.process_data(sorted_list, medic, operation_type.duration, rooms)
 
         # Assert if possibilities have at least one possibility for each room
         self.assertTrue(len(possibilities) >= len(rooms))
 
-    def testProcessDataDayNotEmpty(self):
-        day = datetime.date(year=2021, month=10, day=10)
-        medic_id = Medic.objects.get(name="Krzysztof").id
-        algorithm = DailyHintALG(True, True, day, "12b", medic_id)
-        (daily_operations, operation_type, medic, rooms) = algorithm.gatherDataFromDB()
-        sorted_list = algorithm.sortListBasedOnRooms(daily_operations, rooms)
-        possibilities = algorithm.processData(sorted_list, medic, operation_type.duration, rooms)
+    # TODO: This function is identical to the test above
 
-        self.assertTrue(len(possibilities) >= len(rooms))
+    # def testProcessDataDayNotEmpty(self):
+    #     day = datetime.date(year=2021, month=10, day=10)
+    #     medic_id = Medic.objects.get(name="Krzysztof").id
+    #     algorithm = DailyHintALG(True, True, day, "12b", medic_id)
+    #     (daily_operations, operation_type, medic, rooms) = algorithm.gather_data_from_db()
+    #     sorted_list = algorithm.sort_list_based_on_rooms(daily_operations, rooms)
+    #     possibilities = algorithm.process_data(sorted_list, medic, operation_type.duration, rooms)
+    #
+    #     self.assertTrue(len(possibilities) >= len(rooms))
+
+
+
 
     # Test only for development
     # def testTest(self):
@@ -577,13 +582,14 @@ class DoctorPresenceTest(TestCase):
                                             date_end="2021-10-16")
 
     def testMedicPresent(self):
-        checOne = checkPresence("2021-10-11"), Medic.objects.get(name="Oleg")
-        checTwo = checkPresence("2021-10-11"), Medic.objects.get(name="Krzysztof")
-        self.assertTrue(checOne is True and checTwo is True)
+        check_one = checkPresence("2021-10-11", Medic.objects.get(name="Oleg"))
+        check_two = checkPresence("2021-10-11", Medic.objects.get(name="Krzysztof"))
+        self.assertTrue(check_one)
+        self.assertTrue(check_two)
 
     def testMedicNotPresentOneDayOff(self):
-        self.assertTrue(checkPresence("2021-10-10"), Medic.objects.get(name="Oleg"))
+        self.assertTrue(checkPresence("2021-10-10", Medic.objects.get(name="Oleg")))
 
     def testMedicNotPresentMultipleDaysOff(self):
-        self.assertTrue(checkPresence("2021-10-14"), Medic.objects.get(name="Oleg"))
+        self.assertTrue(checkPresence("2021-10-14", Medic.objects.get(name="Oleg")))
 
