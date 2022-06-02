@@ -1,4 +1,3 @@
-import http from "../http-common";
 import React from 'react'
 import axios from "axios";
 

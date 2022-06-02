@@ -2,12 +2,11 @@ import React, {useState, useEffect, useMemo, useRef} from "react";
 import MedicsBreaksService from "../../../services/MedicsBreaksService";
 import MedicsService from "../../../services/MedicsService";
 import {useTable} from "react-table";
-import {Link, useNavigate} from "react-router-dom"
+
 
 const MedicsBreaks = (props) => {
     const [medicsBreaks, setMedicsBreaks] = useState([]);
     const medicsBreaksRef = useRef();
-    const navigate = useNavigate();
 
     medicsBreaksRef.current = medicsBreaks;
 

@@ -20,19 +20,19 @@ from .views import (
     all_operation_types,
     operation_type_by_id,
 
-    all_NAMs,
-    NAM_by_id,
+    all_nams,
+    nam_by_id,
 
-    all_NARs,
-    NAR_by_id,
+    all_nars,
+    nar_by_id,
     active_rooms,
 
     view_logs,
     view_logs_by_id,
 
-    dailyAlg,
-    medicPresence,
-    yearlyAlg,
+    daily_alg,
+    medic_presence,
+    yearly_alg,
     statistics,
     update_ward_data,
     create_ward_data,
@@ -70,11 +70,11 @@ urlpatterns = [
     path('operation_types/', all_operation_types, name='operation_types'),
     path('operation_type/<id>/', operation_type_by_id, name='operation_type'),
 
-    path('not_available_rooms/', all_NARs, name='not_available_rooms'),
-    path('not_available_room/<id>/', NAR_by_id, name='not_available_room'),
+    path('not_available_rooms/', all_nars, name='not_available_rooms'),
+    path('not_available_room/<id>/', nar_by_id, name='not_available_room'),
 
-    path('not_available_medics/', all_NAMs, name='not_available_medics'),
-    path('not_available_medic/<id>/', NAM_by_id, name='not_available_medic'),
+    path('not_available_medics/', all_nams, name='not_available_medics'),
+    path('not_available_medic/<id>/', nam_by_id, name='not_available_medic'),
 
     path('ward_data/', update_ward_data, name='ward_data'),
     path('create_ward_data/', create_ward_data, name='create_ward_data'),
@@ -89,11 +89,11 @@ urlpatterns = [
     path('logs/<id>', view_logs_by_id, name='log'),
 
     # Hint Alg
-    path('dailyAlg/', dailyAlg, name='dailyAlg'),
-    path('yearlyAlg/', yearlyAlg, name='yearlyAlg'),
+    path('dailyAlg/', daily_alg, name='dailyAlg'),
+    path('yearlyAlg/', yearly_alg, name='yearlyAlg'),
 
     # MedicPresence
-    path('medicPresence/', medicPresence, name='medicPresence'),
+    path('medicPresence/', medic_presence, name='medicPresence'),
 
     # statistics
     path('statistics/', statistics, name='statistics'),

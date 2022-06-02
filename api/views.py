@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 from .utils.ALG import DailyHintALG
 from .utils.DoctorPresence import checkPresence
 from .utils.YearlyAlg import getPercenteges
-from .utils.Stats import getStats
+from .utils.Stats import get_stats
 
 from api.serializers import (
     PatientSerializer,
@@ -34,7 +34,7 @@ from .models import (
     Medic,
     NonAvailabilityMedic,
     Operation,
-    Operation_type,
+    OperationType,
     Room,
     NonAvailabilityRoom,
     Log,
@@ -83,6 +83,7 @@ def allow_access(permissions: List[str]):
     Raises:
         ValidationError: If could not decode token
     """
+
     def allow_access_decorator(func):
         @wraps(func)
         def func_wrapper(*args, **kwargs):
@@ -93,7 +94,8 @@ def allow_access(permissions: List[str]):
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
             for p in permissions:
-                if user.__dict__.get(p, None) is True: break
+                if user.__dict__.get(p, None) is True:
+                    break
             else:
                 data['failure'] = "User does not have permissions to view this site"
                 data['user'] = str(user)
@@ -101,7 +103,9 @@ def allow_access(permissions: List[str]):
             kwargs['user'] = user
             kwargs['token'] = data['token']
             return func(*args, **kwargs)
+
         return func_wrapper
+
     return allow_access_decorator
 
 
@@ -119,15 +123,15 @@ def view_logs(request, *args, **kwargs):
 
 @api_view(['GET', ])
 @allow_access(permissions=['is_admin', ])
-def view_logs_by_id(request, id, *args, **kwargs):
+def view_logs_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        log = Log.objects.get(id=id)
+        log = Log.objects.get(id=_id)
     except Log.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = LogSerializer(log)
-    create_log(request.method, user, token, f"Użytkownik {user} wyświetlił log o id {id} poprzez url api/patients/")
+    create_log(request.method, user, token, f"Użytkownik {user} wyświetlił log o id {_id} poprzez url api/patients/")
     return Response(serializer.data)
 
 
@@ -150,7 +154,8 @@ def all_patients(request, *args, **kwargs):
 
     if request.method == 'GET':
         serializer = PatientSerializer(patients, many=True)
-        create_log(request.method, user, token, f"Użytkownik {user} wyświetlił liste pacjentów poprzez url api/patients/")
+        create_log(request.method, user, token,
+                   f"Użytkownik {user} wyświetlił liste pacjentów poprzez url api/patients/")
         return Response(serializer.data)
 
 
@@ -166,18 +171,18 @@ def create_patient(request, *args, **kwargs):
             serializer.save()
             data["success"] = "update successful"
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzył profil pacjenta poprzez url api/create_patient/")
+                       f"Użytkownik {user} stworzył profil pacjenta poprzez url api/create_patient/")
             return Response(data=data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', ])
 @allow_access(permissions=['is_planist', 'is_ordynator', 'is_medic'])
-def patient_by_id(request, id, *args, **kwargs):
+def patient_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        patient = Patient.objects.get(id=id)
+        patient = Patient.objects.get(id=_id)
     except Patient.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -191,24 +196,24 @@ def patient_by_id(request, id, *args, **kwargs):
         if patient in patients:
             serializer = PatientSerializer(patient)
             create_log(request.method, user, token,
-            f"Użytkownik {user} zobaczył profil pacjenta o id {id} poprzez url api/patient/<id>/")
+                       f"Użytkownik {user} zobaczył profil pacjenta o id {id} poprzez url api/patient/<id>/")
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     serializer = PatientSerializer(patient)
     create_log(request.method, user, token,
-    f"Użytkownik {user} zobaczył profil pacjenta o id {id} poprzez url api/patient/<id>/")
+               f"Użytkownik {user} zobaczył profil pacjenta o id {id} poprzez url api/patient/<id>/")
     return Response(serializer.data)
 
 
 @api_view(['PUT'])
 @allow_access(permissions=['is_planist', 'is_ordynator'])
-def update_patient(request, id, *args, **kwargs):
+def update_patient(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        patient = Patient.objects.get(id=id)
+        patient = Patient.objects.get(id=_id)
     except Patient.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -218,18 +223,18 @@ def update_patient(request, id, *args, **kwargs):
         serializer.save()
         data["success"] = "update successful"
         create_log(request.method, user, token,
-        f"Użytkownik {user} zmienił profil pacjenta o id {id} poprzez url api/update_patient/<id>/")
+                   f"Użytkownik {user} zmienił profil pacjenta o id {_id} poprzez url api/update_patient/<id>/")
         return Response(data=data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE', ])
 @allow_access(permissions=['is_planist', 'is_ordynator'])
-def delete_patient(request, id, *args, **kwargs):
+def delete_patient(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        patient = Patient.objects.get(id=id)
+        patient = Patient.objects.get(id=_id)
     except Patient.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -239,7 +244,7 @@ def delete_patient(request, id, *args, **kwargs):
         if operation:
             data["success"] = "delete successful"
             create_log(request.method, user, token,
-            f"Użytkownik {user} usunął profil pacjenta o id {id} poprzez url api/delete_patient/<id>/")
+                       f"Użytkownik {user} usunął profil pacjenta o id {_id} poprzez url api/delete_patient/<id>/")
 
         else:
             data["failure"] = "delete failed"
@@ -257,7 +262,7 @@ def all_medics(request, *args, **kwargs):
     if request.method == 'GET':
         serializer = MedicSerializer(medics, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} zobaczył liste lekarzy poprzez url api/medics/")
+                   f"Użytkownik {user} zobaczył liste lekarzy poprzez url api/medics/")
 
         return Response(serializer.data)
 
@@ -267,30 +272,31 @@ def all_medics(request, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzył profil lekarza poprzez url api/medics/")
+                       f"Użytkownik {user} stworzył profil lekarza poprzez url api/medics/")
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         count = Medic.objects.all().delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął {count[0]} lekarzy poprzez url api/medics/")
-        return JsonResponse({'message': '{} Medics were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+                   f"Użytkownik {user} usunął {count[0]} lekarzy poprzez url api/medics/")
+        return JsonResponse({'message': f'{count[0]} Medics were deleted successfully!'},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @allow_access(permissions=['is_ordynator'])
-def medic_by_id(request, id, *args, **kwargs):
+def medic_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        medic = Medic.objects.get(id=id)
+        medic = Medic.objects.get(id=_id)
     except Medic.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = MedicSerializer(medic)
         create_log(request.method, user, token,
-        f"Użytkownik {user} zobaczył lekarza o id {id} poprzez url api/medic/<id>/")
+                   f"Użytkownik {user} zobaczył lekarza o id {_id} poprzez url api/medic/<id>/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
@@ -298,13 +304,13 @@ def medic_by_id(request, id, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} edytował profil lekarza o id {id} poprzez url api/medic/<id>/")
+                       f"Użytkownik {user} edytował profil lekarza o id {_id} poprzez url api/medic/<id>/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         medic.delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął profil lekarza o id {id} poprzez url api/medic/<id>/")
+                   f"Użytkownik {user} usunął profil lekarza o id {_id} poprzez url api/medic/<id>/")
         return JsonResponse({'message': 'Medic was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -323,7 +329,7 @@ def all_operations(request, *args, **kwargs):
     if request.method == 'GET':
         serializer = OperationSerializer(operations, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} zobaczył liste operacji poprzez url api/operations/")
+                   f"Użytkownik {user} zobaczył liste operacji poprzez url api/operations/")
         return Response(serializer.data)
 
 
@@ -338,23 +344,24 @@ def edit_operations(request, *args, **kwargs):
         if room_serializer.is_valid():
             room_serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzył operację poprzez url api/operations/edit/")
+                       f"Użytkownik {user} stworzył operację poprzez url api/operations/edit/")
             return JsonResponse(room_serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(room_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         count = Operation.objects.all().delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunał {count[0]} operacji poprzez url api/operations/edit/")
-        return JsonResponse({'message': '{} Operations were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+                   f"Użytkownik {user} usunał {count[0]} operacji poprzez url api/operations/edit/")
+        return JsonResponse({'message': f'{count[0]} Operations were deleted successfully!'},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
 @allow_access(permissions=['is_ordynator', 'is_planist', 'is_medic'])
-def operation_by_id(request, id, *args, **kwargs):
+def operation_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        operation = Operation.objects.get(id=id)
+        operation = Operation.objects.get(id=_id)
     except Operation.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -363,7 +370,7 @@ def operation_by_id(request, id, *args, **kwargs):
             if user.medic == operation.medic:
                 serializer = OperationSerializer(operation)
                 create_log(request.method, user, token,
-                f"Użytkownik {user} wyświetlił operację o id {id} poprzez url api/operation/<id>/")
+                           f"Użytkownik {user} wyświetlił operację o id {_id} poprzez url api/operation/<id>/")
                 return Response(serializer.data)
             else:
                 data = []
@@ -371,17 +378,17 @@ def operation_by_id(request, id, *args, **kwargs):
         else:
             serializer = OperationSerializer(operation)
             create_log(request.method, user, token,
-            f"Użytkownik {user} wyświetlił operację o id {id} poprzez url api/operation/<id>/")
+                       f"Użytkownik {user} wyświetlił operację o id {_id} poprzez url api/operation/<id>/")
             return Response(serializer.data)
 
 
 @api_view(['PUT', 'DELETE'])
 @allow_access(permissions=['is_ordynator', 'is_planist'])
-def edit_operation_by_id(request, id, *args, **kwargs):
+def edit_operation_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        operation = Operation.objects.get(id=id)
+        operation = Operation.objects.get(id=_id)
     except Operation.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -391,13 +398,13 @@ def edit_operation_by_id(request, id, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} edytował operację o id {id} poprzez url api/operation/<id>/edit/")
+                       f"Użytkownik {user} edytował operację o id {_id} poprzez url api/operation/<id>/edit/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         operation.delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął operację o id {id} poprzez url api/operation/<id>/edit/")
+                   f"Użytkownik {user} usunął operację o id {_id} poprzez url api/operation/<id>/edit/")
         return JsonResponse({'message': 'Operation was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -412,7 +419,7 @@ def all_rooms(request, *args, **kwargs):
     if request.method == 'GET':
         serializer = RoomSerializer(rooms, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił listę pokoi poprzez url api/rooms/")
+                   f"Użytkownik {user} wyświetlił listę pokoi poprzez url api/rooms/")
         return Response(serializer.data)
     elif request.method == 'POST':
         room_data = JSONParser().parse(request)
@@ -420,14 +427,15 @@ def all_rooms(request, *args, **kwargs):
         if room_serializer.is_valid():
             room_serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzył nową salę poprzez url api/rooms/")
+                       f"Użytkownik {user} stworzył nową salę poprzez url api/rooms/")
             return JsonResponse(room_serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(room_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         count = Room.objects.all().delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął {count[0]} sal operacyjnych poprzez url api/rooms/")
-        return JsonResponse({'message': '{} Rooms were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+                   f"Użytkownik {user} usunął {count[0]} sal operacyjnych poprzez url api/rooms/")
+        return JsonResponse({'message': f'{count[0]} Rooms were deleted successfully!'},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
@@ -440,24 +448,24 @@ def active_rooms(request, *args, **kwargs):
     if request.method == 'GET':
         serializer = RoomSerializer(rooms, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił listę sal poprzez url api/rooms/active/")
+                   f"Użytkownik {user} wyświetlił listę sal poprzez url api/rooms/active/")
         return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @allow_access(permissions=['is_ordynator'])
-def room_by_id(request, id, *args, **kwargs):
+def room_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        room = Room.objects.get(id=id)
+        room = Room.objects.get(id=_id)
     except Room.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = RoomSerializer(room)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił salę o id {id} poprzez url api/rooms/<id>/")
+                   f"Użytkownik {user} wyświetlił salę o id {_id} poprzez url api/rooms/<id>/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         room_data = JSONParser().parse(request)
@@ -465,13 +473,13 @@ def room_by_id(request, id, *args, **kwargs):
         if room_serializer.is_valid():
             room_serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} edytował salę o id {id} poprzez url api/rooms/<id>/")
+                       f"Użytkownik {user} edytował salę o id {_id} poprzez url api/rooms/<id>/")
             return JsonResponse(room_serializer.data)
         return JsonResponse(room_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         room.delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął salę o id {id} poprzez url api/rooms/<id>/")
+                   f"Użytkownik {user} usunął salę o id {_id} poprzez url api/rooms/<id>/")
         return JsonResponse({'message': 'Room was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -481,12 +489,12 @@ def room_by_id(request, id, *args, **kwargs):
 def all_operation_types(request, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
-    operation_types = [operation_type for operation_type in Operation_type.objects.all()]
+    operation_types = [operation_type for operation_type in OperationType.objects.all()]
 
     if request.method == 'GET':
         serializer = OperationTypeSerializer(operation_types, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił listę typów operacji poprzez url api/operation_types/")
+                   f"Użytkownik {user} wyświetlił listę typów operacji poprzez url api/operation_types/")
         return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
@@ -494,30 +502,31 @@ def all_operation_types(request, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzył typ operacji poprzez url api/operation_types/")
+                       f"Użytkownik {user} stworzył typ operacji poprzez url api/operation_types/")
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        count = Operation_type.objects.all().delete()
+        count = OperationType.objects.all().delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął {count[0]} typów operacji poprzez url api/operation_types/")
-        return JsonResponse({'message': '{} operation types were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+                   f"Użytkownik {user} usunął {count[0]} typów operacji poprzez url api/operation_types/")
+        return JsonResponse({'message': f'{count[0]} operation types were deleted successfully!'},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @allow_access(permissions=['is_ordynator'])
-def operation_type_by_id(request, id, *args, **kwargs):
+def operation_type_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        operation_type = Operation_type.objects.get(id=id)
-    except Operation_type.DoesNotExist:
+        operation_type = OperationType.objects.get(id=_id)
+    except OperationType.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = OperationTypeSerializer(operation_type)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił typ operacji o id {id} poprzez url api/operation_types/<id>/")
+                   f"Użytkownik {user} wyświetlił typ operacji o id {_id} poprzez url api/operation_types/<id>/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
@@ -525,28 +534,28 @@ def operation_type_by_id(request, id, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} edytował typ operacji o id {id} poprzez url api/operation_types/<id>/")
+                       f"Użytkownik {user} edytował typ operacji o id {_id} poprzez url api/operation_types/<id>/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         operation_type.delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunał typ operacji o id {id} poprzez url api/operation_types/<id>/")
+                   f"Użytkownik {user} usunał typ operacji o id {_id} poprzez url api/operation_types/<id>/")
         return JsonResponse({'message': 'NAM was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
 # NonAvailabilityMedic Views #
 @api_view(['GET', 'POST', 'DELETE'])
 @allow_access(permissions=['is_ordynator'])
-def all_NAMs(request, *args, **kwargs):
+def all_nams(request, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
-    NAMs = [NAM for NAM in NonAvailabilityMedic.objects.all()]
+    nams = [NAM for NAM in NonAvailabilityMedic.objects.all()]
 
     if request.method == 'GET':
-        serializer = NonAvailabilityMedicSerializer(NAMs, many=True)
+        serializer = NonAvailabilityMedicSerializer(nams, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił listę nieaktywności lekarzy poprzez url api/not_available_medics/")
+                   f"Użytkownik {user} wyświetlił listę nieaktywności lekarzy poprzez url api/not_available_medics/")
         return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
@@ -554,59 +563,63 @@ def all_NAMs(request, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzył nieaktywność lekarza poprzez url api/not_available_medics/")
+                       f"Użytkownik {user} stworzył nieaktywność lekarza poprzez url api/not_available_medics/")
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         count = NonAvailabilityMedic.objects.all().delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunał {count[0]} nieaktywności lekarzy poprzez url api/not_available_medics/")
-        return JsonResponse({'message': '{} NAMs were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+                   f"Użytkownik {user} usunał {count[0]} nieaktywności lekarzy poprzez url api/not_available_medics/")
+        return JsonResponse({'message': f'{count[0]} NAMs were deleted successfully!'},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @allow_access(permissions=['is_ordynator'])
-def NAM_by_id(request, id, *args, **kwargs):
+def nam_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        NAM = NonAvailabilityMedic.objects.get(id=id)
+        nam = NonAvailabilityMedic.objects.get(id=_id)
     except NonAvailabilityMedic.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = NonAvailabilityMedicSerializer(NAM)
+        serializer = NonAvailabilityMedicSerializer(nam)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił nieaktywność lekarza o id {id} poprzez url api/not_available_medics/<id>/")
+                   f"Użytkownik {user} wyświetlił nieaktywność lekarza o id {_id} "
+                   f"poprzez url api/not_available_medics/<id>/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = NonAvailabilityMedicSerializer(NAM, data=data)
+        serializer = NonAvailabilityMedicSerializer(nam, data=data)
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} edytował nieaktywność lekarza o id {id} poprzez url api/not_available_medics/<id>/")
+                       f"Użytkownik {user} edytował nieaktywność lekarza o id {_id} "
+                       f"poprzez url api/not_available_medics/<id>/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        NAM.delete()
+        nam.delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął nieaktywność lekarza o id {id} poprzez url api/not_available_medics/<id>/")
+                   f"Użytkownik {user} usunął nieaktywność lekarza o id {_id} "
+                   f"poprzez url api/not_available_medics/<id>/")
         return JsonResponse({'message': 'NAM was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
 # NonAvailabilityRoom Views #
 @api_view(['GET', 'POST', 'DELETE'])
 @allow_access(permissions=['is_ordynator'])
-def all_NARs(request, *args, **kwargs):
+def all_nars(request, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
-    NARs = [NAR for NAR in NonAvailabilityRoom.objects.all()]
+    nars = [NAR for NAR in NonAvailabilityRoom.objects.all()]
 
     if request.method == 'GET':
-        serializer = NonAvailabilityRoomSerializer(NARs, many=True)
+        serializer = NonAvailabilityRoomSerializer(nars, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił listę nieaktywnych pokoi poprzez url api/not_available_rooms/")
+                   f"Użytkownik {user} wyświetlił listę nieaktywnych pokoi poprzez url api/not_available_rooms/")
         return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
@@ -614,44 +627,47 @@ def all_NARs(request, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzył nieaktywny pokój poprzez url api/not_available_rooms/")
+                       f"Użytkownik {user} stworzył nieaktywny pokój poprzez url api/not_available_rooms/")
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         count = NonAvailabilityRoom.objects.all().delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął {count[0]} nieaktywnych pokoi poprzez url api/not_available_rooms/")
-        return JsonResponse({'message': '{} Rooms were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+                   f"Użytkownik {user} usunął {count[0]} nieaktywnych pokoi poprzez url api/not_available_rooms/")
+        return JsonResponse({'message': f'{count[0]} NARs were deleted successfully!'},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @allow_access(permissions=['is_ordynator'])
-def NAR_by_id(request, id, *args, **kwargs):
+def nar_by_id(request, _id, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        NAR = NonAvailabilityRoom.objects.get(id=id)
+        nar = NonAvailabilityRoom.objects.get(id=_id)
     except NonAvailabilityRoom.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = NonAvailabilityRoomSerializer(NAR)
+        serializer = NonAvailabilityRoomSerializer(nar)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił nieaktywność pokoju o id {id} poprzez url api/not_available_rooms/<id>/")
+                   f"Użytkownik {user} wyświetlił nieaktywność pokoju o id {_id} "
+                   f"poprzez url api/not_available_rooms/<id>/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = NonAvailabilityRoomSerializer(NAR, data=data)
+        serializer = NonAvailabilityRoomSerializer(nar, data=data)
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} edytował nieaktywność pokoju o id {id} poprzez url api/not_available_rooms/<id>/")
+                       f"Użytkownik {user} edytował nieaktywność pokoju o id {_id} "
+                       f"poprzez url api/not_available_rooms/<id>/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        NAR.delete()
+        nar.delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął nieaktywność pokoju o id {id} poprzez url api/not_available_rooms/<id>/")
+                   f"Użytkownik {user} usunął nieaktywność pokoju o id {_id} poprzez url api/not_available_rooms/<id>/")
         return JsonResponse({'message': 'NAR was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -665,7 +681,7 @@ def budget_years(request, *args, **kwargs):
     if request.method == 'GET':
         serializer = BudgetYearsSerializer(years, many=True)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił listę lat budzetowych poprzez url api/budget_years/")
+                   f"Użytkownik {user} wyświetlił listę lat budzetowych poprzez url api/budget_years/")
         return Response(serializer.data)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
@@ -673,14 +689,15 @@ def budget_years(request, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} dodal nowy rok budzetowy poprzez url api/budget_years/")
+                       f"Użytkownik {user} dodal nowy rok budzetowy poprzez url api/budget_years/")
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        count = BudgetYearsSerializer.objects.all().delete()
+        count = BudgetYear.objects.all().delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął {count[0]} lat budzetowych poprzez url api/budget_years/")
-        return JsonResponse({'message': '{} Rooms were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
+                   f"Użytkownik {user} usunął {count[0]} lat budzetowych poprzez url api/budget_years/")
+        return JsonResponse({'message': f'{count[0]} Budgets were deleted successfully!'},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -689,29 +706,30 @@ def budget_year(request, year, *args, **kwargs):
     user = kwargs['user']
     token = kwargs['token']
     try:
-        budget_year = BudgetYear.objects.get(year=year)
+        _budget_year = BudgetYear.objects.get(year=year)
     except BudgetYear.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = BudgetYearsSerializer(budget_year)
+        serializer = BudgetYearsSerializer(_budget_year)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił rok {year} poprzez url api/budget_year/<id>/")
+                   f"Użytkownik {user} wyświetlił rok {year} poprzez url api/budget_year/<id>/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = BudgetYearsSerializer(budget_year, data=data)
+        serializer = BudgetYearsSerializer(_budget_year, data=data)
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} edytował rok {year} poprzez url api/budget_year/<id>/")
+                       f"Użytkownik {user} edytował rok {year} poprzez url api/budget_year/<id>/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        budget_year.delete()
+        _budget_year.delete()
         create_log(request.method, user, token,
-        f"Użytkownik {user} usunął rok {year} poprzez url api/budget_year/<id>/")
+                   f"Użytkownik {user} usunął rok {year} poprzez url api/budget_year/<id>/")
         return JsonResponse({'message': 'Year was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
 
 @api_view(['POST'])
 @allow_access(permissions=['is_ordynator'])
@@ -720,17 +738,17 @@ def create_ward_data(request, *args, **kwargs):
     token = kwargs['token']
     try:
         data = JSONParser().parse(request)
-        serializer = WardDataSerializer(data=data)
-    except serializer.DoesNotExist:
+        ward_data = WardDataSerializer(data=data)
+    except WardData.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'POST' and len(WardData.objects.all()) == 0:
-        if serializer.is_valid():
-            serializer.save()
+        if ward_data.is_valid():
+            ward_data.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} stworzyl nowa konfiguracje poprzez url api/create_ward_data/")
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                       f"Użytkownik {user} stworzyl nowa konfiguracje poprzez url api/create_ward_data/")
+            return JsonResponse(ward_data.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(ward_data.errors, status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
@@ -749,7 +767,7 @@ def update_ward_data(request, *args, **kwargs):
     if request.method == 'GET':
         serializer = WardDataSerializer(ward)
         create_log(request.method, user, token,
-        f"Użytkownik {user} wyświetlił konfiguracje poprzez url api/ward_data/")
+                   f"Użytkownik {user} wyświetlił konfiguracje poprzez url api/ward_data/")
         return Response(serializer.data)
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
@@ -758,10 +776,10 @@ def update_ward_data(request, *args, **kwargs):
         if serializer.is_valid():
             serializer.save()
             create_log(request.method, user, token,
-            f"Użytkownik {user} zaktualizował konfiguracje poprzez url api/ward_data/")
+                       f"Użytkownik {user} zaktualizował konfiguracje poprzez url api/ward_data/")
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+    return JsonResponse(status=status.HTTP_404_NOT_FOUND, data=data)
 
 
 @api_view(['GET'])
@@ -788,7 +806,8 @@ def statistics(request, *args, **kwargs):
         end_day = request.GET.get("end_day")
 
         # Check presence of request values
-        if start_year is None or start_month is None or start_day is None or end_year is None or end_month is None or end_day is None:
+        if start_year is None or start_month is None or start_day is None \
+                or end_year is None or end_month is None or end_day is None:
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         # Check is there any operations in range in DB
@@ -796,25 +815,23 @@ def statistics(request, *args, **kwargs):
         end_date = datetime.date(year=int(end_year), month=int(end_month), day=int(end_day))
         operations = Operation.objects.filter(date__range=[start_date, end_date])
         if len(operations) == 0:
-            data = {}
-            data["failure"] = "There are no operations in DB"
+            data = {"failure": "There are no operations in DB"}
             return Response(status=status.HTTP_400_BAD_REQUEST, data=data)
 
         try:
-            data = getStats(operations, start_date, end_date)
+            data = get_stats(operations, start_date, end_date)
             result = [data]
             create_log(request.method, user, token,
-            f"Użytkownik {user} wyświetlił statystyki poprzez url api/statistics/")
+                       f"Użytkownik {user} wyświetlił statystyki poprzez url api/statistics/")
         except BudgetYear.DoesNotExist:
-            data = {}
-            data["failure"] = "BudgetYear is empty"
+            data = {"failure": "BudgetYear is empty"}
             return Response(status=status.HTTP_501_NOT_IMPLEMENTED, data=data)
         return Response(status=status.HTTP_200_OK, data=result)
 
 
 @api_view(["POST"])
 @allow_access(permissions=['is_ordynator', 'is_planist'])
-def medicPresence(request, *args, **kwargs):
+def medic_presence(request, *args, **kwargs):
     """
 
     Args:
@@ -840,7 +857,8 @@ def medicPresence(request, *args, **kwargs):
             day = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
             if checkPresence(day, medic_id) is True:
                 create_log(request.method, user, token,
-                f"Użytkownik {user} wyświetlił obecnosc lekarzana z daty {date_year}-{date_month}-{date_day} poprzez url api/medicPresence/")
+                           f"Użytkownik {user} wyświetlił obecnosc lekarzana z daty {date_year}-{date_month}-{date_day}"
+                           f" poprzez url api/medicPresence/")
                 return Response(status=status.HTTP_200_OK, data="1")
             else:
                 return Response(status=status.HTTP_200_OK, data="0")
@@ -850,7 +868,7 @@ def medicPresence(request, *args, **kwargs):
 
 @api_view(["POST"])
 @allow_access(permissions=['is_ordynator', 'is_planist'])
-def dailyAlg(request, *args, **kwargs):
+def daily_alg(request, *args, **kwargs):
     """
 
     Args:
@@ -869,24 +887,25 @@ def dailyAlg(request, *args, **kwargs):
             data["failure"] = "Please config ward data first"
             return Response(status=status.HTTP_409_CONFLICT, data=data)
 
-        is_child = request.POST.get("is_child")             # 1 or 0
-        is_difficult = request.POST.get("is_difficult")     # 1 or 0
-        date_year = request.POST.get("date_year")           # int
-        date_month = request.POST.get("date_month")         # int
-        date_day = request.POST.get("date_day")             # int
-        type_ICD = request.POST.get("type_ICD")             # int
-        medic_id = request.POST.get("medic_id")             # int
+        is_child = request.POST.get("is_child")  # 1 or 0
+        is_difficult = request.POST.get("is_difficult")  # 1 or 0
+        date_year = request.POST.get("date_year")  # int
+        date_month = request.POST.get("date_month")  # int
+        date_day = request.POST.get("date_day")  # int
+        type_icd = request.POST.get("type_ICD")  # int
+        medic_id = request.POST.get("medic_id")  # int
 
         # Check presence of request values
-        if is_child is None or is_difficult is None or date_year is None or date_month is None or date_day is None or type_ICD is None or medic_id is None:
+        if is_child is None or is_difficult is None or date_year is None \
+                or date_month is None or date_day is None or type_icd is None or medic_id is None:
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         day_date = datetime.date(year=int(date_year), month=int(date_month), day=int(date_day))
-        algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_ICD, medic_id)
+        algorithm = DailyHintALG(int(is_child), int(is_difficult), day_date, type_icd, medic_id)
 
-        json = algorithm.toJSON()
+        json = algorithm.to_json()
         create_log(request.method, user, token,
-        f"Użytkownik {user} zebral dane o mozliwych operacjach poprzez url api/dailyAlg/")
+                   f"Użytkownik {user} zebral dane o mozliwych operacjach poprzez url api/dailyAlg/")
 
         return Response(status=status.HTTP_200_OK, data=json)
 
@@ -895,7 +914,7 @@ def dailyAlg(request, *args, **kwargs):
 
 @api_view(["POST"])
 @allow_access(permissions=['is_ordynator', 'is_planist'])
-def yearlyAlg(request, *args, **kwargs):
+def yearly_alg(request, *args, **kwargs):
     """
 
     Args:
@@ -925,5 +944,6 @@ def yearlyAlg(request, *args, **kwargs):
 
         json = getPercenteges(year)
         create_log(request.method, user, token,
-        f"Użytkownik {user} zebral dane o dniach z operacjami oraz ich zapelnieniu poprzez url api/yearlyAlg/")
+                   f"Użytkownik {user} zebral dane o dniach z operacjami oraz ich zapelnieniu "
+                   f"poprzez url api/yearlyAlg/")
         return Response(status=status.HTTP_200_OK, data=json)

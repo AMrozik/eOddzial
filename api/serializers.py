@@ -4,7 +4,7 @@ from .models import (
     Medic,
     NonAvailabilityMedic,
     Operation,
-    Operation_type,
+    OperationType,
     Room,
     NonAvailabilityRoom,
     Log,
@@ -34,7 +34,7 @@ class OperationSerializer(serializers.ModelSerializer):
 
 class OperationTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Operation_type
+        model = OperationType
         fields = ('id', 'name', 'ICD_code', 'cost', 'is_difficult', 'duration')
 
 

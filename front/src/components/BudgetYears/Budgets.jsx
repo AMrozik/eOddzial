@@ -1,12 +1,10 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
 import BudgetYearsService from "../../services/BudgetYearsService";
 import {useTable} from "react-table";
-import {Link, useNavigate} from "react-router-dom"
 
 const Budgets = (props) => {
     const [budgets, setBudgets] = useState([]);
     const budgetsRef = useRef();
-    const navigate = useNavigate();
 
     budgetsRef.current = budgets;
 
@@ -25,9 +23,9 @@ const Budgets = (props) => {
             });
     };
 
-    const refreshList = () => {
-        retriveBudgets();
-    };
+    // const refreshList = () => {
+    //     retriveBudgets();
+    // };
 
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {

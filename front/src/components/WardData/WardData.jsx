@@ -61,11 +61,11 @@ const WardData = (props) => {
             .then(response => {
                 setMessage("The WardData was updated successfully!");
             })
-            .catch(e => {
+            .catch(error => {
                 if (e.response.status === 400) {
                     alert("Prosze poprawic czas przygotowania sali operacyjnej!\nFormat: HH:MM:SS");
                 }
-                console.log(e);
+                console.log(error);
             });
     };
 

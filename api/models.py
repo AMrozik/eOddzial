@@ -5,7 +5,7 @@ import re
 
 
 def code(icd: str) -> bool:
-    return bool(re.match(r"^[0-9]{2,3}(\.[0-9]{1,5})?$", icd))
+    return bool(re.match(r"^\d{2,3}(\.\d{1,5})?$", icd))
 
 
 class Patient(models.Model):
@@ -35,7 +35,7 @@ class Medic(models.Model):
     name = models.CharField(max_length=200, null=False)
 
 
-class Operation_type(models.Model):
+class OperationType(models.Model):
     name = models.CharField(max_length=200, null=False)
     ICD_code = models.CharField(max_length=200, null=False)
     cost = models.IntegerField(null=False)
@@ -63,7 +63,7 @@ class NonAvailabilityRoom(models.Model):
 
 
 class Operation(models.Model):
-    type = models.ForeignKey('Operation_type', on_delete=models.CASCADE)
+    type = models.ForeignKey('api.OperationType', on_delete=models.CASCADE)
     medic = models.ForeignKey('Medic', on_delete=models.CASCADE)
     patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
     date = models.DateField(null=False)
