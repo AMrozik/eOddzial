@@ -63,7 +63,7 @@ class NonAvailabilityRoom(models.Model):
 
 
 class Operation(models.Model):
-    type = models.ForeignKey('api.models.OperationType', on_delete=models.CASCADE)
+    type = models.ForeignKey('api.OperationType', on_delete=models.CASCADE)
     medic = models.ForeignKey('Medic', on_delete=models.CASCADE)
     patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
     date = models.DateField(null=False)
