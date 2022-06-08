@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Redirect } from "react";
 import WardDataService from "../../services/WardDataService";
+import { useNavigate } from "react-router-dom";
 
 const AddWardData = () => {
   const initialWardDataState = {
@@ -14,11 +15,12 @@ const AddWardData = () => {
   const [wardData, setWardData] = useState(initialWardDataState);
   const [submitted, setSubmitted] = useState(false);
   const [exist, setExist] = useState(false);
+    let navigate = useNavigate();
 
   const checkExistence = () => {
       WardDataService.get()
             .then(response => {
-                if (response.data) { setExist(true); }
+                if (response.data) { setExist(true); setTimeout(()=>{navigate('/home')}, 5000)}
             })
             .catch(e => {
                 if (e.response.status === 409) {  setExist(false); }
@@ -72,11 +74,7 @@ const AddWardData = () => {
       <div className="submit-form form_style">
         {exist ? (
             <div>
-{/*                  Obviously meta should not be part of body but no one really knows that this is here XD, also redirects don't work fsr*/}
-{/*                  Remember to not set content on 0 because it causes logout*/}
-                <head><meta httpEquiv="refresh" content="2; /home"/></head>
                 <h1>Już Skonfigurowano</h1>
-                {/*<a href="/home"> take me home country road </a>*/}
             </div>
         ) : (submitted ? (
                 <div className="form_style">

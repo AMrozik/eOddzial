@@ -14,6 +14,8 @@ export const getAll = () => {
     return instance.get('/medics/')
 };
 
-export default {
-    getAll
+const apis = {
+    getAll,
 };
+
+export default apis;

@@ -22,7 +22,7 @@ const RoomsBreaks = (props) => {
                     temp2 = resp.data;
                     for (var i = 0; i < temp.length; i++) {
                         for (var j = 0; j < temp2.length; j++) {
-                            if (temp2[j].id == temp[i]["room"]) {
+                            if (temp2[j].id === temp[i]["room"]) {
                                 temp[i]["room_number"] = temp2[j]["room_number"];
                             }
                         }

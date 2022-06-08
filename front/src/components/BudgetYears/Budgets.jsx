@@ -4,6 +4,7 @@ import {useTable} from "react-table";
 
 const Budgets = (props) => {
     const [budgets, setBudgets] = useState([]);
+    const [visibleBudgets, setVisibleBudgets] = useState([]);
     const budgetsRef = useRef();
 
     budgetsRef.current = budgets;
@@ -16,7 +17,7 @@ const Budgets = (props) => {
         BudgetYearsService.getAll()
             .then((response) => {
                 setBudgets(response.data);
-                console.log(response.data)
+                setVisibleBudgets(response.data);
             })
             .catch((e) => {
                 console.log(e);
@@ -41,6 +42,11 @@ const Budgets = (props) => {
             .catch(e => {
                 console.log(e);
             });
+    };
+
+    let inputSearchHandler = (element) => {
+        var lowerCase = element.target.value.toLowerCase();
+        setVisibleBudgets(budgets.filter((element) => {return element.year.toString().toLowerCase().includes(lowerCase)}));
     };
 
     const buttonSVG = () => {
@@ -77,13 +83,18 @@ const Budgets = (props) => {
         prepareRow,
     } = useTable({
         columns,
-        data: budgets,
+        data: visibleBudgets,
     });
 
     return (
         <div className="col-md-12 list table_style">
-            {/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
-
+            <input
+                id="outlined-basic"
+                type="text"
+                onChange={inputSearchHandler}
+                variant="outlined"
+                label="Search"
+            />
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}

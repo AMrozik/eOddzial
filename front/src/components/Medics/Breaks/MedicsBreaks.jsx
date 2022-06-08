@@ -23,7 +23,7 @@ const MedicsBreaks = (props) => {
                     temp2 = resp.data;
                     for (var i = 0; i < temp.length; i++) {
                         for (var j = 0; j < temp2.length; j++) {
-                            if (temp2[j].id == temp[i]["medic"]) {
+                            if (temp2[j].id === temp[i]["medic"]) {
                                 temp[i]["name"] = temp2[j]["name"];
                             }
                         }

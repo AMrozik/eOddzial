@@ -26,6 +26,8 @@ export const getAll = () => {
     return instance.get('/statistics/')
 };
 
-export default {
-    getAll
+const apis = {
+    getAll,
 };
+
+export default apis;
