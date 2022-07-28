@@ -58,9 +58,9 @@ urlpatterns = [
     path('medic/<id>/', medic_by_id, name='medic'),
     path('medics/', all_medics, name='medics'),
 
-    path('operations/', all_operations, name='medics'),
-    path('operations/edit/', edit_operations, name='medics'),
-    path('operation/<id>/', operation_by_id, name='medic'),
+    path('operations/', all_operations, name='operations'),
+    path('operations/edit/', edit_operations, name='edit_operations'),
+    path('operation/<id>/', operation_by_id, name='operations_by_id'),
     path('operation/<id>/edit/', edit_operation_by_id, name='medic'),
 
     path('rooms/', all_rooms, name='rooms'),

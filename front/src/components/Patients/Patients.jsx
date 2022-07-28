@@ -4,7 +4,7 @@ import {useTable} from "react-table";
 import {useNavigate} from "react-router-dom"
 
 const Patients = (props) => {
-    const [patients, setPatients] = useState(["JD"]);
+    const [patients, setPatients] = useState([""]);
     const patientsRef = useRef();
     const navigate = useNavigate();
 
@@ -80,8 +80,6 @@ const Patients = (props) => {
 
     return (
         <div className="col-md-12 list table_style">
-            {/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
-
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}
@@ -130,7 +128,8 @@ const Patients = (props) => {
                                                 <path
                                                     d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
-                                            </svg> usuń
+                                            </svg>
+                                            usuń
                                         </button>
 
                                     </td>

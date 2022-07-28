@@ -46,7 +46,7 @@ const AddPatient = () => {
       <div className="submit-form form_style">
         {submitted ? (
             <div className="form_style">
-              <h4>Created new patient!</h4>
+              <h4>Pomyślne utworzono pacjenta!</h4>
               <button className="btn btn-success" onClick={newPatient}> Dodaj </button>
             </div>
         ) : (
