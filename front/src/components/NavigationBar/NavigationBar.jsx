@@ -76,8 +76,8 @@ export const NavigationBar = () => {
             </Navbar>
             <br/>
             <Routes>
-              <Route path="/schedule" exact element={<PrivateRoute/>}>
-                <Route path="/schedule" exact element={<OperationScheduler/>}/>
+              <Route path="/schedule/:date" exact element={<PrivateRoute/>}>
+                <Route path="/schedule/:date" exact element={<OperationScheduler/>}/>
               </Route>
               <Route path="/statistics" exact element={<PrivateRoute/>}>
                 <Route path="/statistics" exact element={<Statistics/>}/>
