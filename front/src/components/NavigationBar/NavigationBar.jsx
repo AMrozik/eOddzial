@@ -11,6 +11,7 @@ import PrivateRoute from '../../PrivateRoute';
 import Login from '../Login/Login';
 import Logout from '../Login/Logout';
 import OperationScheduler from "../OperationScheduler/OperationScheduler";
+import OperationDateSearch from "../Operations/OperationDateSearch";
 import Statistics from "../Statistics/Statistics";
 import Patients from "../Patients/Patients";
 import EditPatient from "../Patients/EditPatient";
@@ -76,8 +77,8 @@ export const NavigationBar = () => {
             </Navbar>
             <br/>
             <Routes>
-              <Route path="/schedule/:date" exact element={<PrivateRoute/>}>
-                <Route path="/schedule/:date" exact element={<OperationScheduler/>}/>
+              <Route path="/schedule" exact element={<PrivateRoute/>}>
+                <Route path="/schedule" exact element={<OperationScheduler/>}/>
               </Route>
               <Route path="/statistics" exact element={<PrivateRoute/>}>
                 <Route path="/statistics" exact element={<Statistics/>}/>
@@ -102,6 +103,10 @@ export const NavigationBar = () => {
               </Route>
 
 {/*                Routing is weird in this project */}
+              <Route path="/operation_date_search/:date" exact element={<PrivateRoute/>}>
+                <Route path="/operation_date_search/:date" exact element={<OperationDateSearch/>}/>
+              </Route>
+
               <Route path="/add_room" exact element={<PrivateRoute/>}>
                 <Route path="/add_room" exact element={<AddRoom/>}/>
               </Route>
