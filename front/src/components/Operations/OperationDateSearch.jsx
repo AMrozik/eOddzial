@@ -156,15 +156,24 @@ const OperationDateSearch = () => {
     //     console.log(days);
 
         for(i=0; i < alldays/7; i++){
+            var colors = [];
+            colors.push(decideColor(0+(i*7), thismonthdays, predays));
+            colors.push(decideColor(1+(i*7), thismonthdays, predays));
+            colors.push(decideColor(2+(i*7), thismonthdays, predays));
+            colors.push(decideColor(3+(i*7), thismonthdays, predays));
+            colors.push(decideColor(4+(i*7), thismonthdays, predays));
+            colors.push(decideColor(5+(i*7), thismonthdays, predays));
+            colors.push(decideColor(6+(i*7), thismonthdays, predays));
+
             rows.push(
                 <tr>
-                <td style={{"backgroundColor": decideColor(0+(i*7), thismonthdays, predays), "border": "2px black solid"}}><a href="/add_operation">{days[0+(i*7)]}</a></td>
-                <td style={{"backgroundColor": decideColor(1+(i*7), thismonthdays, predays), "border": "2px black solid"}}><a href="/add_operation">{days[1+(i*7)]}</a></td>
-                <td style={{"backgroundColor": decideColor(2+(i*7), thismonthdays, predays), "border": "2px black solid"}}><a href="/add_operation">{days[2+(i*7)]}</a></td>
-                <td style={{"backgroundColor": decideColor(3+(i*7), thismonthdays, predays), "border": "2px black solid"}}><a href="/add_operation">{days[3+(i*7)]}</a></td>
-                <td style={{"backgroundColor": decideColor(4+(i*7), thismonthdays, predays), "border": "2px black solid"}}><a href="/add_operation">{days[4+(i*7)]}</a></td>
-                <td style={{"backgroundColor": decideColor(5+(i*7), thismonthdays, predays), "border": "2px black solid"}}><a href="/add_operation">{days[5+(i*7)]}</a></td>
-                <td style={{"backgroundColor": decideColor(6+(i*7), thismonthdays, predays), "border": "2px black solid"}}><a href="/add_operation">{days[6+(i*7)]}</a></td>
+                    <td style={{"backgroundColor": colors[0], "border": "2px black solid"}}><a href={(colors[0] !== "grey")?'/add_operation/'+yearToShow+'-'+(parseInt(monthToShow)+1)+'-'+days[0+(i*7)] : '#'}>{days[0+(i*7)]}</a></td>
+                    <td style={{"backgroundColor": colors[1], "border": "2px black solid"}}><a href={(colors[1] !== "grey")?'/add_operation/'+yearToShow+'-'+(parseInt(monthToShow)+1)+'-'+days[1+(i*7)] : '#'}>{days[1+(i*7)]}</a></td>
+                    <td style={{"backgroundColor": colors[2], "border": "2px black solid"}}><a href={(colors[2] !== "grey")?'/add_operation/'+yearToShow+'-'+(parseInt(monthToShow)+1)+'-'+days[2+(i*7)] : '#'}>{days[2+(i*7)]}</a></td>
+                    <td style={{"backgroundColor": colors[3], "border": "2px black solid"}}><a href={(colors[3] !== "grey")?'/add_operation/'+yearToShow+'-'+(parseInt(monthToShow)+1)+'-'+days[3+(i*7)] : '#'}>{days[3+(i*7)]}</a></td>
+                    <td style={{"backgroundColor": colors[4], "border": "2px black solid"}}><a href={(colors[4] !== "grey")?'/add_operation/'+yearToShow+'-'+(parseInt(monthToShow)+1)+'-'+days[4+(i*7)] : '#'}>{days[4+(i*7)]}</a></td>
+                    <td style={{"backgroundColor": colors[5], "border": "2px black solid"}}><a href={(colors[5] !== "grey")?'/add_operation/'+yearToShow+'-'+(parseInt(monthToShow)+1)+'-'+days[5+(i*7)] : '#'}>{days[5+(i*7)]}</a></td>
+                    <td style={{"backgroundColor": colors[6], "border": "2px black solid"}}><a href={(colors[6] !== "grey")?'/add_operation/'+yearToShow+'-'+(parseInt(monthToShow)+1)+'-'+days[6+(i*7)] : '#'}>{days[6+(i*7)]}</a></td>
                 </tr>
             );
         }

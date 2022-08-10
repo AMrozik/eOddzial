@@ -64,7 +64,7 @@ export const remove = id => {
 //    return http.delete(`/rooms/`);
 //};
 
-export default {
+const apis = {
     getAll,
     get,
     create,
@@ -72,3 +72,5 @@ export default {
     remove,
 //    removeAll
 };
+
+export default apis;

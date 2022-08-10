@@ -1,5 +1,7 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
+import {useParams} from "react-router-dom"
 import OperationService from "../../services/OperationService";
+import HintingAlgService from "../../services/HintingAlgService";
 
 const AddOperation = () => {
     const initialOperationtState = {
@@ -12,23 +14,26 @@ const AddOperation = () => {
         done: 0,
     };
 
+    const {date} = useParams();
+    var dateToShow = new Date(date);
     const [operation, setOperation] = useState(initialOperationtState);
     const [operationHints, setOperationHints] = useState();
     const [submitted, setSubmitted] = useState(false);
+    console.log(operationHints);
 
-//     const getOperationHints = () => {
-//         HintingAlgService.getDaily()
-//             .then(response => {
-//               setOperationHints(response.data);
-//             })
-//             .catch(e => {
-//               console.log(e);
-//             });
-//     };
-//
-//     useEffect(() => {
-//       getOperationHints();
-//     }, []);
+    const getOperationHints = () => {
+        HintingAlgService.getDaily()
+            .then(response => {
+              setOperationHints(response.data);
+            })
+            .catch(e => {
+              console.log(e);
+            });
+    };
+
+    useEffect(() => {
+      getOperationHints();
+    }, []);
 
     const handleInputChange = event => {
         const {name, value} = event.target;
