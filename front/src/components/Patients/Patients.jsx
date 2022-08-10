@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom"
 
 const Patients = (props) => {
     const [patients, setPatients] = useState([""]);
+    const [visiblePatients, setVisiblePatients] = useState([""]);
     const patientsRef = useRef();
     const navigate = useNavigate();
 
@@ -18,7 +19,7 @@ const Patients = (props) => {
         PatientsService.getAll()
             .then((response) => {
                 setPatients(response.data);
-//                 console.log(response)
+                setVisiblePatients(response.data);
             })
             .catch((e) => {
                 console.log(e);
@@ -31,7 +32,7 @@ const Patients = (props) => {
 
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
-            deletePatients(id)
+            deletePatients(id);
         }
     }
 
@@ -43,6 +44,11 @@ const Patients = (props) => {
             .catch(e => {
                 console.log(e);
             });
+    };
+
+    let inputSearchHandler = (element) => {
+        var lowerCase = element.target.value.toLowerCase();
+        setVisiblePatients(patients.filter((element) => {return element.name.toLowerCase().includes(lowerCase)}));
     };
 
     const buttonSVG = () => {
@@ -75,11 +81,18 @@ const Patients = (props) => {
         prepareRow,
     } = useTable({
         columns,
-        data: patients,
+        data: visiblePatients,
     });
 
     return (
         <div className="col-md-12 list table_style">
+            <input
+                id="outlined-basic"
+                type="text"
+                onChange={inputSearchHandler}
+                variant="outlined"
+                label="Search"
+            />
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}
@@ -128,8 +141,7 @@ const Patients = (props) => {
                                                 <path
                                                     d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
-                                            </svg>
-                                            usuń
+                                            </svg> usuń
                                         </button>
 
                                     </td>

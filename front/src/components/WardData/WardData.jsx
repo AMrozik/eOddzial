@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import WardDataService from "../../services/WardDataService";
+import { useNavigate } from "react-router-dom";
 
 const WardData = (props) => {
     const initialWardDataState = {
@@ -14,17 +15,7 @@ const WardData = (props) => {
     const [currentWardData, setCurrentWardData] = useState(initialWardDataState);
     const [message, setMessage] = useState("");
     const [exist, setExist] = useState(false);
-
-//   const checkExistence = () => {
-//       WardDataService.get()
-//             .then(response => {
-//                 if (response.data) { setExist(true); }
-//             })
-//             .catch(e => {
-//                 if (e.response.status === 409) { setExist(false); }
-//                 console.log(e);
-//             });
-//   };
+    let navigate = useNavigate();
 
     const getWardData = () => {
         WardDataService.get()
@@ -37,6 +28,7 @@ const WardData = (props) => {
             .catch(e => {
                 if (e.response.status === 409) {
                     setExist(false);
+                    setTimeout(()=>{navigate('/add_ward_data')}, 5000);
                 } else {
                     console.log(e);
                 }
@@ -44,7 +36,6 @@ const WardData = (props) => {
     };
 
     useEffect(() => {
-//     checkExistence();
         getWardData();
     }, []);
 
@@ -85,7 +76,7 @@ const WardData = (props) => {
                                 value={currentWardData.operation_prepare_time}
                                 onChange={handleInputChange}
                             />
-                            <label htmlFor="name">Ward opening hour</label>
+                            <label htmlFor="name">Godzina rozpoczęcia pracy</label>
                             <input
                                 type="time"
                                 className="form-control"
@@ -95,7 +86,7 @@ const WardData = (props) => {
                                 value={currentWardData.working_start_hour}
                                 onChange={handleInputChange}
                             />
-                            <label htmlFor="name">Ward ending hour</label>
+                            <label htmlFor="name">Godzina zakończenia pracy</label>
                             <input
                                 type="time"
                                 className="form-control"
@@ -105,7 +96,7 @@ const WardData = (props) => {
                                 value={currentWardData.working_end_hour}
                                 onChange={handleInputChange}
                             />
-                            <label htmlFor="name">Child interval ending hour</label>
+                            <label htmlFor="name">Godzina zakończenia strefy dziecięcej</label>
                             <input
                                 type="time"
                                 className="form-control"
@@ -115,7 +106,7 @@ const WardData = (props) => {
                                 value={currentWardData.child_interval_hour}
                                 onChange={handleInputChange}
                             />
-                            <label htmlFor="name">Difficult operations starting hour</label>
+                            <label htmlFor="name">Godzina rozpoczęcia strefy trudnych operacji</label>
                             <input
                                 type="time"
                                 className="form-control"
@@ -132,8 +123,6 @@ const WardData = (props) => {
                 </div>
             ) : (
                 <div className="submit-form form_style">
-                    {/*              staralem sie bawic w fajne przekierowania, ale meta w tym miejscu wywala nawet na widoku od edycji ward data*/}
-                    {/*                 <head><meta httpEquiv="refresh" content="2; /add_ward_data"/></head> */}
                     <h1> Brak Konfiguracji </h1>
 
 

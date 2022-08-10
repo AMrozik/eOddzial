@@ -51,30 +51,30 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('patients/', all_patients, name='patients'),
     path('create_patient/', create_patient, name='create_patients'),
-    path('patient/<id>/', patient_by_id, name='patient'),
-    path('update_patient/<id>/', update_patient, name='update_patient'),
-    path('delete_patient/<id>/', delete_patient, name='delete_patient'),
+    path('patient/<_id>/', patient_by_id, name='patient'),
+    path('update_patient/<_id>/', update_patient, name='update_patient'),
+    path('delete_patient/<_id>/', delete_patient, name='delete_patient'),
 
-    path('medic/<id>/', medic_by_id, name='medic'),
+    path('medic/<_id>/', medic_by_id, name='medic'),
     path('medics/', all_medics, name='medics'),
 
     path('operations/', all_operations, name='operations'),
     path('operations/edit/', edit_operations, name='edit_operations'),
-    path('operation/<id>/', operation_by_id, name='operations_by_id'),
-    path('operation/<id>/edit/', edit_operation_by_id, name='medic'),
+    path('operation/<_id>/', operation_by_id, name='operations_by_id'),
+    path('operation/<_id>/edit/', edit_operation_by_id, name='operation_edit_by_id'),
 
     path('rooms/', all_rooms, name='rooms'),
-    path('rooms/<id>/', room_by_id, name='room'),
+    path('rooms/<_id>/', room_by_id, name='room'),
     path('rooms/active/', active_rooms, name='active_rooms'),
 
     path('operation_types/', all_operation_types, name='operation_types'),
-    path('operation_type/<id>/', operation_type_by_id, name='operation_type'),
+    path('operation_type/<_id>/', operation_type_by_id, name='operation_type'),
 
     path('not_available_rooms/', all_nars, name='not_available_rooms'),
-    path('not_available_room/<id>/', nar_by_id, name='not_available_room'),
+    path('not_available_room/<_id>/', nar_by_id, name='not_available_room'),
 
     path('not_available_medics/', all_nams, name='not_available_medics'),
-    path('not_available_medic/<id>/', nam_by_id, name='not_available_medic'),
+    path('not_available_medic/<_id>/', nam_by_id, name='not_available_medic'),
 
     path('ward_data/', update_ward_data, name='ward_data'),
     path('create_ward_data/', create_ward_data, name='create_ward_data'),
@@ -86,7 +86,7 @@ urlpatterns = [
 
     # Logs
     path('logs/', view_logs, name='logs'),
-    path('logs/<id>', view_logs_by_id, name='log'),
+    path('logs/<_id>', view_logs_by_id, name='log'),
 
     # Hint Alg
     path('dailyAlg/', daily_alg, name='dailyAlg'),

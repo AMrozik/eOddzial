@@ -932,17 +932,27 @@ def yearly_alg(request, *args, **kwargs):
             data["failure"] = "Please config ward data first"
             return Response(status=status.HTTP_409_CONFLICT, data=data)
 
-        year = request.POST.get("date_year")
+        data = JSONParser().parse(request)
+        year = data["date_year"]
+        month = data["date_month"]
 
         if year is None:
             data["failure"] = "year is None"
+            return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
+
+        if month is None:
+            data["failure"] = "month is None"
             return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY, data=data)
 
         if len(Operation.objects.filter(date__year=year)) == 0:
             data["failure"] = "There are no operations in this year"
             return Response(status=status.HTTP_204_NO_CONTENT, data=data)
 
-        json = getPercenteges(year)
+        if len(Operation.objects.filter(date__month=month)) == 0:
+            data["failure"] = "There are no operations in this month"
+            return Response(status=status.HTTP_204_NO_CONTENT, data=data)
+
+        json = getPercenteges(year, month)
         create_log(request.method, user, token,
                    f"Użytkownik {user} zebral dane o dniach z operacjami oraz ich zapelnieniu "
                    f"poprzez url api/yearlyAlg/")

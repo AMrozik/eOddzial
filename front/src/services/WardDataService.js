@@ -37,8 +37,10 @@ export const update = data => {
     return instance.put("/ward_data/", data);
 };
 
-export default {
+const apis = {
     get,
     create,
-    update
+    update,
 };
+
+export default apis;
