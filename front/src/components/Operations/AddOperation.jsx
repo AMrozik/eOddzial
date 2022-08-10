@@ -13,7 +13,22 @@ const AddOperation = () => {
     };
 
     const [operation, setOperation] = useState(initialOperationtState);
+    const [operationHints, setOperationHints] = useState();
     const [submitted, setSubmitted] = useState(false);
+
+//     const getOperationHints = () => {
+//         HintingAlgService.getDaily()
+//             .then(response => {
+//               setOperationHints(response.data);
+//             })
+//             .catch(e => {
+//               console.log(e);
+//             });
+//     };
+//
+//     useEffect(() => {
+//       getOperationHints();
+//     }, []);
 
     const handleInputChange = event => {
         const {name, value} = event.target;
@@ -66,8 +81,8 @@ const AddOperation = () => {
                 </div>
             ) : (
                 <div>
-                    <form onSubmit={saveOperation}>
-                        <div className="form-group form_style ">
+                    <form onSubmit={saveOperation} >
+                        <div className="form-group form_style " style={{float:"left"}}>
                             <label htmlFor="type">Typ operacji</label>
                             <input
                                 type="number"
@@ -138,8 +153,24 @@ const AddOperation = () => {
                                 onChange={handleInputChange}
                                 name="done"
                             />
+                            <button type="submit" className="btn btn-success"> Zapisz</button>
                         </div>
-                        <button type="submit" className="btn btn-success"> Zapisz</button>
+                        <div className="form-group form_style " >
+                            <label htmlFor="type">Typ operacji</label>
+                            <p></p>
+                            <label htmlFor="medic">Lekarz</label>
+                            <p></p>
+                            <label htmlFor="patient">Pacjent</label>
+                            <p></p>
+                            <label htmlFor="date">Data</label>
+                            <p></p>
+                            <label htmlFor="room">Pokój</label>
+                            <p></p>
+                            <label htmlFor="start">Rozpoczęcie operacji</label>
+                            <p></p>
+                            <label htmlFor="done">Zakończona</label>
+                            <p></p>
+                        </div>
                     </form>
                 </div>
             )}
