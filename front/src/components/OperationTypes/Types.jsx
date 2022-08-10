@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom"
 
 const Types = (props) => {
     const [types, setTypes] = useState([]);
+    const [visibleTypes, setVisibleTypes] = useState([]);
     const typesRef = useRef();
     const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const Types = (props) => {
         TypesService.getAll()
             .then((response) => {
                 setTypes(response.data);
+                setVisibleTypes(response.data);
             })
             .catch((e) => {
                 console.log(e);
@@ -42,6 +44,11 @@ const Types = (props) => {
             .catch(e => {
                 console.log(e);
             });
+    };
+
+    let inputSearchHandler = (element) => {
+        var lowerCase = element.target.value.toLowerCase();
+        setVisibleTypes(types.filter((element) => {return element.name.toLowerCase().includes(lowerCase)}));
     };
 
     const buttonSVG = () => {
@@ -75,12 +82,18 @@ const Types = (props) => {
 
     } = useTable({
         columns,
-        data: types,
+        data: visibleTypes,
     });
 
     return (
         <div className="col-md-12 list table_style">
-
+            <input
+                id="outlined-basic"
+                type="text"
+                onChange={inputSearchHandler}
+                variant="outlined"
+                label="Search"
+            />
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}

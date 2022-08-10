@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom"
 
 const Patients = (props) => {
     const [patients, setPatients] = useState(["JD"]);
+    const [visiblePatients, setVisiblePatients] = useState([""]);
     const patientsRef = useRef();
     const navigate = useNavigate();
 
@@ -18,7 +19,7 @@ const Patients = (props) => {
         PatientsService.getAll()
             .then((response) => {
                 setPatients(response.data);
-//                 console.log(response)
+                setVisiblePatients(response.data);
             })
             .catch((e) => {
                 console.log(e);
@@ -31,7 +32,7 @@ const Patients = (props) => {
 
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
-            deletePatients(id)
+            deletePatients(id);
         }
     }
 
@@ -43,6 +44,11 @@ const Patients = (props) => {
             .catch(e => {
                 console.log(e);
             });
+    };
+
+    let inputSearchHandler = (element) => {
+        var lowerCase = element.target.value.toLowerCase();
+        setVisiblePatients(patients.filter((element) => {return element.name.toLowerCase().includes(lowerCase)}));
     };
 
     const buttonSVG = () => {
@@ -75,13 +81,18 @@ const Patients = (props) => {
         prepareRow,
     } = useTable({
         columns,
-        data: patients,
+        data: visiblePatients,
     });
 
     return (
         <div className="col-md-12 list table_style">
-            {/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
-
+            <input
+                id="outlined-basic"
+                type="text"
+                onChange={inputSearchHandler}
+                variant="outlined"
+                label="Search"
+            />
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}
