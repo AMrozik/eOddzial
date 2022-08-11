@@ -88,14 +88,14 @@ const OperationDateSearch = () => {
     const decideColor = (iterator, dayAmount, predays) => {
         var color = "green"
 
-        if (iterator < predays) {
+        if (iterator <= predays) {
             color = "grey"
-        } else if (iterator >= dayAmount + predays) {
+        } else if (iterator > dayAmount + predays) {
             color = "grey"
         } else if (dayFillPercent[iterator - predays] >= 1) {
             color = "red"
         } else if (dayFillPercent[iterator - predays] > 0) {
-            color = "orange"
+            color = "rgb(255, "+(255*(1-dayFillPercent[iterator - predays]))+", 0)"
         }
 
         return color;
@@ -157,13 +157,13 @@ const OperationDateSearch = () => {
 
         for (i = 0; i < alldays / 7; i++) {
             var colors = [];
-            colors.push(decideColor(0 + (i * 7), thismonthdays, predays));
             colors.push(decideColor(1 + (i * 7), thismonthdays, predays));
             colors.push(decideColor(2 + (i * 7), thismonthdays, predays));
             colors.push(decideColor(3 + (i * 7), thismonthdays, predays));
             colors.push(decideColor(4 + (i * 7), thismonthdays, predays));
             colors.push(decideColor(5 + (i * 7), thismonthdays, predays));
             colors.push(decideColor(6 + (i * 7), thismonthdays, predays));
+            colors.push(decideColor(7 + (i * 7), thismonthdays, predays));
 
             rows.push(
                 <tr>

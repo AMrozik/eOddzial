@@ -47,7 +47,7 @@ const WardData = (props) => {
     };
 
     const updateWardData = (e) => {
-//   this prevents norma behavior of form on submit
+//   this prevents normal behavior of form on submit
         e.preventDefault();
 
         WardDataService.update(currentWardData)

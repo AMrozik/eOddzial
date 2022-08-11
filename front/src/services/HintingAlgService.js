@@ -15,7 +15,7 @@ export const getYearly = data => {
     return instance.post('/yearlyAlg/', data)
 };
 
-export const getDaily = () => {
+export const getDaily = data => {
 
     let a = JSON.parse(localStorage.getItem('authTokens'));
 
@@ -25,7 +25,7 @@ export const getDaily = () => {
         headers: {'Authorization': 'Bearer ' + a['access']}
     });
 
-    return instance.post('/dailyAlg/')
+    return instance.post('/dailyAlg/', data)
 };
 
 const apis = {
