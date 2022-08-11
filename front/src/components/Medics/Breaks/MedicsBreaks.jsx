@@ -93,8 +93,8 @@ const MedicsBreaks = (props) => {
         <div className="col-md-12 list table_style">
             <table
                 className="table table-striped table-bordered"
-                {...getTableProps()}
-            >
+                {...getTableProps()}>
+
                 <thead>
                 {headerGroups.map((headerGroup) => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -119,9 +119,6 @@ const MedicsBreaks = (props) => {
                                 );
                             })}
                             <td>
-                                {/* ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA */}
-
-
                                 <button type="submit" className="btn btn-danger table_button" onClick={() => {
                                     deletionAlert(row.original.id)
                                 }}>
@@ -130,20 +127,20 @@ const MedicsBreaks = (props) => {
                                         <path
                                             d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                         <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
-                                    </svg> usuń
+                                    </svg> Usuń
                                 </button>
 
-
-                                <button type="submit" className="btn btn-success table_button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                         fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path
-                                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                                    </svg>
-                                    <a href={'/medic_break/' + row.original.id}> edytuj </a>
-                                </button>
+                                <a href={'/medic_break/' + row.original.id}>
+                                    <button type="submit" className="btn btn-success table_button">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor" className="bi bi-plus-circle" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path
+                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                        </svg> Edytuj
+                                    </button>
+                                </a>
                             </td>
                         </tr>
                     );

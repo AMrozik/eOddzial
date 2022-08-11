@@ -55,7 +55,7 @@ const OperationDateSearch = () => {
         const dateNow = new Date();
         const year = dateNow.getFullYear();
         return (
-            <select onChange={handleYearChange}>
+            <select class="form-select-sm" onChange={handleYearChange}>
                 <option value="" selected disabled hidden>Wybierz Rok</option>
                 <option value={year}>{year}</option>
                 <option value={year + 1}>{year + 1}</option>
@@ -108,13 +108,13 @@ const OperationDateSearch = () => {
         const head = (
             <thead>
             <tr>
-                <th>Niedziela</th>
-                <th>Poniedzialek</th>
-                <th>Wtorek</th>
-                <th>Sroda</th>
-                <th>Czwartek</th>
-                <th>Piatek</th>
-                <th>Sobota</th>
+                <th class="calendar-th">Niedziela</th>
+                <th class="calendar-th">Poniedziałek</th>
+                <th class="calendar-th">Wtorek</th>
+                <th class="calendar-th">Środa</th>
+                <th class="calendar-th">Czwartek</th>
+                <th class="calendar-th">Piątek</th>
+                <th class="calendar-th">Sobota</th>
             </tr>
             </thead>
         );
@@ -197,31 +197,33 @@ const OperationDateSearch = () => {
     }
 
     return (
-        <div>
-            {yearOptions()}
-            <select onChange={handleMonthChange}>
-                <option value="" selected disabled hidden>Wybierz Miesiac</option>
-                <option value={0}>Styczen</option>
-                <option value={1}>Luty</option>
-                <option value={2}>Marzec</option>
-                <option value={3}>Kwiecien</option>
-                <option value={4}>Maj</option>
-                <option value={5}>Czerwiec</option>
-                <option value={6}>Lipiec</option>
-                <option value={7}>Sierpien</option>
-                <option value={8}>Wrzesien</option>
-                <option value={9}>Pazdziernik</option>
-                <option value={10}>Listopad</option>
-                <option value={11}>Grudzien</option>
-            </select>
+        <div className="submit-form form_style">
+            <div class="searchbar">
+                {yearOptions()}
+                <select class="form-select-sm" onChange={handleMonthChange}>
+                    <option value="" selected disabled hidden>Wybierz Miesiac</option>
+                    <option value={0}>Styczen</option>
+                    <option value={1}>Luty</option>
+                    <option value={2}>Marzec</option>
+                    <option value={3}>Kwiecien</option>
+                    <option value={4}>Maj</option>
+                    <option value={5}>Czerwiec</option>
+                    <option value={6}>Lipiec</option>
+                    <option value={7}>Sierpien</option>
+                    <option value={8}>Wrzesien</option>
+                    <option value={9}>Pazdziernik</option>
+                    <option value={10}>Listopad</option>
+                    <option value={11}>Grudzien</option>
+                </select>
 
-            <a href={'/operation_date_search/' + yearToShow + '-' + (parseInt(monthToShow) + 1)}>
-                <button type="submit">
-                    Przejdz
-                </button>
-            </a>
+                <a href={'/operation_date_search/' + yearToShow + '-' + (parseInt(monthToShow) + 1)}>
+                    <button class="btn-sm btn-primary" type="submit">
+                        Przejdz
+                    </button>
+                </a>
+            </div>
 
-            <table>
+            <table class="calendar">
                 {tableBody(dateToShow)}
             </table>
         </div>

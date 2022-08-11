@@ -34,6 +34,16 @@
     margin-bottom: 15px;
 }
 
+.calendar-th{
+    width: 150px;
+    overflow: hidden;
+}
+
+.calendar{
+    table-layout: fixed;
+    width: 1050px;
+}
+
 
 /* TABLES & BUTTONS */
 a {

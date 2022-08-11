@@ -75,16 +75,18 @@ const Medics = (props) => {
                         {headerGroup.headers.map((column) => (
                             <th {...column.getHeaderProps()}>
                                 {column.render("Header")}
-                                <button type="submit" className="btn btn-warning table_button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                         className="bi bi-pause-circle" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path
-                                            d="M5 6.25a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5zm3.5 0a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5z"/>
-                                    </svg>
-                                    <a href='/medics_breaks'> Przerwy</a>
-                                </button>
+                                <a href='/medics_breaks'>
+                                    <button type="submit" className="btn btn-warning table_button">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor"
+                                             className="bi bi-pause-circle" viewBox="0 0 16 16">
+                                            <path
+                                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path
+                                                d="M5 6.25a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5zm3.5 0a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5z"/>
+                                        </svg> Przerwy
+                                    </button>
+                                </a>
                             </th>
                         ))}
                     </tr>
@@ -99,16 +101,18 @@ const Medics = (props) => {
                                 return (
                                     <td {...cell.getCellProps()}>
                                         {cell.render("Cell")}
-                                        <button type="submit" className="btn btn-warning table_button">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                 fill="currentColor" className="bi bi-pause-circle" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                                <path
-                                                    d="M5 6.25a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5zm3.5 0a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5z"/>
-                                            </svg>
-                                            <a href={'/add_medic_break/' + row.original.id}> Dodaj przerwe </a>
-                                        </button>
+                                        <a href={'/add_medic_break/' + row.original.id}>
+                                            <button type="submit" className="btn btn-warning table_button">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                     fill="currentColor" className="bi bi-pause-circle"
+                                                     viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                                    <path
+                                                        d="M5 6.25a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5zm3.5 0a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5z"/>
+                                                </svg> Dodaj przerwe
+                                            </button>
+                                        </a>
                                     </td>
                                 );
                             })}

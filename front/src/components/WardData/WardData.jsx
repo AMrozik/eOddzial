@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import WardDataService from "../../services/WardDataService";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const WardData = (props) => {
     const initialWardDataState = {
@@ -28,7 +28,9 @@ const WardData = (props) => {
             .catch(e => {
                 if (e.response.status === 409) {
                     setExist(false);
-                    setTimeout(()=>{navigate('/add_ward_data')}, 5000);
+                    setTimeout(() => {
+                        navigate('/add_ward_data')
+                    }, 5000);
                 } else {
                     console.log(e);
                 }
@@ -117,7 +119,7 @@ const WardData = (props) => {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <button type="submit" className="btn btn-success"> Zapisz</button>
+                        <button type="submit" className="btn btn-success"> Zapisz </button>
                     </form>
                     <p>{message}</p>
                 </div>
@@ -125,17 +127,17 @@ const WardData = (props) => {
                 <div className="submit-form form_style">
                     <h1> Brak Konfiguracji </h1>
 
-
-                    <button type="submit" className="btn btn-success table_button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             className="bi bi-plus-circle" viewBox="0 0 16 16">
-                            <path
-                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                            <path
-                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
-                        <a href="/add_ward_data"> Skonfiguruj </a>
-                    </button>
+                    <a href="/add_ward_data">
+                        <button type="submit" className="btn btn-success table_button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 className="bi bi-plus-circle" viewBox="0 0 16 16">
+                                <path
+                                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path
+                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg> Skonfiguruj
+                        </button>
+                    </a>
                 </div>
             )}
 
