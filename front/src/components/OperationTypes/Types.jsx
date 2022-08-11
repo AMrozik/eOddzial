@@ -31,7 +31,7 @@ const Types = (props) => {
     };
 
     const deletionAlert = (id) => {
-        if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
+        if (prompt("Wprowadź DELETE żeby potwierdzić usunięcie\nUWAGA!!! Usunięcie tego elementu będzie skutkowalo usunięciem powiązanych danych!",) === "DELETE") {
             deleteTypes(id)
         }
     }
@@ -48,7 +48,9 @@ const Types = (props) => {
 
     let inputSearchHandler = (element) => {
         var lowerCase = element.target.value.toLowerCase();
-        setVisibleTypes(types.filter((element) => {return element.name.toLowerCase().includes(lowerCase)}));
+        setVisibleTypes(types.filter((element) => {
+            return element.name.toLowerCase().includes(lowerCase)
+        }));
     };
 
     const buttonSVG = () => {
@@ -66,7 +68,7 @@ const Types = (props) => {
     const columns = useMemo(
         () => [
             {
-                Header: "Type",
+                Header: "Typy Operacji",
                 accessor: "name",
             },
         ],
@@ -87,13 +89,19 @@ const Types = (props) => {
 
     return (
         <div className="col-md-12 list table_style">
-            <input
-                id="outlined-basic"
-                type="text"
-                onChange={inputSearchHandler}
-                variant="outlined"
-                label="Search"
-            />
+            {/*<input*/}
+            {/*    id="outlined-basic"*/}
+            {/*    type="text"*/}
+            {/*    onChange={inputSearchHandler}*/}
+            {/*    variant="outlined"*/}
+            {/*    label="Search"*/}
+            {/*/>*/}
+
+            <div class="form-group searchbar">
+                <input type="search" class="form-control" placeholder="Wyszukaj typ operacji" aria-label="Search"
+                       onChange={inputSearchHandler}/>
+            </div>
+
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}
@@ -104,10 +112,11 @@ const Types = (props) => {
                         {headerGroup.headers.map((column) => (
                             <th {...column.getHeaderProps()}>
                                 {column.render("Header")}
-                                <button type="submit" className="btn btn-success table_button">
-                                    {buttonSVG()}
-                                    <a href='/add_type'> dodaj</a>
-                                </button>
+                                <a href='/add_type'>
+                                    <button type="submit" className="btn btn-success table_button">
+                                        {buttonSVG()} Dodaj
+                                    </button>
+                                </a>
                             </th>
                         ))}
                     </tr>
@@ -122,11 +131,11 @@ const Types = (props) => {
                                 return (
                                     <td {...cell.getCellProps()}>
                                         {cell.render("Cell")}
-                                        {/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
-                                        <button type="submit" className="btn btn-success table_button">
-                                            {buttonSVG()}
-                                            <a href={'/type/' + row.original.id}> edytuj </a>
-                                        </button>
+                                        <a href={'/type/' + row.original.id}>
+                                            <button type="submit" className="btn btn-success table_button">
+                                                {buttonSVG()} Edytuj
+                                            </button>
+                                        </a>
                                         <button type="submit" className="btn btn-danger table_button" onClick={() => {
                                             deletionAlert(row.original.id)
                                         }}>
@@ -135,10 +144,8 @@ const Types = (props) => {
                                                 <path
                                                     d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
-                                            </svg> usun
+                                            </svg> Usuń
                                         </button>
-
-
                                     </td>
                                 );
                             })}

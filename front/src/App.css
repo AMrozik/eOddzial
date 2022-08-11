@@ -30,6 +30,10 @@
     margin-top: 24px;
 }
 
+.searchbar{
+    margin-bottom: 15px;
+}
+
 
 /* TABLES & BUTTONS */
 a {
@@ -37,6 +41,10 @@ a {
     text-decoration: none;
     color: white !important;
     font-size: 18px;
+}
+
+a:hover{
+    cursor: pointer;
 }
 
 .table_button{

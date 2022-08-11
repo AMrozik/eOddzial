@@ -61,14 +61,14 @@ const AddMedicBreak = () => {
       <div className="submit-form form_style">
         {submitted ? (
             <div className="form_style">
-              <h4>Created new MedicBreak!</h4>
+              <h4>Zapisano nowy urlop lekarza</h4>
               <button className="btn btn-success" onClick={newMedicBreak}> Dodaj </button>
             </div>
         ) : (
             <div>
                 <form onSubmit={saveMedicBreak}>
                   <div className="form-group form_style ">
-                    <label htmlFor="name">poczatek</label>
+                    <label htmlFor="name">Początek</label>
                     <input
                         type="date"
                         className="form-control"
@@ -87,7 +87,7 @@ const AddMedicBreak = () => {
                         onChange={handleInputChange}
                         name="time_start"
                     />
-                    <label htmlFor="name">koniec</label>
+                    <label htmlFor="name">Koniec</label>
                     <input
                         type="date"
                         className="form-control"

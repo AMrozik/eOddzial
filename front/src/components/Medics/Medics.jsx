@@ -27,7 +27,7 @@ const Medics = (props) => {
     };
 
     const deletionAlert = (id) => {
-        if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
+        if (prompt("Wprowadź DELETE żeby potwierdzić usunięcie\nUWAGA!!! Usunięcie tego elementu będzie skutkowalo usunięciem powiązanych danych!",) === "DELETE") {
             deleteMedics(id)
         }
     }
@@ -45,7 +45,7 @@ const Medics = (props) => {
     const columns = useMemo(
         () => [
             {
-                Header: "Medics",
+                Header: "Lekarze",
                 accessor: "name",
             },
         ],
@@ -65,8 +65,6 @@ const Medics = (props) => {
 
     return (
         <div className="col-md-12 list table_style">
-            {/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
-
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}
@@ -85,7 +83,7 @@ const Medics = (props) => {
                                         <path
                                             d="M5 6.25a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5zm3.5 0a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5z"/>
                                     </svg>
-                                    <a href='/medics_breaks'> przerwy</a>
+                                    <a href='/medics_breaks'> Przerwy</a>
                                 </button>
                             </th>
                         ))}
@@ -109,7 +107,7 @@ const Medics = (props) => {
                                                 <path
                                                     d="M5 6.25a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5zm3.5 0a1.25 1.25 0 1 1 2.5 0v3.5a1.25 1.25 0 1 1-2.5 0v-3.5z"/>
                                             </svg>
-                                            <a href={'/add_medic_break/' + row.original.id}> dodaj przerwe </a>
+                                            <a href={'/add_medic_break/' + row.original.id}> Dodaj przerwe </a>
                                         </button>
                                     </td>
                                 );
