@@ -199,7 +199,7 @@ const OperationDateSearch = () => {
     return (
         <div className="submit-form form_style">
             <div class="searchbar">
-                {yearOptions()}
+                {yearOptions()} &nbsp;
                 <select class="form-select-sm" onChange={handleMonthChange}>
                     <option value="" selected disabled hidden>Wybierz Miesiac</option>
                     <option value={0}>Styczen</option>
@@ -214,7 +214,7 @@ const OperationDateSearch = () => {
                     <option value={9}>Pazdziernik</option>
                     <option value={10}>Listopad</option>
                     <option value={11}>Grudzien</option>
-                </select>
+                </select> &nbsp;
 
                 <a href={'/operation_date_search/' + yearToShow + '-' + (parseInt(monthToShow) + 1)}>
                     <button class="btn-sm btn-primary" type="submit">
