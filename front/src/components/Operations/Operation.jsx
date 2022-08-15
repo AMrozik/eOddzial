@@ -67,13 +67,12 @@ const deleteOperation = (id) => {
             </svg>
         ])
     }
-
     const columns = useMemo(
         () => [
             {
-                Header: "Operations",
-                accessor: "type",
-            },
+                Header: "Operacja",
+                accessor: operation => 'data operacji: ' + operation.date + ' godzina: ' + operation.start
+            }
         ],
         []
     );

@@ -22,7 +22,7 @@ const Operations = (props) => {
     const {id} = useParams()
     const [currentOperation, setCurrentOperation] = useState(initialOperationState);
     const [message, setMessage] = useState("");
-    console.log(currentOperation, message);
+    console.log(currentOperation);
 
     const getOperation = () => {
         OperationService.get(id)
