@@ -3,5 +3,5 @@
 *.pyc
 .idea/
 node_modules/
-package-lock.json
+front/package-lock.json
 settings.py

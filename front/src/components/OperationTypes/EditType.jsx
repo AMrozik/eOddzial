@@ -75,7 +75,7 @@ const Type = (props) => {
     setCurrentType({ ...currentType});
   }
 
-    const check_difficulty = () => {
+  const check_difficulty = () => {
     if (currentType.is_difficult) {
       return "Prawda"
     }else {

@@ -1,25 +1,30 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
+import OperationService from "../../services/OperationService";
+import HintingAlgService from "../../services/HintingAlgService";
 import TypesService from "../../services/TypesService";
+import MedicsService from "../../services/MedicsService";
+import PatientsService from "../../services/PatientsService";
+import RoomsService from "../../services/RoomsService";
 import {useTable} from "react-table";
 import {useNavigate} from "react-router-dom"
 
-const Types = (props) => {
-    const [types, setTypes] = useState([]);
-    const [visibleTypes, setVisibleTypes] = useState([]);
-    const typesRef = useRef();
+const Operation = (props) => {
+    const [operation, setOperation] = useState([]);
+    const [visibleOperation, setVisibleOperation] = useState([]);
+    const operationRef = useRef();
     const navigate = useNavigate();
 
-    typesRef.current = types;
+    operationRef.current = operation;
 
     useEffect(() => {
-        retriveTypes();
+        retriveOperation();
     }, []);
 
-    const retriveTypes = () => {
-        TypesService.getAll()
+    const retriveOperation = () => {
+        OperationService.getAll()
             .then((response) => {
-                setTypes(response.data);
-                setVisibleTypes(response.data);
+                setOperation(response.data);
+                setVisibleOperation(response.data);
             })
             .catch((e) => {
                 console.log(e);
@@ -27,17 +32,17 @@ const Types = (props) => {
     };
 
     const refreshList = () => {
-        retriveTypes();
+        retriveOperation();
     };
 
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
-            deleteTypes(id)
+            deleteOperation(id)
         }
     }
 
-    const deleteTypes = (id) => {
-        TypesService.remove(id)
+const deleteOperation = (id) => {
+        OperationService.remove(id)
             .then(response => {
                 window.location.reload();
             })
@@ -48,7 +53,7 @@ const Types = (props) => {
 
     let inputSearchHandler = (element) => {
         var lowerCase = element.target.value.toLowerCase();
-        setVisibleTypes(types.filter((element) => {return element.name.toLowerCase().includes(lowerCase)}));
+        setVisibleOperation(operation.filter((element) => {return element.name.toLowerCase().includes(lowerCase)}));
     };
 
     const buttonSVG = () => {
@@ -66,8 +71,8 @@ const Types = (props) => {
     const columns = useMemo(
         () => [
             {
-                Header: "Type",
-                accessor: "name",
+                Header: "Operations",
+                accessor: "type",
             },
         ],
         []
@@ -82,7 +87,7 @@ const Types = (props) => {
 
     } = useTable({
         columns,
-        data: visibleTypes,
+        data: visibleOperation,
     });
 
     return (
@@ -106,7 +111,7 @@ const Types = (props) => {
                                 {column.render("Header")}
                                 <button type="submit" className="btn btn-success table_button">
                                     {buttonSVG()}
-                                    <a href='/add_type'> dodaj</a>
+                                    <a href='/add_operation/:data'> dodaj</a>
                                 </button>
                             </th>
                         ))}
@@ -124,7 +129,7 @@ const Types = (props) => {
                                         {cell.render("Cell")}
                                         <button type="submit" className="btn btn-success table_button">
                                             {buttonSVG()}
-                                            <a href={'/type/' + row.original.id}> edytuj </a>
+                                            <a href={'/operations/' + row.original.id}> edytuj </a>
                                         </button>
                                         <button type="submit" className="btn btn-danger table_button" onClick={() => {
                                             deletionAlert(row.original.id)
@@ -136,18 +141,20 @@ const Types = (props) => {
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
                                             </svg> usun
                                         </button>
-
-
                                     </td>
                                 );
                             })}
                         </tr>
                     );
                 })}
+                <button type="submit" className="btn btn-success table_button">
+                    {buttonSVG()}
+                    <a href='/operation_date_search/'> szukaj</a>
+                </button>
                 </tbody>
             </table>
         </div>
     );
 };
 
-export default Types;
+export default Operation;
