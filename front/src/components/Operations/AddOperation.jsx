@@ -25,12 +25,14 @@ const AddOperation = () => {
     const [medics, setMedics] = useState();
     const [patients, setPatients] = useState();
     const [rooms, setRooms] = useState();
+    const [roomIndex, setRoomIndex] = useState();
     const [operationHints, setOperationHints] = useState();
     const [hintIndexer, setHintIndexer] = useState(1);
     const [submitted, setSubmitted] = useState(false);
     console.log(operation);
     console.log(operationHints);
     console.log(rooms);
+    console.log(roomIndex);
 //     console.log((patients) ? patients[0] : "elo");
 
     if (operation.date === "") {
@@ -62,11 +64,6 @@ const AddOperation = () => {
             .catch(e => {
                 console.log(e);
             });
-    };
-
-    const getOperationHints = (e) => {
-//   this prevents normal behavior of form on submit
-        e.preventDefault();
 
 //         Rooms
         RoomsService.getAll()
@@ -76,6 +73,11 @@ const AddOperation = () => {
             .catch(e => {
                 console.log(e);
             });
+    };
+
+    const getOperationHints = (e) => {
+//   this prevents normal behavior of form on submit
+        e.preventDefault();
 
         if (operation.type !== -1 && operation.medic !== -1 && operation.patient !== -1) {
             HintingAlgService.getDaily({
@@ -103,14 +105,10 @@ const AddOperation = () => {
 //   this prevents normal behavior of form on submit
         e.preventDefault();
 
-        var roomId = -1;
-        for (var i = 0; i < rooms.length; i++) {
-            if (rooms[i].room_number === operationHints[hintIndexer].room) {
-                roomId = rooms[i].id;
-            }
-        }
+        var roomId = getRoomID(operationHints[hintIndexer].room);
 
         setOperation({...operation, "room": roomId, "start": operationHints[hintIndexer].start.slice(11)});
+        setRoomIndex(getRoomIndex(operationHints[hintIndexer].room));
     }
 
     useEffect(() => {
@@ -136,6 +134,32 @@ const AddOperation = () => {
         const {name, value} = event.target;
         setOperation({...operation, [name]: patients[value]});
     };
+
+    const handleRoomChange = event => {
+        const {name, value} = event.target;
+        setRoomIndex(rooms.indexOf(rooms[value]));
+        setOperation({...operation, [name]: rooms[value].id});
+    };
+
+    const getRoomID = number => {
+        var id = -1;
+        for (var i = 0; i < rooms.length; i++) {
+            if (rooms[i].room_number === number) {
+                id = rooms[i].id;
+            }
+        }
+        return id;
+    }
+
+    const getRoomIndex = number => {
+        var index = -1;
+        for (var i = 0; i < rooms.length; i++) {
+            if (rooms[i].room_number === number) {
+                index = i;
+            }
+        }
+        return index;
+    }
 
     const saveOperation = (e) => {
 //   this prevents normal behavior of form on submit
@@ -213,14 +237,12 @@ const AddOperation = () => {
                     <form onSubmit={saveOperation}>
                         <div className="form-group" style={{float: "left"}}>
                             <label htmlFor="room">Pokój</label>
-                            <input
-                                type="number"
-                                className="form-control"
-                                id="room"
-                                required
-                                value={operation.room}
-                                onChange={handleInputChange}
-                                name="room"/> <br/>
+                                <select className="form-select" name="room" value={roomIndex} onChange={handleRoomChange}>
+                                    <option value={-1} selected disabled hidden>Wybierz pokój</option>
+                                    {(rooms) ? rooms.map((element) => <option
+                                        value={rooms.indexOf(element)}>{element.room_number}</option>) : <option></option>}
+                                </select>
+                                <br/>
                             <label htmlFor="start">Rozpoczęcie operacji</label>
                             <input
                                 type="time"
