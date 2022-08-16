@@ -13,11 +13,11 @@ function textifyBudged(obj) {
             <table className="table table-striped table-bordered">
             <tbody>
             <tr>
-                <th><strong>Caly w skali wybranych lat:</strong></th>
+                <th><strong>Cały w skali wybranych lat:</strong></th>
                 <td> {obj['bud_rok']} </td>
             </tr>
             <tr>
-                <th><strong>Budzet na wybrane miesiace:</strong></th>
+                <th><strong>Budżet na wybrane miesiące:</strong></th>
                 <td> {obj['bud_mon']} </td>
             </tr>
             </tbody>
@@ -36,7 +36,7 @@ function textifyPatients(obj) {
                 <td> szt.{obj['kob_int']} proc.{obj['kob_proc']}%</td>
             </tr>
             <tr>
-                <th><strong>Mezczyzni:</strong></th>
+                <th><strong>Mężczyźni:</strong></th>
                 <td> szt.{obj['men_int']} proc.{obj['men_proc']}%</td>
             </tr>
             <tr>
@@ -56,7 +56,7 @@ function textifyPatients(obj) {
                 <td> {obj['wiek_max_int']} </td>
             </tr>
             <tr>
-                <th><strong>Sredni wiek:</strong></th>
+                <th><strong>Średni wiek:</strong></th>
                 <td> {obj['wiek_sred']} </td>
             </tr>
             </tbody>
@@ -70,10 +70,10 @@ function textifyProcedures(obj) {
         const keys = Object.keys(obj['bud_typy_int']);
         var rows = [];
         rows.push(<tr>
-            <th>typ</th>
-            <th>ilosc</th>
-            <th>calkowity koszt</th>
-            <th>procentowy koszt</th>
+            <th>Typ</th>
+            <th>Ilość</th>
+            <th>Całkowity koszt</th>
+            <th>Procentowy koszt</th>
         </tr>)
         for (var i = 0; i < keys.length; i++) {
             rows.push(<tr>
@@ -87,7 +87,7 @@ function textifyProcedures(obj) {
             <table className="table table-striped table-bordered">
             <tbody>
             <tr>
-                <th><strong>Ilosc zabiegow:</strong></th>
+                <th><strong>Ilość zabiegów:</strong></th>
                 <td> {obj['zab']} </td>
             </tr>
             <tr>
@@ -99,11 +99,11 @@ function textifyProcedures(obj) {
                 <td> szt.{obj['zap_int']} proc.{obj['zap_proc']}%</td>
             </tr>
             <tr>
-                <th><strong>Koszt wykonanych zabiegow:</strong></th>
+                <th><strong>Koszt wykonanych zabiegów:</strong></th>
                 <td> {obj['wyk_koszt_int']}</td>
             </tr>
             <tr>
-                <th><strong>Koszt wszystkich zabiegow:</strong></th>
+                <th><strong>Koszt wszystkich zabiegów:</strong></th>
                 <td> {obj['zab_koszt_int']} </td>
             </tr>
             </tbody>

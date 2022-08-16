@@ -21,10 +21,49 @@ const Operations = (props) => {
     };
     const {id} = useParams()
     const [currentOperation, setCurrentOperation] = useState(initialOperationState);
+    const [types, setTypes] = useState();
+    const [medics, setMedics] = useState();
+    const [patients, setPatients] = useState();
+    const [rooms, setRooms] = useState();
     const [message, setMessage] = useState("");
     console.log(currentOperation);
 
-    const getOperation = () => {
+    const gatherData = () => {
+//     Types
+        TypesService.getAll()
+            .then(response => {
+                setTypes(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+//      Medics
+        MedicsService.getAll()
+            .then(response => {
+                setMedics(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+//      Patients
+        PatientsService.getAll()
+            .then(response => {
+                setPatients(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+
+//      Rooms
+        RoomsService.getAll()
+            .then(response => {
+                setRooms(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+
+//      Operations
         OperationService.get(id)
             .then(response => {
             setCurrentOperation(response.data);
@@ -35,13 +74,69 @@ const Operations = (props) => {
     };
 
     useEffect(() => {
-        getOperation();
+        gatherData();
     }, []);
 
     const handleInputChange = event => {
         const { name, value } = event.target;
         setCurrentOperation({ ...currentOperation, [name]: value });
     };
+
+    const handleTypeChange = event => {
+        const { name, value } = event.target;
+        setCurrentOperation({ ...currentOperation, [name]: types[value].id });
+    };
+    const handleMedicChange = event => {
+        const { name, value } = event.target;
+        setCurrentOperation({ ...currentOperation, [name]: medics[value].id });
+    };
+    const handlePatientChange = event => {
+        const { name, value } = event.target;
+        setCurrentOperation({ ...currentOperation, [name]: patients[value].id });
+    };
+    const handleRoomChange = event => {
+        const { name, value } = event.target;
+        setCurrentOperation({ ...currentOperation, [name]: rooms[value].id });
+    };
+
+//     const getIndexes = (typeId, medicId, patientId, roomId) => {
+//      Index order: Type, Medic, Patient, Room
+    const getTypeIndex = (typeId) => {
+        var index = -1;
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].id === typeId) {
+                index = i;
+            }
+        }
+        return index;
+    }
+    const getMedicIndex = (medicId) => {
+        var index = -1;
+        for (var i = 0; i < medics.length; i++) {
+            if (medics[i].id === medicId) {
+                index = i;
+            }
+        }
+        return index;
+    }
+    const getPatientIndex = (patientId) => {
+        var index = -1;
+        for (var i = 0; i < patients.length; i++) {
+            if (patients[i].id === patientId) {
+                index = i;
+            }
+        }
+        return index;
+    }
+    const getRoomIndex = (roomId) => {
+        var index = -1;
+        for (var i = 0; i < rooms.length; i++) {
+            if (rooms[i].id === roomId) {
+                index = i;
+            }
+        }
+        return index;
+    }
 
     const updateOperation = (e) => {
         e.preventDefault();
@@ -75,49 +170,45 @@ const Operations = (props) => {
                   <form onSubmit={updateOperation}>
                     <div className="form-group">
                     <label htmlFor="name">Edytuj typ operacji</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="type"
-                        required
-                        value={currentOperation.type}
-                        onChange={handleInputChange}
-                        name="type"
-                    />
-                      <br/>
+                    <select className="form-select" name="type" value={(types)?getTypeIndex(currentOperation.type):-1} onChange={handleTypeChange}>
+                        <option value={-1} selected disabled hidden>Wybierz typ</option>
+                        {(types) ? types.map((element) => <option
+                            value={types.indexOf(element)}>{element.name}</option>) : <option></option>}
+                    </select> <br/>
+
                     <label htmlFor="name">Lekarz</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="medic"
-                        required
-                        value={currentOperation.medic}
-                        onChange={handleInputChange}
-                        name="medic"
-                    />
-                      <br/>
+                    <select className="form-select" name="medic" value={(medics)?getMedicIndex(currentOperation.medic):-1} onChange={handleMedicChange}>
+                        <option value={-1} selected disabled hidden>Wybierz typ</option>
+                        {(medics) ? medics.map((element) => <option
+                            value={medics.indexOf(element)}>{element.name}</option>) : <option></option>}
+                    </select> <br/>
+
                     <label htmlFor="name">Pacjent</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="patient"
-                        required
-                        value={currentOperation.patient}
-                        onChange={handleInputChange}
-                        name="patient"
-                    />
-                      <br/>
+                    <select className="form-select" name="patient" value={(patients)?getPatientIndex(currentOperation.patient):-1} onChange={handlePatientChange}>
+                        <option value={-1} selected disabled hidden>Wybierz typ</option>
+                        {(patients) ? patients.map((element) => <option
+                            value={patients.indexOf(element)}>{element.name}</option>) : <option></option>}
+                    </select> <br/>
+
                     <label htmlFor="name">Pokój</label>
+                    <select className="form-select" name="room" value={(rooms)?getRoomIndex(currentOperation.room):-1} onChange={handleRoomChange}>
+                        <option value={-1} selected disabled hidden>Wybierz typ</option>
+                        {(rooms) ? rooms.map((element) => <option
+                            value={rooms.indexOf(element)}>{element.room_number}</option>) : <option></option>}
+                    </select> <br/>
+
+                    <label htmlFor="name">Data ropoczęcia operacji</label>
                     <input
-                        type="number"
+                        type="date"
                         className="form-control"
-                        id="room"
+                        id="date"
                         required
-                        value={currentOperation.room}
+                        value={currentOperation.date}
                         onChange={handleInputChange}
-                        name="room"
+                        name="date"
                     />
-                      <br/>
+                    <br/>
+
                     <label htmlFor="name">Czas ropoczęcia operacji</label>
                     <input
                         type="time"

@@ -10,11 +10,11 @@ import {SecretaryNavigation} from "./SecretaryNavigation";
 import PrivateRoute from '../../PrivateRoute';
 import Login from '../Login/Login';
 import Logout from '../Login/Logout';
-import OperationScheduler from "../OperationScheduler/OperationScheduler";
+// import OperationScheduler from "../OperationScheduler/OperationScheduler";
+import Operation from "../Operations/Operation"
 import OperationDateSearch from "../Operations/OperationDateSearch";
 import AddOperation from "../Operations/AddOperation"
 import EditOperation from "../Operations/EditOperation"
-import Operation from "../Operations/Operation"
 import Statistics from "../Statistics/Statistics";
 import Patients from "../Patients/Patients";
 import EditPatient from "../Patients/EditPatient";
@@ -80,8 +80,8 @@ export const NavigationBar = () => {
             </Navbar>
             <br/>
             <Routes>
-              <Route path="/schedule" exact element={<PrivateRoute/>}>
-                <Route path="/schedule" exact element={<OperationScheduler/>}/>
+              <Route path="/operations" exact element={<PrivateRoute/>}>
+                <Route path="/operations" exact element={<Operation/>}/>
               </Route>
               <Route path="/statistics" exact element={<PrivateRoute/>}>
                 <Route path="/statistics" exact element={<Statistics/>}/>
@@ -105,8 +105,8 @@ export const NavigationBar = () => {
                 <Route path="/wardData" exact element={<WardData/>}/>
               </Route>
 
-              <Route path="/operation_date_search" exact element={<PrivateRoute/>}>
-                <Route path="/operation_date_search" exact element={<OperationDateSearch/>}/>
+              <Route path="/operation_date_search/:date" exact element={<PrivateRoute/>}>
+                <Route path="/operation_date_search/:date" exact element={<OperationDateSearch/>}/>
               </Route>
               <Route path="/add_operation/:date" exact element={<PrivateRoute/>}>
                 <Route path="/add_operation/:date" exact element={<AddOperation/>}/>

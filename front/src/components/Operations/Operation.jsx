@@ -13,6 +13,8 @@ const Operation = (props) => {
     const [visibleOperation, setVisibleOperation] = useState([]);
     const operationRef = useRef();
     const navigate = useNavigate();
+    const today = new Date();
+//     console.log(operation)
 
     operationRef.current = operation;
 
@@ -53,7 +55,7 @@ const deleteOperation = (id) => {
 
     let inputSearchHandler = (element) => {
         var lowerCase = element.target.value.toLowerCase();
-        setVisibleOperation(operation.filter((element) => {return element.name.toLowerCase().includes(lowerCase)}));
+        setVisibleOperation(operation.filter((element) => {return element.date.toLowerCase().includes(lowerCase)}));
     };
 
     const buttonSVG = () => {
@@ -91,13 +93,10 @@ const deleteOperation = (id) => {
 
     return (
         <div className="col-md-12 list table_style">
-            <input
-                id="outlined-basic"
-                type="text"
-                onChange={inputSearchHandler}
-                variant="outlined"
-                label="Search"
-            />
+
+            <label>Wyszukaj operacje po dacie</label>
+            <input class="form-group searchbar" placeholder="Wyszukaj operacje" type="date" onChange={inputSearchHandler}/>
+
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}
@@ -108,10 +107,11 @@ const deleteOperation = (id) => {
                         {headerGroup.headers.map((column) => (
                             <th {...column.getHeaderProps()}>
                                 {column.render("Header")}
-                                <button type="submit" className="btn btn-success table_button">
-                                    {buttonSVG()}
-                                    <a href='/add_operation/:data'> dodaj</a>
-                                </button>
+                                <a href={'/operation_date_search/'+today.getFullYear()+'-'+(parseInt(today.getMonth())+1)}>
+                                    <button type="submit" className="btn btn-success table_button">
+                                        {buttonSVG()} Dodaj
+                                    </button>
+                                </a>
                             </th>
                         ))}
                     </tr>
@@ -126,10 +126,11 @@ const deleteOperation = (id) => {
                                 return (
                                     <td {...cell.getCellProps()}>
                                         {cell.render("Cell")}
-                                        <button type="submit" className="btn btn-success table_button">
-                                            {buttonSVG()}
-                                            <a href={'/operations/' + row.original.id}> edytuj </a>
-                                        </button>
+                                        <a href={'/operations/' + row.original.id}>
+                                            <button type="submit" className="btn btn-success table_button">
+                                                {buttonSVG()} Edytuj
+                                            </button>
+                                        </a>
                                         <button type="submit" className="btn btn-danger table_button" onClick={() => {
                                             deletionAlert(row.original.id)
                                         }}>
@@ -138,7 +139,7 @@ const deleteOperation = (id) => {
                                                 <path
                                                     d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
-                                            </svg> usun
+                                            </svg> Usun
                                         </button>
                                     </td>
                                 );
@@ -146,10 +147,6 @@ const deleteOperation = (id) => {
                         </tr>
                     );
                 })}
-                <button type="submit" className="btn btn-success table_button">
-                    {buttonSVG()}
-                    <a href='/operation_date_search/'> szukaj</a>
-                </button>
                 </tbody>
             </table>
         </div>

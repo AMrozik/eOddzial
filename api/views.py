@@ -887,13 +887,14 @@ def daily_alg(request, *args, **kwargs):
             data["failure"] = "Please config ward data first"
             return Response(status=status.HTTP_409_CONFLICT, data=data)
 
-        is_child = request.POST.get("is_child")  # 1 or 0
-        is_difficult = request.POST.get("is_difficult")  # 1 or 0
-        date_year = request.POST.get("date_year")  # int
-        date_month = request.POST.get("date_month")  # int
-        date_day = request.POST.get("date_day")  # int
-        type_icd = request.POST.get("type_ICD")  # int
-        medic_id = request.POST.get("medic_id")  # int
+        data = JSONParser().parse(request)
+        is_child = data["is_child"]  # 1 or 0
+        is_difficult = data["is_difficult"]  # 1 or 0
+        date_year = data["date_year"]  # int
+        date_month = data["date_month"]  # int
+        date_day = data["date_day"]  # int
+        type_icd = data["type_ICD"]  # int
+        medic_id = data["medic_id"]  # int
 
         # Check presence of request values
         if is_child is None or is_difficult is None or date_year is None \

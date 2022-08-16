@@ -11,7 +11,7 @@
 /* FORMS*/
 .form_style > * {
     margin-bottom: 24px;
-    width: 30%;
+    width: 45%;
 }
 
 .separation_style > * {
@@ -30,6 +30,20 @@
     margin-top: 24px;
 }
 
+.searchbar{
+    margin-bottom: 15px;
+}
+
+.calendar-th{
+    width: 150px;
+    overflow: hidden;
+}
+
+.calendar{
+    table-layout: fixed;
+    width: 1050px;
+}
+
 
 /* TABLES & BUTTONS */
 a {
@@ -37,6 +51,10 @@ a {
     text-decoration: none;
     color: white !important;
     font-size: 18px;
+}
+
+a:hover{
+    cursor: pointer;
 }
 
 .table_button{

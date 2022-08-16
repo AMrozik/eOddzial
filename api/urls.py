@@ -58,10 +58,10 @@ urlpatterns = [
     path('medic/<_id>/', medic_by_id, name='medic'),
     path('medics/', all_medics, name='medics'),
 
-    path('operations/', all_operations, name='medics'),
-    path('operations/edit/', edit_operations, name='medics'),
-    path('operation/<_id>/', operation_by_id, name='medic'),
-    path('operation/<_id>/edit/', edit_operation_by_id, name='medic'),
+    path('operations/', all_operations, name='operations'),
+    path('operations/edit/', edit_operations, name='edit_operations'),
+    path('operation/<_id>/', operation_by_id, name='operations_by_id'),
+    path('operation/<_id>/edit/', edit_operation_by_id, name='operation_edit_by_id'),
 
     path('rooms/', all_rooms, name='rooms'),
     path('rooms/<_id>/', room_by_id, name='room'),

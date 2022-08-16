@@ -46,7 +46,9 @@ const Budgets = (props) => {
 
     let inputSearchHandler = (element) => {
         var lowerCase = element.target.value.toLowerCase();
-        setVisibleBudgets(budgets.filter((element) => {return element.year.toString().toLowerCase().includes(lowerCase)}));
+        setVisibleBudgets(budgets.filter((element) => {
+            return element.year.toString().toLowerCase().includes(lowerCase)
+        }));
     };
 
     const buttonSVG = () => {
@@ -88,13 +90,19 @@ const Budgets = (props) => {
 
     return (
         <div className="col-md-12 list table_style">
-            <input
-                id="outlined-basic"
-                type="text"
-                onChange={inputSearchHandler}
-                variant="outlined"
-                label="Search"
-            />
+            {/*<input*/}
+            {/*    id="outlined-basic"*/}
+            {/*    type="text"*/}
+            {/*    onChange={inputSearchHandler}*/}
+            {/*    variant="outlined"*/}
+            {/*    label="Search"*/}
+            {/*/>*/}
+
+            <div class="form-group searchbar">
+                <input type="search" class="form-control" placeholder="Wyszukaj rok budżetowy" aria-label="Search"
+                       onChange={inputSearchHandler}/>
+            </div>
+
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}
@@ -106,11 +114,11 @@ const Budgets = (props) => {
                             <th {...column.getHeaderProps()}>
                                 {column.render("Header")}
 
-
-                                <button type="submit" className="btn btn-success table_button">
-                                    {buttonSVG()}
-                                    <a href='/add_budget_year'> dodaj</a>
-                                </button>
+                                <a href='/add_budget_year'>
+                                    <button type="submit" className="btn btn-success table_button">
+                                        {buttonSVG()} Dodaj
+                                    </button>
+                                </a>
 
                             </th>
                         ))}
@@ -126,13 +134,12 @@ const Budgets = (props) => {
                                 return (
                                     <td {...cell.getCellProps()}>
                                         {cell.render("Cell")}
-                                        {/*                            ANDRZEJU TUTAJ!!! DOTKNIJ TO PALCEM MIDASA*/}
 
-
-                                        <button type="submit" className="btn btn-success table_button">
-                                            {buttonSVG()}
-                                            <a href={'/budget_year/' + row.original.year}> edytuj </a>
-                                        </button>
+                                        <a href={'/budget_year/' + row.original.year}>
+                                            <button type="submit" className="btn btn-success table_button">
+                                                {buttonSVG()} Edytuj
+                                            </button>
+                                        </a>
 
 
                                         <button type="submit" className="btn btn-danger table_button" onClick={() => {
@@ -143,7 +150,7 @@ const Budgets = (props) => {
                                                 <path
                                                     d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                                 <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
-                                            </svg> usuń
+                                            </svg> Usuń
                                         </button>
 
                                     </td>

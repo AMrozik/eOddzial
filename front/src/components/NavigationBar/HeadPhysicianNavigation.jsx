@@ -6,7 +6,7 @@ import {Nav} from 'react-bootstrap';
 export const HeadPhysicianNavigation = () => {
   return (
       <React.Fragment>
-          <Nav.Link className="link_item" href="/schedule">Plan</Nav.Link>
+          <Nav.Link className="link_item" href="/operations">Operacje</Nav.Link>
           <Nav.Link className="link_item" href="/statistics">Statystyki</Nav.Link>
           <Nav.Link className="link_item" href="/patients">Pacjenci</Nav.Link>
           <Nav.Link className="link_item" href="/medics">Lekarze</Nav.Link>

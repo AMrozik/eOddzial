@@ -14,7 +14,6 @@ const AddOperation = () => {
         patient: -1,
         date: "",
         room: -1,
-        done: -1,
         start: "",
     };
 
@@ -26,42 +25,53 @@ const AddOperation = () => {
     const [medics, setMedics] = useState();
     const [patients, setPatients] = useState();
     const [rooms, setRooms] = useState();
+    const [roomIndex, setRoomIndex] = useState();
     const [operationHints, setOperationHints] = useState();
     const [hintIndexer, setHintIndexer] = useState(1);
     const [submitted, setSubmitted] = useState(false);
-    console.log(operation);
-    console.log(operationHints);
-    console.log(rooms);
+//     console.log(operation);
+//     console.log(operationHints);
+//     console.log(rooms);
+//     console.log(roomIndex);
 //     console.log((patients) ? patients[0] : "elo");
 
-    if (operation.date === ""){
-        setOperation({...operation, "date":dateToShow});
+    if (operation.date === "") {
+        setOperation({...operation, "date": dateToShow});
     }
 
     const getSelectable = () => {
 //     Types
         TypesService.getAll()
             .then(response => {
-              setTypes(response.data);
+                setTypes(response.data);
             })
             .catch(e => {
-              console.log(e);
+                console.log(e);
             });
 //      Medics
         MedicsService.getAll()
             .then(response => {
-              setMedics(response.data);
+                setMedics(response.data);
             })
             .catch(e => {
-              console.log(e);
+                console.log(e);
             });
 //      Patients
         PatientsService.getAll()
             .then(response => {
-              setPatients(response.data);
+                setPatients(response.data);
             })
             .catch(e => {
-              console.log(e);
+                console.log(e);
+            });
+
+//         Rooms
+        RoomsService.getAll()
+            .then(response => {
+                setRooms(response.data);
+            })
+            .catch(e => {
+                console.log(e);
             });
     };
 
@@ -69,53 +79,40 @@ const AddOperation = () => {
 //   this prevents normal behavior of form on submit
         e.preventDefault();
 
-//         Rooms
-        RoomsService.getAll()
-            .then(response => {
-              setRooms(response.data);
-            })
-            .catch(e => {
-              console.log(e);
-            });
-
-        if(operation.type !== -1 && operation.medic !== -1 && operation.patient !== -1 ){
+        if (operation.type !== -1 && operation.medic !== -1 && operation.patient !== -1) {
             HintingAlgService.getDaily({
                 is_child: (operation.patient.age >= 18) ? false : true,
                 is_difficult: operation.type.is_difficult,
                 date_year: operation.date.getFullYear(),
-                date_month: operation.date.getMonth()+1,
+                date_month: operation.date.getMonth() + 1,
                 date_day: operation.date.getDate(),
                 type_ICD: operation.type.ICD_code,
                 medic_id: operation.medic.id
             })
                 .then(response => {
-                  setOperationHints(response.data);
-                  setHintIndexer(0);
+                    setOperationHints(response.data);
+                    setHintIndexer(0);
                 })
                 .catch(e => {
-                  console.log(e);
+                    console.log(e);
                 });
-        }else{
+        } else {
             alert("Nie wszystkie wybory zostaly dokonane!")
         }
     };
 
-    const useDataToFillObj = (e) =>{
+    const useDataToFillObj = (e) => {
 //   this prevents normal behavior of form on submit
         e.preventDefault();
 
-        var roomId = -1;
-        for(var i=0; i< rooms.length; i++){
-            if (rooms[i].room_number === operationHints[hintIndexer].room){
-                roomId = rooms[i].id;
-            }
-        }
+        var roomId = getRoomID(operationHints[hintIndexer].room);
 
         setOperation({...operation, "room": roomId, "start": operationHints[hintIndexer].start.slice(11)});
+        setRoomIndex(getRoomIndex(operationHints[hintIndexer].room));
     }
 
     useEffect(() => {
-      getSelectable();
+        getSelectable();
     }, []);
 
     const handleInputChange = event => {
@@ -137,6 +134,32 @@ const AddOperation = () => {
         const {name, value} = event.target;
         setOperation({...operation, [name]: patients[value]});
     };
+
+    const handleRoomChange = event => {
+        const {name, value} = event.target;
+        setRoomIndex(rooms.indexOf(rooms[value]));
+        setOperation({...operation, [name]: rooms[value].id});
+    };
+
+    const getRoomID = number => {
+        var id = -1;
+        for (var i = 0; i < rooms.length; i++) {
+            if (rooms[i].room_number === number) {
+                id = rooms[i].id;
+            }
+        }
+        return id;
+    }
+
+    const getRoomIndex = number => {
+        var index = -1;
+        for (var i = 0; i < rooms.length; i++) {
+            if (rooms[i].room_number === number) {
+                index = i;
+            }
+        }
+        return index;
+    }
 
     const saveOperation = (e) => {
 //   this prevents normal behavior of form on submit
@@ -175,21 +198,6 @@ const AddOperation = () => {
         setOperation(initialOperationState);
         setSubmitted(false);
     };
-//     const changeDone = (e) => {
-//       e.preventDefault();
-//
-//       operation.done ? (operation.done = false):(operation.done = true);
-//       setOperation({ ...operation});
-//     }
-//
-//     const check_done = () => {
-//       if (operation.done) {
-//         return "Tak"
-//       }else {
-//         return "Nie"
-//       }
-//     }
-
 
     return (
         <div className="submit-form form_style">
@@ -199,38 +207,42 @@ const AddOperation = () => {
                     <button className="btn btn-success" onClick={newOperation}> Dodaj</button>
                 </div>
             ) : (
-                <div>
-                    <form onSubmit={getOperationHints}>
-                        <label htmlFor="type">Typ operacji</label>
-                            <select name="type" onChange={handleTypeChange}>
+                <div className="form-group">
+                    <div>
+                        <form onSubmit={getOperationHints}>
+                            <label htmlFor="type">Typ operacji</label>
+                            <select className="form-select" name="type" onChange={handleTypeChange}>
                                 <option value={-1} selected disabled hidden>Wybierz typ operacji</option>
-                                {(types) ? types.map((element) => <option value={types.indexOf(element)}>{element.name}</option>) : <option></option> }
-                            </select>
-                        <label htmlFor="medic">Lekarz</label>
-                            <select name="medic" onChange={handleMedicChange}>
+                                {(types) ? types.map((element) => <option
+                                    value={types.indexOf(element)}>{element.name}</option>) : <option></option>}
+                            </select> <br/>
+                            <label htmlFor="medic">Lekarz</label>
+                            <select className="form-select" name="medic" onChange={handleMedicChange}>
                                 <option value={-1} selected disabled hidden>Wybierz medyka</option>
-                                {(medics) ? medics.map((element) => <option value={medics.indexOf(element)}>{element.name}</option>) : <option></option> }
-                            </select>
-                        <label htmlFor="patient">Pacjent</label>
-                            <select name="patient" onChange={handlePatientChange}>
+                                {(medics) ? medics.map((element) => <option
+                                    value={medics.indexOf(element)}>{element.name}</option>) : <option></option>}
+                            </select> <br/>
+                            <label htmlFor="patient">Pacjent</label>
+                            <select className="form-select" name="patient" onChange={handlePatientChange}>
                                 <option value={-1} selected disabled hidden>Wybierz pacjenta</option>
-                                {(patients) ? patients.map((element) => <option value={patients.indexOf(element)}>{element.name}</option>) : <option></option> }
-                            </select>
-                        <input type="submit" value="Podpowiedz"/>
-                    </form>
+                                {(patients) ? patients.map((element) => <option
+                                    value={patients.indexOf(element)}>{element.name}</option>) : <option></option>}
+                            </select> <br/>
+                            <button className="btn btn-primary" type="submit">
+                                Podpowiedź
+                            </button>
+                        </form>
+                    </div>
                     <hr></hr>
-                    <form onSubmit={saveOperation} >
-                        <div className="form-group form_style " style={{float:"left"}}>
+                    <form onSubmit={saveOperation}>
+                        <div className="form-group" style={{float: "left"}}>
                             <label htmlFor="room">Pokój</label>
-                            <input
-                                type="number"
-                                className="form-control"
-                                id="room"
-                                required
-                                value={operation.room}
-                                onChange={handleInputChange}
-                                name="room"
-                            />
+                                <select className="form-select" name="room" value={roomIndex} onChange={handleRoomChange}>
+                                    <option value={-1} selected disabled hidden>Wybierz pokój</option>
+                                    {(rooms) ? rooms.map((element) => <option
+                                        value={rooms.indexOf(element)}>{element.room_number}</option>) : <option></option>}
+                                </select>
+                                <br/>
                             <label htmlFor="start">Rozpoczęcie operacji</label>
                             <input
                                 type="time"
@@ -239,18 +251,17 @@ const AddOperation = () => {
                                 required
                                 value={operation.start}
                                 onChange={handleInputChange}
-                                name="start"
-                            />
+                                name="start"/> <br/>
                             <button type="submit" className="btn btn-success">Zapisz</button>
                         </div>
                     </form>
                     <form onSubmit={useDataToFillObj}>
-                        <div className="form-group form_style " >
-                            <label htmlFor="room">Pokój</label>
+                        <div className="form-group">
+                            <label htmlFor="room">Pokój</label><br/>
                             <p>{(operationHints) ? operationHints[hintIndexer].room : ""}</p>
-                            <label htmlFor="start">Rozpoczęcie operacji</label>
+                            <label htmlFor="start">Rozpoczęcie operacji</label><br/>
                             <p>{(operationHints) ? operationHints[hintIndexer].start.slice(11) : ""}</p>
-                            <input type="submit" value="Uzyj danych"/>
+                            <button className="btn btn-primary" type="submit"> Użyj danych</button>
                         </div>
                     </form>
                 </div>
