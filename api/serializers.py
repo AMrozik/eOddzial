@@ -29,7 +29,7 @@ class MedicSerializer(serializers.ModelSerializer):
 class OperationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation
-        fields = ('id', 'type', 'medic', 'patient', 'date', 'room', 'start')
+        fields = ('id', 'type', 'medic', 'patient', 'date', 'room', 'start', 'done')
 
 
 class OperationTypeSerializer(serializers.ModelSerializer):

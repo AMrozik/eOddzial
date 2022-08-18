@@ -69,7 +69,8 @@ class Operation(models.Model):
     date = models.DateField(null=False)
     room = models.ForeignKey('Room', on_delete=models.CASCADE)
     start = models.TimeField()
-    done = models.BooleanField(default=False)
+    done = models.BooleanField()
+
 
 
 class WardData(models.Model):
