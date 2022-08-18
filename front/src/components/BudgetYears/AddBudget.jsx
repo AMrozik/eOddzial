@@ -112,114 +112,175 @@ const AddBudget = () => {
                     name="given_budget"
                 />
                 <label htmlFor="name">Rozklad procentowy</label>
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.jan}
-                    onChange={handleInputChange}
-                    name="jan"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.feb}
-                    onChange={handleInputChange}
-                    name="feb"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.mar}
-                    onChange={handleInputChange}
-                    name="mar"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.apr}
-                    onChange={handleInputChange}
-                    name="apr"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.may}
-                    onChange={handleInputChange}
-                    name="may"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.jun}
-                    onChange={handleInputChange}
-                    name="jun"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.jul}
-                    onChange={handleInputChange}
-                    name="jul"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.aug}
-                    onChange={handleInputChange}
-                    name="aug"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.sep}
-                    onChange={handleInputChange}
-                    name="sep"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.oct}
-                    onChange={handleInputChange}
-                    name="oct"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.nov}
-                    onChange={handleInputChange}
-                    name="nov"
-                />%
-                <input
-                    type="number"
-                    className="form-control"
-                    id="name"
-                    required
-                    value={budget.dec}
-                    onChange={handleInputChange}
-                    name="dec"
-                />%
+                <div>
+                    <label htmlFor="name" >Styczen:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.jan}
+                        onChange={handleInputChange}
+                        name="jan"
+                        align="left"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Luty:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.feb}
+                        onChange={handleInputChange}
+                        name="feb"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Marzec:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.mar}
+                        onChange={handleInputChange}
+                        name="mar"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Kwiecien:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.apr}
+                        onChange={handleInputChange}
+                        name="apr"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Maj:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.may}
+                        onChange={handleInputChange}
+                        name="may"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Czerwiec:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.jun}
+                        onChange={handleInputChange}
+                        name="jun"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Lipiec:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.jul}
+                        onChange={handleInputChange}
+                        name="jul"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Sierpien:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.aug}
+                        onChange={handleInputChange}
+                        name="aug"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Wrzesien:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.sep}
+                        onChange={handleInputChange}
+                        name="sep"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Pazdziernik:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.oct}
+                        onChange={handleInputChange}
+                        name="oct"
+                        style={{"width": "40%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div>
+                    <label htmlFor="name" >Listopad:</label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.nov}
+                        onChange={handleInputChange}
+                        name="nov"
+                        style={{"width": "50%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
+                <div >
+                    <label htmlFor="name">Grodzien: </label>
+                    <input
+                        type="number"
+                        className="form-control"
+                        id="name"
+                        required
+                        value={budget.dec}
+                        onChange={handleInputChange}
+                        name="dec"
+                        style={{"width": "45%", "display":"inline"}}
+                    />
+                    <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
+                </div>
 
               </div>
               <button type="submit" className="btn btn-success"> Zapisz </button>
