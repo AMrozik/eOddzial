@@ -114,8 +114,9 @@ const Budget = (props) => {
             <div className="edit-form">
               <form onSubmit={updateBudget}>
                 <div className="form-group">
-                  <p htmlFor="name">Rok {currentBudget.year}</p>
-                <label htmlFor="name">Roczny budzet</label>
+                  <h2 htmlFor="name">Rok {currentBudget.year}</h2>
+                    <br/>
+                <h3 htmlFor="name">Roczny budzet</h3>
                 <input
                     type="number"
                     className="form-control"
@@ -125,9 +126,12 @@ const Budget = (props) => {
                     onChange={handleInputChange}
                     name="given_budget"
                 />
-                <label htmlFor="name">Rozklad procentowy</label>
+                    <br/><br/>
+
+                <h3 htmlFor="name">Rozklad procentowy</h3>
+
+                    <label htmlFor="name" >Styczeń:</label>
                     <div>
-                        <label htmlFor="name" >Styczen:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -136,13 +140,12 @@ const Budget = (props) => {
                             value={currentBudget.jan}
                             onChange={handleInputChange}
                             name="jan"
-                            align="left"
                             style={{"width": "50%", "display":"inline"}}
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Luty:</label>
                     <div>
-                        <label htmlFor="name" >Luty:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -155,8 +158,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Marzec:</label>
                     <div>
-                        <label htmlFor="name" >Marzec:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -169,8 +172,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Kwiecień:</label>
                     <div>
-                        <label htmlFor="name" >Kwiecien:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -183,8 +186,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Maj:</label>
                     <div>
-                        <label htmlFor="name" >Maj:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -197,8 +200,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Czerwiec:</label>
                     <div>
-                        <label htmlFor="name" >Czerwiec:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -211,8 +214,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Lipiec:</label>
                     <div>
-                        <label htmlFor="name" >Lipiec:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -225,8 +228,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Sierpień:</label>
                     <div>
-                        <label htmlFor="name" >Sierpien:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -239,8 +242,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Wrzesień:</label>
                     <div>
-                        <label htmlFor="name" >Wrzesien:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -253,8 +256,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Październik:</label>
                     <div>
-                        <label htmlFor="name" >Pazdziernik:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -263,12 +266,12 @@ const Budget = (props) => {
                             value={currentBudget.oct}
                             onChange={handleInputChange}
                             name="oct"
-                            style={{"width": "40%", "display":"inline"}}
+                            style={{"width": "50%", "display":"inline"}}
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
+                    <label htmlFor="name" >Listopad:</label>
                     <div>
-                        <label htmlFor="name" >Listopad:</label>
                         <input
                             type="number"
                             className="form-control"
@@ -281,8 +284,8 @@ const Budget = (props) => {
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>
-                    <div >
-                        <label htmlFor="name">Grodzien: </label>
+                    <label htmlFor="name">Grudzień: </label>
+                    <div>
                         <input
                             type="number"
                             className="form-control"
@@ -291,7 +294,7 @@ const Budget = (props) => {
                             value={currentBudget.dec}
                             onChange={handleInputChange}
                             name="dec"
-                            style={{"width": "45%", "display":"inline"}}
+                            style={{"width": "50%", "display":"inline"}}
                         />
                         <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                     </div>

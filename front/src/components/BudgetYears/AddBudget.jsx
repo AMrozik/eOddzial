@@ -88,10 +88,8 @@ const AddBudget = () => {
               <button className="btn btn-success" onClick={newBudget}> Dodaj </button>
             </div>
         ) : (
-            <div>
             <form onSubmit={saveBudget}>
-              <div className="form-group form_style ">
-                <label htmlFor="name">Rok</label>
+                <h2 htmlFor="name">Rok</h2>
                 <input
                     type="number"
                     className="form-control"
@@ -100,8 +98,8 @@ const AddBudget = () => {
                     value={budget.year}
                     onChange={handleInputChange}
                     name="year"
-                />
-                <label htmlFor="name">Roczny budzet</label>
+                /><br/><br/>
+                <h3 htmlFor="name">Budżet Roczny</h3>
                 <input
                     type="number"
                     className="form-control"
@@ -111,9 +109,11 @@ const AddBudget = () => {
                     onChange={handleInputChange}
                     name="given_budget"
                 />
-                <label htmlFor="name">Rozklad procentowy</label>
+                <br/><br/><br/>
+                <h3 htmlFor="name">Rozkład Procentowy</h3>
+
+                <label htmlFor="name" >Styczeń:</label>
                 <div>
-                    <label htmlFor="name" >Styczen:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -127,8 +127,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Luty:</label>
                 <div>
-                    <label htmlFor="name" >Luty:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -141,8 +141,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Marzec:</label>
                 <div>
-                    <label htmlFor="name" >Marzec:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -155,8 +155,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Kwiecień:</label>
                 <div>
-                    <label htmlFor="name" >Kwiecien:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -169,8 +169,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Maj:</label>
                 <div>
-                    <label htmlFor="name" >Maj:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -183,8 +183,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Czerwiec:</label>
                 <div>
-                    <label htmlFor="name" >Czerwiec:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -197,8 +197,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Lipiec:</label>
                 <div>
-                    <label htmlFor="name" >Lipiec:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -211,8 +211,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Sierpień:</label>
                 <div>
-                    <label htmlFor="name" >Sierpien:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -225,8 +225,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Wrzesień:</label>
                 <div>
-                    <label htmlFor="name" >Wrzesien:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -239,8 +239,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Październik:</label>
                 <div>
-                    <label htmlFor="name" >Pazdziernik:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -249,12 +249,12 @@ const AddBudget = () => {
                         value={budget.oct}
                         onChange={handleInputChange}
                         name="oct"
-                        style={{"width": "40%", "display":"inline"}}
+                        style={{"width": "50%", "display":"inline"}}
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
+                <label htmlFor="name" >Listopad:</label>
                 <div>
-                    <label htmlFor="name" >Listopad:</label>
                     <input
                         type="number"
                         className="form-control"
@@ -267,8 +267,8 @@ const AddBudget = () => {
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
-                <div >
-                    <label htmlFor="name">Grodzien: </label>
+                <label htmlFor="name">Grudzień: </label>
+                <div>
                     <input
                         type="number"
                         className="form-control"
@@ -277,15 +277,13 @@ const AddBudget = () => {
                         value={budget.dec}
                         onChange={handleInputChange}
                         name="dec"
-                        style={{"width": "45%", "display":"inline"}}
+                        style={{"width": "50%", "display":"inline"}}
                     />
                     <label style={{"margin-left": "4px"}} htmlFor="name">%</label>
                 </div>
-
-              </div>
+              <br/>
               <button type="submit" className="btn btn-success"> Zapisz </button>
             </form>
-            </div>
         )}
       </div>
   );
