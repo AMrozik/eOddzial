@@ -35,31 +35,12 @@ const Type = (props) => {
     setCurrentType({ ...currentType, [name]: value });
   };
 
-// Maybe, we have to consider it in later version
-//   const updateActive = status => {
-//     let data = {
-//       id: currentType.id,
-//       room_number: currentType.room_number,
-//     };
-//
-//     RoomService.update(currentType.id, data)
-//         .then(response => {
-//           currentType({ ...currentType, active: status });
-//           console.log(response.data);
-//           setMessage("The status was updated successfully!");
-//         })
-//         .catch(e => {
-//           console.log(e);
-//         });
-//   };
-
   const updateType = (e) => {
 //   this prevents norma behavior of form on submit
     e.preventDefault();
 
     TypesService.update(id, currentType)
         .then(response => {
-//        TODO: Chciales tutaj andrzeju wrzucic redirecta na liste pokoi (i chyba mozna wywalic ten message ale to jak juz chcesz)
           setMessage("Zaktualizowano");
         })
         .catch(e => {

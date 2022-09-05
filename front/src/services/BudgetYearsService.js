@@ -61,10 +61,6 @@ export const remove = year => {
 
     return instance.delete(`/budget_year/${year}/`);
 };
-// I will leave this here just in case one day we need it (remember to uncomment export)
-//export const removeAll = () => {
-//    return http.delete(`/rooms/`);
-//};
 
 const apis = {
     getAll,

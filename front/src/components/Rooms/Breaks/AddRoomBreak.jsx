@@ -18,8 +18,6 @@ const AddRoomBreak = () => {
   const [roomBreak, setRoomBreak] = useState(initialRoomBreakState);
   const [time, setTime] = useState(initialTimeState);
   const [submitted, setSubmitted] = useState(false);
-//   console.log(time);
-//   console.log(roomBreak);
 
   const handleInputChange = event => {
     const { name, value } = event.target;

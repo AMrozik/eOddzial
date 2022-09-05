@@ -29,11 +29,6 @@ const AddOperation = () => {
     const [operationHints, setOperationHints] = useState();
     const [hintIndexer, setHintIndexer] = useState(1);
     const [submitted, setSubmitted] = useState(false);
-//     console.log(operation);
-//     console.log(operationHints);
-//     console.log(rooms);
-//     console.log(roomIndex);
-//     console.log((patients) ? patients[0] : "elo");
 
     if (operation.date === "") {
         setOperation({...operation, "date": dateToShow});

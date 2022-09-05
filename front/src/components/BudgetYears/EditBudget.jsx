@@ -27,7 +27,6 @@ const Budget = (props) => {
   const getBudget = () => {
     BudgetYearsService.get(year)
         .then(response => {
-//           console.log(response.data);
             const data = {
                 year: response.data.year,
                 jan: response.data.jan*100,
@@ -59,25 +58,6 @@ const Budget = (props) => {
     const { name, value } = event.target;
     setCurrentBudget({ ...currentBudget, [name]: value });
   };
-
-// Maybe, we have to consider it in later version
-//   const updateActive = status => {
-//     let data = {
-//       id: currentBudget.id,
-//       name: currentBudget.name,
-//       PESEL: currentBudget.PESEL,
-//     };
-//
-//     BudgetYearsService.update(currentBudget.id, data)
-//         .then(response => {
-//           currentBudget({ ...currentBudget, active: status });
-//           console.log(response.data);
-//           setMessage("The status was updated successfully!");
-//         })
-//         .catch(e => {
-//           console.log(e);
-//         });
-//   };
 
   const updateBudget = (e) => {
 //   this prevents norma behavior of form on submit

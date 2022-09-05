@@ -182,39 +182,7 @@ const Statistics = () => {
                 {textifyProcedures(stats[0])}
             </div>
         </div>
-        //<div className="col-md-12 list table_style">
-        //  <table
-        //      className="table table-striped table-bordered"
-        //      {...getTableProps()}
-        //  >
-        //    <thead>
-        //    {headerGroups.map((headerGroup) => (
-        //        <tr {...headerGroup.getHeaderGroupProps()}>
-        //          {headerGroup.headers.map((column) => (
-        //              <th {...column.getHeaderProps()}>
-        //                {column.render("Header")}
-        //              </th>
-        //          ))}
-        //        </tr>
-        //    ))}
-        //    </thead>
-        //    <tbody {...getTableBodyProps()}>
-        //    {rows.map((row, i) => {
-        //      prepareRow(row);
-        //      return (
-        //          <tr {...row.getRowProps()}>
-        //            {row.cells.map((cell) => {
-        //              return (
-        //                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-        //              );
-        //            })}
-        //          </tr>
-        //      );
-        //    })}
-        //    </tbody>
-        //  </table>
-        //</div>
-    )//
+    )
 }
 
 export default Statistics;

@@ -99,7 +99,7 @@ const Operations = (props) => {
         setCurrentOperation({ ...currentOperation, [name]: rooms[value].id });
     };
 
-//     const getIndexes = (typeId, medicId, patientId, roomId) => {
+
 //      Index order: Type, Medic, Patient, Room
     const getTypeIndex = (typeId) => {
         var index = -1;

@@ -89,13 +89,6 @@ const Types = (props) => {
 
     return (
         <div className="col-md-12 list table_style">
-            {/*<input*/}
-            {/*    id="outlined-basic"*/}
-            {/*    type="text"*/}
-            {/*    onChange={inputSearchHandler}*/}
-            {/*    variant="outlined"*/}
-            {/*    label="Search"*/}
-            {/*/>*/}
 
             <div class="form-group searchbar">
                 <input type="search" class="form-control" placeholder="Wyszukaj typ operacji" aria-label="Search"

@@ -24,10 +24,6 @@ const Budgets = (props) => {
             });
     };
 
-    // const refreshList = () => {
-    //     retriveBudgets();
-    // };
-
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
             deleteBudgets(id)
@@ -69,10 +65,6 @@ const Budgets = (props) => {
                 Header: "Rok",
                 accessor: "year",
             },
-//             {
-//                 Header: "Wartosc",
-//                 accessor: "given_budget",
-//             },
         ],
         []
     );
@@ -90,14 +82,6 @@ const Budgets = (props) => {
 
     return (
         <div className="col-md-12 list table_style">
-            {/*<input*/}
-            {/*    id="outlined-basic"*/}
-            {/*    type="text"*/}
-            {/*    onChange={inputSearchHandler}*/}
-            {/*    variant="outlined"*/}
-            {/*    label="Search"*/}
-            {/*/>*/}
-
             <div class="form-group searchbar">
                 <input type="search" class="form-control" placeholder="Wyszukaj rok budżetowy" aria-label="Search"
                        onChange={inputSearchHandler}/>

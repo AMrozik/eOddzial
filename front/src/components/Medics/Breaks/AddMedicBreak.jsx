@@ -18,8 +18,6 @@ const AddMedicBreak = () => {
   const [medicBreak, setMedicBreak] = useState(initialMedicBreakState);
   const [time, setTime] = useState(initialTimeState);
   const [submitted, setSubmitted] = useState(false);
-//   console.log(time);
-//   console.log(medicBreak);
 
   const handleInputChange = event => {
     const { name, value } = event.target;

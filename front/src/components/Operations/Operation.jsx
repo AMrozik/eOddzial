@@ -14,7 +14,6 @@ const Operation = (props) => {
     const operationRef = useRef();
     const navigate = useNavigate();
     const today = new Date();
-//     console.log(operation)
 
     operationRef.current = operation;
 

@@ -22,7 +22,6 @@ export const getAll = () => {
         }
     });
 
-//    temporary solution
     return instance.get('/statistics/')
 };
 

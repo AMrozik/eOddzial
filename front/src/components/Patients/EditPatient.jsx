@@ -16,7 +16,6 @@ const Patient = (props) => {
   const getPatient = () => {
     PatientsService.get(id)
         .then(response => {
-//           console.log(response.data);
           setCurrentPatient(response.data);
         })
         .catch(e => {
@@ -32,25 +31,6 @@ const Patient = (props) => {
     const { name, value } = event.target;
     setCurrentPatient({ ...currentPatient, [name]: value });
   };
-
-// Maybe, we have to consider it in later version
-//   const updateActive = status => {
-//     let data = {
-//       id: currentPatient.id,
-//       name: currentPatient.name,
-//       PESEL: currentPatient.PESEL,
-//     };
-//
-//     PatientsService.update(currentPatient.id, data)
-//         .then(response => {
-//           currentPatient({ ...currentPatient, active: status });
-//           console.log(response.data);
-//           setMessage("The status was updated successfully!");
-//         })
-//         .catch(e => {
-//           console.log(e);
-//         });
-//   };
 
   const updatePatient = (e) => {
 //   this prevents norma behavior of form on submit

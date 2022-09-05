@@ -2,13 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {useParams} from "react-router-dom"
 import HintingAlgService from "../../services/HintingAlgService";
 
-// import Scheduler from 'devextreme-react/scheduler';
-//
-// import { data } from './data.js';
-//
-// const currentDate = new Date(2021, 3, 29);
-// const views = ['day', 'week', 'workWeek', 'month'];
-
 const OperationDateSearch = () => {
     const {date} = useParams();
     var dateToShow = new Date(date);
@@ -124,11 +117,7 @@ const OperationDateSearch = () => {
 
         //  Calc this month
         var predays = date.getDay();
-        //     console.log(predays)
-        //     var x = 6-(date.getDay()-1);
-        //     var b = dayamount - x;
         var postdays = 7 - (thismonthdays - (6 - (date.getDay() - 1))) % 7;
-        //     console.log(postdays)
         var alldays = thismonthdays + predays + postdays;
 
         //  Calc last month
@@ -153,7 +142,6 @@ const OperationDateSearch = () => {
         for (i = 1; i <= postdays; i++) {
             days.push(i);
         }
-        //     console.log(days);
 
         for (i = 0; i < alldays / 7; i++) {
             var colors = [];

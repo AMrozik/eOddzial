@@ -22,10 +22,6 @@ const Rooms = (props) => {
             });
     };
 
-    // const refreshList = () => {
-    //     retriveRooms();
-    // };
-
     const deletionAlert = (id) => {
         if (prompt("Wprowadz DELETE zeby potwierdzic usuniecie\nUWAGA!!! Usuniecie tego elementu bedzie skutkowalo usunieciem powiazanych danych!",) === "DELETE") {
             deleteRoom(id)
@@ -65,9 +61,6 @@ const Rooms = (props) => {
 
     return (
         <div className="col-md-12 list table_style">
-            {/*          TODO: poprawic wyglad tego hrefa, moze calosc wziac w jeszcze jednego diva i wydzielic link z tabeli zeby latwiej go pozycjonowoac*/}
-
-
             <table
                 className="table table-striped table-bordered"
                 {...getTableProps()}

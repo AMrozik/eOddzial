@@ -59,10 +59,6 @@ export const remove = id => {
     });
     return instance.delete(`/operation/${id}/edit/`);
 };
-// I will leave this here just in case one day we need it (remember to uncomment export)
-//export const removeAll = () => {
-//    return http.delete(`/rooms/`);
-//};
 
 const apis = {
     getAll,

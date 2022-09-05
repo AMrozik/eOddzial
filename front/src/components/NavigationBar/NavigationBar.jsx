@@ -10,7 +10,6 @@ import {SecretaryNavigation} from "./SecretaryNavigation";
 import PrivateRoute from '../../PrivateRoute';
 import Login from '../Login/Login';
 import Logout from '../Login/Logout';
-// import OperationScheduler from "../OperationScheduler/OperationScheduler";
 import Operation from "../Operations/Operation"
 import OperationDateSearch from "../Operations/OperationDateSearch";
 import AddOperation from "../Operations/AddOperation"
